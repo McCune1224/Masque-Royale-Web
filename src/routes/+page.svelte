@@ -1,35 +1,24 @@
-<!-- YOU CAN DELETE EVERYTHING IN THIS PAGE -->
+<script lang="ts">
+	import { onMount } from 'svelte';
 
-<div class="container h-full mx-auto flex justify-center items-center">
-	<div class="space-y-10 text-center flex flex-col items-center">
-		<h2 class="h2 spin-slow">LMAO MADE YOU LOOK</h2>
-		<!-- / -->
+	onMount(() => {
+		document.title = 'Day 0';
+	});
+</script>
+
+<div>
+	<h1 class="h1 text-center text-primary-700 dark:text-primary-400">Day 0</h1>
+	<div class="py-32 container h-full mx-auto flex justify-center items-center">
+		<div class="space-y-10 text-center flex flex-col items-center">
+			<div class="flex justify-center items-center">
+				<div
+					class="w-[300px] h-[300px] bg-surface-300 dark:bg-surface-200 rounded-full flex justify-center items-center shadow-2xl"
+				>
+					<div
+						class="w-[200px] h-[200px] bg-gray-500 dark:bg-surface-700 rounded-full flex justify-center items-center"
+					></div>
+				</div>
+			</div>
+		</div>
 	</div>
 </div>
-
-<style lang="postcss">
-	@keyframes spin {
-		0% {
-			transform: rotate(0deg);
-		}
-		100% {
-			transform: rotate(359deg);
-		}
-	}
-
-	.spin {
-		animation: spin 1s linear infinite;
-	}
-
-	.spin-reverse {
-		animation: spin 1s linear infinite reverse;
-	}
-
-	.spin-slow {
-		animation: spin 6s linear infinite;
-	}
-
-	.spin-slow-reverse {
-		animation: spin 2s linear infinite reverse;
-	}
-</style>

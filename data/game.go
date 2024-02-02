@@ -8,8 +8,9 @@ type Game struct {
 	CreatedAt string `json:"created_at" db:"created_at"`
 	UpdatedAt string `json:"updated_at" db:"updated_at"`
 }
+
 type GameModel struct {
-	DB *sqlx.DB
+	*sqlx.DB
 }
 
 func (gm *GameModel) GetByID(id int) (*Game, error) {

@@ -1,0 +1,21 @@
+package errors
+
+import "github.com/mccune1224/betrayal-widget/views"
+
+templ Error404() {
+	@views.Base() {
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12">
+					<h1>404</h1>
+					<p>Page not found</p>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12">
+					<a href="/">Back to home</a>
+				</div>
+			</div>
+		</div>
+	}
+}

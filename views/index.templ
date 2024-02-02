@@ -1,0 +1,33 @@
+package views
+
+import "strings"
+
+// PathToID converts a path to a unique ID for use in HTML for valid IDs
+func PathToID(path string) string {
+	return strings.Join(strings.Split(path[1:], "/"), "_")
+}
+
+templ GameCodeInput(endpoint string, title string, placeholder string) {
+	<form action={ templ.SafeURL(endpoint) }>
+		<input hx-get="" hx-target="body" name="game_id" type="text" class="w-full p-2 text-lg border-2 border-gray-300 rounded-md dark:border-gray-700" placeholder={ placeholder }/>
+		<button class="w-full p-2 mt-2 text-lg font-semibold text-white bg-indigo-600 rounded-md dark:bg-indigo-300">{ title }</button>
+		// If there is an error, display it
+	</form>
+}
+
+templ Index(authenticated bool) {
+	@Base() {
+		<main class="container mx-auto leading-normal tracking-normal px-4">
+			// Center content in the middle of the screen
+			<div class="flex flex-col items-center justify-center h-full">
+				<div class="space-y-2">
+					<h1 class="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none">Betrayal Thingy</h1>
+				</div>
+				@GameCodeInput("/games/new", "Create Game", "New Game Code")
+				@GameCodeInput("/games/join", "Join Game", "Existing Game Code")
+				<button hx-get="/games/test">GET ME</button>
+				<div id="test"></div>
+			</div>
+		</main>
+	}
+}

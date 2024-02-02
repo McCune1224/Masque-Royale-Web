@@ -1,2 +1,2 @@
-# betrayal-widget
-Mobile Webapp to assist with tabletop betrayal game
+# betrayal-web
+Website/admin view for Discord Betrayal game

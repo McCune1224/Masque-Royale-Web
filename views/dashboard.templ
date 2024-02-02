@@ -2,11 +2,11 @@ package views
 
 import "github.com/labstack/echo/v4"
 
-templ Dashboard(ctx echo.Context) {
+templ Dashboard(c echo.Context) {
 	@Base() {
 		<div class="container mx-auto px-4 text-center">
 			<h1>Dashboard</h1>
-			<p>Welcome to the dashboard</p>
+			<p>Welcome to Game { c.Get("game_id").(string) }</p>
 		</div>
 	}
 }

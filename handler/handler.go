@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"log"
+
 	"github.com/a-h/templ"
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
@@ -24,10 +26,11 @@ func TemplRender(c echo.Context, component templ.Component) error {
 }
 
 func (h *Handler) Index(c echo.Context) error {
-	cookie, _ := c.Cookie("access_token")
-	if cookie != nil {
-		return c.Redirect(302, "/dashboard")
+	games, err := h.models.Games.GetAll()
+	if err != nil {
+		log.Println(err)
+		return TemplRender(c, views.Index(nil))
 	}
 
-	return TemplRender(c, views.Index(false))
+	return TemplRender(c, views.Index(games))
 }

@@ -1,32 +1,44 @@
 package views
 
 import "strings"
+import "github.com/mccune1224/betrayal-widget/data"
 
 // PathToID converts a path to a unique ID for use in HTML for valid IDs
 func PathToID(path string) string {
 	return strings.Join(strings.Split(path[1:], "/"), "_")
 }
 
-templ GameCodeInput(endpoint string, title string, placeholder string) {
-	<form action={ templ.SafeURL(endpoint) }>
-		<input hx-get="" hx-target="body" name="game_id" type="text" class="w-full p-2 text-lg border-2 border-gray-300 rounded-md dark:border-gray-700" placeholder={ placeholder }/>
-		<button class="w-full p-2 mt-2 text-lg font-semibold text-white bg-indigo-600 rounded-md dark:bg-indigo-300">{ title }</button>
-		// If there is an error, display it
-	</form>
+templ GamesList(games []data.Game) {
+	for _, game := range games {
+		<li class="flex flex-row items-center justify-between w-full p-4 my-2 bg-white border-2 border-gray-300 rounded-md ">
+			<div class="flex flex-col">
+				<h3 class="text-xl font-semibold">{ game.GameID }</h3>
+			</div>
+			<div class="flex flex-row gap-2">
+				<a href={ templ.SafeURL("/games/join/" + game.GameID) } class="px-4 py-2 text-lg font-semibold text-white bg-indigo-600 rounded-md hover:bg-indigo-400">Join</a>
+				<a href={ templ.SafeURL("/games/delete/" + game.GameID) } class="px-4 py-2 text-lg font-semibold text-white bg-red-600 rounded-md hover:bg-red-400">Delete</a>
+			</div>
+		</li>
+	}
 }
 
-templ Index(authenticated bool) {
+templ Index(games []data.Game) {
 	@Base() {
-		<main class="container mx-auto leading-normal tracking-normal px-4">
+		<main class="">
 			// Center content in the middle of the screen
-			<div class="flex flex-col items-center justify-center h-full">
+			<div class="flex flex-col items-center justify-center h-full gap-4">
 				<div class="space-y-2">
 					<h1 class="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none">Betrayal Thingy</h1>
 				</div>
-				@GameCodeInput("/games/new", "Create Game", "New Game Code")
-				@GameCodeInput("/games/join", "Join Game", "Existing Game Code")
-				<button hx-get="/games/test">GET ME</button>
-				<div id="test"></div>
+				<button class="px-4 py-2 text-lg font-semibold text-white bg-indigo-600 rounded-md hover:bg-indigo-400">
+					<a href={ templ.SafeURL("/games/new") }>New Game</a>
+				</button>
+				<h2
+					class="text-2xl font-semibold tracking-tighter sm:text-3xl md:text-4xl lg:text-5xl/none"
+				>
+					Active Games:
+				</h2>
+				@GamesList(games)
 			</div>
 		</main>
 	}

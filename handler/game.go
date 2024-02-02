@@ -4,41 +4,49 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"time"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
+	"github.com/mccune1224/betrayal-widget/views"
 )
 
 func (h *Handler) CreateGame(c echo.Context) error {
+	return TemplRender(c, views.GameCreate(""))
+}
+
+func (h *Handler) GenerateGame(c echo.Context) error {
 	gameID := c.QueryParam("game_id")
 	if gameID == "" {
-		return c.HTML(400, "game_id is required")
+		return TemplRender(c, views.GameCreate("Game ID is required"))
+	}
+	existingID, _ := h.models.Games.GetByGameID(gameID)
+	if existingID != nil {
+		return TemplRender(c, views.GameCreate(fmt.Sprintf("Game ID %s already exists", gameID)))
 	}
 
-	_, err := h.models.Games.InsertGame(gameID)
+	playerCount := c.QueryParam("player_count")
+	if playerCount == "" {
+		return TemplRender(c, views.GameCreate("Player Count is required"))
+	}
+	iPlayerCount, err := strconv.Atoi(playerCount)
 	if err != nil {
-		return c.HTML(500, "<div>Error inserting game</div>")
+		return TemplRender(c, views.GameCreate("Player Count must be a number"))
 	}
 
-	c.SetCookie(&http.Cookie{
-		Name:     "game_id",
-		Value:    gameID,
-		Path:     "/",
-		SameSite: http.SameSiteNoneMode,
-		Secure:   true,
-	})
+	_, err = h.models.Games.InsertGame(gameID, iPlayerCount)
+	if err != nil {
+		return err
+	}
 
-	return c.Redirect(302, "/games/dashboard")
+	return TemplRender(c, views.Dashboard(c))
 }
 
 func (h *Handler) JoinGame(c echo.Context) error {
-	gameID := c.QueryParam("game_id")
+	gameID := c.Param("game_id")
 	if gameID == "" {
-		log.Println("hit within gameID check")
 		return c.HTML(400, "game_id is required")
 	}
 
-	log.Println("hit")
 	_, err := h.models.Games.GetByGameID(gameID)
 	if err != nil {
 		log.Println(err)
@@ -52,16 +60,17 @@ func (h *Handler) JoinGame(c echo.Context) error {
 		Secure:   true,
 	})
 
-	log.Println("hit2")
-	return c.Redirect(302, "/games/dashboard")
+	return c.Redirect(302, "/games/dashboard/"+gameID)
 }
 
-func (h *Handler) Test(c echo.Context) error {
-	someData := time.Now().Unix()
-	msg := fmt.Sprintf(" <div> %v </div>", someData)
-
-	return c.HTML(200, msg)
+func (h *Handler) DeleteGame(c echo.Context) error {
+	gameID := c.Param("game_id")
+	if gameID == "" {
+		return c.HTML(400, "game_id is required")
+	}
+	err := h.models.Games.DeleteGame(gameID)
+	if err != nil {
+		return err
+	}
+	return c.Redirect(302, "/")
 }
-
-// psql statement to constrain game_id to be unique
-// ALTER TABLE games ADD CONSTRAINT game_id_unique UNIQUE (game_id);

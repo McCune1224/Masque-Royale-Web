@@ -42,9 +42,12 @@ func main() {
 
 	game := app.Group("/games")
 	game.GET("/new", handler.CreateGame)
-	game.GET("/join", handler.JoinGame)
-	game.GET("/dashboard", handler.Dashboard)
-	game.GET("/test", handler.Test)
+	game.GET("/new/generate", handler.GenerateGame)
+	game.GET("/join/:game_id", handler.JoinGame)
+	game.GET("/delete/:game_id", handler.DeleteGame)
+
+	dashboard := app.Group("/games/dashboard")
+	dashboard.GET("/:game_id", handler.Dashboard)
 
 	log.Fatal(app.Start(":" + os.Getenv("PORT")))
 }

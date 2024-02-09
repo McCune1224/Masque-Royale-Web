@@ -8,29 +8,31 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/mccune1224/betrayal-widget/views"
+	"github.com/mccune1224/betrayal-widget/views/components"
+	"github.com/mccune1224/betrayal-widget/views/create"
 )
 
 func (h *Handler) CreateGame(c echo.Context) error {
-	return TemplRender(c, views.GameCreate(""))
+	return TemplRender(c, create.GameCreate(""))
 }
 
 func (h *Handler) GenerateGame(c echo.Context) error {
 	gameID := c.QueryParam("game_id")
 	if gameID == "" {
-		return TemplRender(c, views.GameCreate("Game ID is required"))
+		return TemplRender(c, create.GameCreate("Game ID is required"))
 	}
 	existingID, _ := h.models.Games.GetByGameID(gameID)
 	if existingID != nil {
-		return TemplRender(c, views.GameCreate(fmt.Sprintf("Game ID %s already exists", gameID)))
+		return TemplRender(c, create.GameCreate(fmt.Sprintf("Game ID %s already exists", gameID)))
 	}
 
 	playerCount := c.QueryParam("player_count")
 	if playerCount == "" {
-		return TemplRender(c, views.GameCreate("Player Count is required"))
+		return TemplRender(c, create.GameCreate("Player Count is required"))
 	}
 	iPlayerCount, err := strconv.Atoi(playerCount)
 	if err != nil {
-		return TemplRender(c, views.GameCreate("Player Count must be a number"))
+		return TemplRender(c, create.GameCreate("Player Count must be a number"))
 	}
 
 	_, err = h.models.Games.InsertGame(gameID, iPlayerCount)
@@ -38,6 +40,7 @@ func (h *Handler) GenerateGame(c echo.Context) error {
 		return err
 	}
 
+	c.Set("game_id", gameID)
 	return TemplRender(c, views.Dashboard(c))
 }
 
@@ -73,4 +76,13 @@ func (h *Handler) DeleteGame(c echo.Context) error {
 		return err
 	}
 	return c.Redirect(302, "/")
+}
+
+func (h *Handler) GenerateGrid(c echo.Context) error {
+	player_count := c.FormValue("player_count")
+	pCount, err := strconv.Atoi(player_count)
+	if err != nil {
+		return TemplRender(c, components.Grid(0))
+	}
+	return TemplRender(c, components.Grid(pCount))
 }

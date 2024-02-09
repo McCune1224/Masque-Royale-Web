@@ -1,7 +1,9 @@
-package views
+package create
+
+import "github.com/mccune1224/betrayal-widget/views"
 
 templ FormError(err string) {
-	@Base() {
+	@views.Base() {
 		<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
 			<strong class="font-bold">Game Create Error</strong>
 			<span class="block sm:inline">{ err }</span>
@@ -11,7 +13,7 @@ templ FormError(err string) {
 }
 
 templ GameCreate(err string) {
-	@Base() {
+	@views.Base() {
 		if err != "" {
 			@FormError(err)
 		}
@@ -28,14 +30,14 @@ templ GameCreate(err string) {
 					name="game_id"
 					required
 				/>
-				<label
-					class="block text-gray-700 text-sm font-bold mb-2"
-					for="gameName"
-				>
+				<label class="block text-gray-700 text-sm font-bold mb-2" for="gameName">
 					Player Count
 				</label>
 				<input
 					class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+					hx-post="/games/new/grid"
+          hx-target="#grid_result"
+					hx-trigger="input changed delay:500ms, search"
 					id="player_count"
 					type="text"
 					placeholder="Player Count"
@@ -48,6 +50,8 @@ templ GameCreate(err string) {
 				>
 					Create Game
 				</button>
+
+			<div id="grid_result"></div>
 			</div>
 		</form>
 	}

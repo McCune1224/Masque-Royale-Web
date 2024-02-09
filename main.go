@@ -43,6 +43,7 @@ func main() {
 	game := app.Group("/games")
 	game.GET("/new", handler.CreateGame)
 	game.GET("/new/generate", handler.GenerateGame)
+	game.POST("/new/grid", handler.GenerateGrid)
 	game.GET("/join/:game_id", handler.JoinGame)
 	game.GET("/delete/:game_id", handler.DeleteGame)
 

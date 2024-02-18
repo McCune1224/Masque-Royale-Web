@@ -1,0 +1,23 @@
+package navbar
+
+import "github.com/labstack/echo/v4"
+import "strings"
+
+func GetGameIDURL(c echo.Context) string {
+	// get the full url of the current path
+	url := c.Request().URL.String()
+
+	// split the url by the / and join up until dashboard/:gameid
+	return strings.Join(strings.Split(url, "/")[:4], "/")
+}
+
+templ Navbar(c echo.Context) {
+	// navbar that is at the bottom of the page with 4 links (font awesome icons)
+	// tailwindcss sticky navbar at the bottom of the page
+	<nav class="text-2xl fixed flex justify-around bottom-0 left-0 z-50 w-full h-12 ">
+		<a class="navbar-brand" href={ templ.SafeURL(GetGameIDURL(c)) }><i class="fas fa-home"></i></a>
+		<a class="navbar-brand" href="/search"><i class="fa-solid fa-user-plus"></i></a>
+		<a class="navbar-brand" href="/create"><i class="fa-solid fa-user-tag"></i></a>
+		<a class="navbar-brand" href="/profile"><i class="fa-solid fa-user-shield"></i></a>
+	</nav>
+}

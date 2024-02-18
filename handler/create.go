@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 	"github.com/mccune1224/betrayal-widget/views"
@@ -17,7 +18,7 @@ func (h *Handler) CreateGame(c echo.Context) error {
 }
 
 func (h *Handler) GenerateGame(c echo.Context) error {
-	gameID := c.QueryParam("game_id")
+	gameID := strings.ToLower(c.QueryParam("game_id"))
 	if gameID == "" {
 		return TemplRender(c, create.GameCreate("Game ID is required"))
 	}

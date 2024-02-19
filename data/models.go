@@ -5,11 +5,13 @@ import (
 )
 
 type Models struct {
-	Games GameModel
+	Games   GameModel
+	Players PlayerModel
 }
 
 func NewModels(db *sqlx.DB) *Models {
 	return &Models{
-		Games: GameModel{DB: db},
+		Games:   GameModel{DB: db},
+		Players: PlayerModel{DB: db},
 	}
 }

@@ -18,6 +18,8 @@ templ Navbar(c echo.Context) {
 		<a class="navbar-brand" href={ templ.SafeURL(GetGameIDURL(c)) }><i class="fas fa-home"></i></a>
 		<a class="navbar-brand" href="/search"><i class="fa-solid fa-user-plus"></i></a>
 		<a class="navbar-brand" href="/create"><i class="fa-solid fa-user-tag"></i></a>
-		<a class="navbar-brand" href="/profile"><i class="fa-solid fa-user-shield"></i></a>
+		<a class="navbar-brand" href={ templ.SafeURL(GetGameIDURL(c)) + "/positions" }>
+			<i class="fa-solid fa-user-shield"></i>
+		</a>
 	</nav>
 }

@@ -50,6 +50,7 @@ func main() {
 
 	dashboard := app.Group("/games/dashboard")
 	dashboard.GET("/:game_id", handler.Dashboard)
+	// dashboard.GET("/:game_id/positions", handler.Positions)
 
 	log.Fatal(app.Start(":" + os.Getenv("PORT")))
 }

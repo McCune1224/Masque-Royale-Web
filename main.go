@@ -39,6 +39,7 @@ func main() {
 	app.Pre(middleware.RemoveTrailingSlash())
 
 	app.GET("/", handler.Index)
+	app.POST("/resize", handler.Resize)
 
 	game := app.Group("/games")
 	game.GET("/new", handler.CreateGame)

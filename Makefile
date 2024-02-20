@@ -10,4 +10,4 @@ sql:
 	psql $(shell cat .env | grep DATABASE_URL | cut -d '=' -f2)
 
 stage: 
-	tailwindcss -i ./static/input.css -o ./static/output.css && templ generate
+	templ generate&& tailwindcss -i ./static/input.css -o ./static/output.css

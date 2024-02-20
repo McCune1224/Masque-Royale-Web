@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/labstack/echo/v4"
-	"github.com/mccune1224/betrayal-widget/views"
 	"github.com/mccune1224/betrayal-widget/views/components"
 	"github.com/mccune1224/betrayal-widget/views/create"
 )
@@ -42,7 +41,7 @@ func (h *Handler) GenerateGame(c echo.Context) error {
 	}
 
 	c.Set("game_id", gameID)
-	return TemplRender(c, views.Dashboard(c))
+	return c.Redirect(302, "/games/dashboard/"+gameID)
 }
 
 func (h *Handler) JoinGame(c echo.Context) error {

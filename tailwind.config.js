@@ -7,7 +7,10 @@ module.exports = {
     // "./views/components/**/*.templ",
     // "./views/components/**/*.go",
     // "./views/components/**/*.html",
-    "./views/**/*",
+    // "./views/**/*",
+    "./**/*.html",
+    "./**/*.templ",
+    "./**/*.go",
   ],
   theme: {
     extend: {

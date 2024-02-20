@@ -1,17 +1,20 @@
 package views
 
 import "github.com/labstack/echo/v4"
-import "fmt"
+import "strconv"
 
-// Each item is positioned within the circle by a given angle (to allow symmetry)
-// Should be positioned like that of a round table
-templ Positions(c echo.Context, playerCount int) {
-@Dashboard(c) {
-// tailwindcss circle to place items in
-<ul class="list-none flex flex-col h-64 w-64 bg-gray-200 rounded-full">
-  for i := range [7]int{} {
-  <li class={ fmt.Sprintf("text-red-%d00 p-%d", i+1, i+1) }>{ fmt.Sprintf("%d", i) }</li>
-  }
-</ul>
-}
+templ Positions(c echo.Context, playerCount int, tStyles []string ) {
+	<ul class="list-none flex justify-center items-center h-64 w-64 bg-gray-400 rounded-full">
+		for i, v := range tStyles {
+			<li class={ v }>
+				// small circle
+				if len(tStyles) > 12 {
+					<div class="w-8 h-8 bg-gray-900 rounded-full text-white">{ strconv.Itoa(i+1) }</div>
+				} else {
+					<div class="w-12 h-12 bg-gray-900 rounded-full text-white">{ strconv.Itoa(i+1) }</div>
+				}
+			</li>
+			// i.e bg-orange-100, bg-orange-200, bg-orange-300 etc
+		}
+	</ul>
 }

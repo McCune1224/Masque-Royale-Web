@@ -70,5 +70,11 @@ func (gm *GameModel) DeleteGame(gID string) error {
 	if err != nil {
 		return err
 	}
+
+	// delete all players in the game with the given game_id
+	_, err = gm.Exec("DELETE FROM players WHERE game_id = $1", gID)
+	if err != nil {
+		return err
+	}
 	return nil
 }

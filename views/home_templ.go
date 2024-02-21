@@ -53,6 +53,10 @@ func Home(c echo.Context, players []*data.Player) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" <button id=\"openModal\" class=\"bg-blue-500 text-white p-2 rounded\">Open Modal</button><div id=\"modal\" class=\"hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center\"><div class=\"bg-white p-4 rounded shadow-md\"><!-- Modal content goes here --><p>This is your modal content.</p><!-- Close button --><button id=\"closeModal\" class=\"mt-2 bg-blue-500 text-white p-2 rounded\">Close</button></div></div><script>\n  // Vanilla JavaScript code to handle modal functionality\n  document.getElementById('openModal').addEventListener('click', function () {\n    document.getElementById('modal').classList.remove('hidden');\n  });\n\n  document.getElementById('closeModal').addEventListener('click', function () {\n    document.getElementById('modal').classList.add('hidden');\n  });\n</script>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
 			if !templ_7745c5c3_IsBuffer {
 				_, templ_7745c5c3_Err = io.Copy(templ_7745c5c3_W, templ_7745c5c3_Buffer)
 			}

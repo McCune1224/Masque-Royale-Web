@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strconv"
 	"strings"
 
 	"github.com/labstack/echo/v4"
@@ -25,16 +24,7 @@ func (h *Handler) GenerateGame(c echo.Context) error {
 		return TemplRender(c, create.GameCreate(fmt.Sprintf("Game ID %s already exists", gameID)))
 	}
 
-	playerCount := c.QueryParam("player_count")
-	if playerCount == "" {
-		return TemplRender(c, create.GameCreate("Player Count is required"))
-	}
-	iPlayerCount, err := strconv.Atoi(playerCount)
-	if err != nil {
-		return TemplRender(c, create.GameCreate("Player Count must be a number"))
-	}
-
-	_, err = h.models.Games.InsertGame(gameID, iPlayerCount)
+	_, err := h.models.Games.InsertGame(gameID, 0)
 	if err != nil {
 		return err
 	}

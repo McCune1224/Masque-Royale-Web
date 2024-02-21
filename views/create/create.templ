@@ -3,56 +3,35 @@ package create
 import "github.com/mccune1224/betrayal-widget/views"
 
 templ FormError(err string) {
-	@views.Base() {
-		<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-			<strong class="font-bold">Game Create Error</strong>
-			<span class="block sm:inline">{ err }</span>
-			<span class="absolute top-0 bottom-0 right-0 px-4 py-3"></span>
-		</div>
-	}
+@views.Base() {
+<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+  <strong class="font-bold">Game Create Error</strong>
+  <span class="block sm:inline">{ err }</span>
+  <span class="absolute top-0 bottom-0 right-0 px-4 py-3"></span>
+</div>
+}
 }
 
 templ GameCreate(err string) {
-	@views.Base() {
-		if err != "" {
-			@FormError(err)
-		}
-		<form action="/games/new/generate">
-			<div class="mb-4 text-center flex flex-col gap-4">
-				<label class="block text-gray-700 text-sm font-bold mb-2" for="game_id">
-					New Game ID
-				</label>
-				<input
-					class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-					id="game_id"
-					type="text"
-					placeholder="Game Name"
-					name="game_id"
-					required
-				/>
-				<label class="block text-gray-700 text-sm font-bold mb-2" for="gameName">
-					Player Count
-				</label>
-				<input
-					class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-					hx-post="/games/new/grid"
-          hx-target="#grid_result"
-					hx-trigger="input changed delay:500ms, search"
-					id="player_count"
-					type="text"
-					placeholder="Player Count"
-					name="player_count"
-					required
-				/>
-				<button
-					class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-					type="submit"
-				>
-					Create Game
-				</button>
-
-			<div id="grid_result"></div>
-			</div>
-		</form>
-	}
+@views.Base() {
+if err != "" {
+@FormError(err)
+}
+<form action="/games/new/generate">
+  <div class="mb-4 text-center flex flex-col gap-4">
+    <label class="block text-gray-700 text-sm font-bold mb-2" for="game_id">
+      New Game ID
+    </label>
+    <input
+      class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+      id="game_id" type="text" placeholder="Game Name" name="game_id" required />
+    <button
+      class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+      type="submit">
+      Create Game
+    </button>
+    <div id="grid_result"></div>
+  </div>
+</form>
+}
 }

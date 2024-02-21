@@ -44,7 +44,7 @@ func Positions(c echo.Context, players []*data.Player) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<ul class=\"list-none flex justify-center items-center h-64 w-64 bg-gray-400 rounded-full mx-auto\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<ul class=\"list-none flex justify-center items-center h-64 w-64 bg-transparent rounded-full mx-auto\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -66,8 +66,8 @@ func Positions(c echo.Context, players []*data.Player) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			if len(players) > 12 {
-				var templ_7745c5c3_Var3 = []any{"w-8 h-8 bg-gray-900 rounded-full text-white " + RotateAngleCSS(len(players), i, true)}
+			if len(players) > 9 {
+				var templ_7745c5c3_Var3 = []any{"w-12 h-12 bg-gray-900 rounded-full text-white " + RotateAngleCSS(len(players), i, true)}
 				templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var3...)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -87,7 +87,7 @@ func Positions(c echo.Context, players []*data.Player) templ.Component {
 				var templ_7745c5c3_Var4 string
 				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(string(players[i].Name[0:2]))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/positions.templ`, Line: 30, Col: 137}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/positions.templ`, Line: 30, Col: 139}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 				if templ_7745c5c3_Err != nil {
@@ -98,7 +98,7 @@ func Positions(c echo.Context, players []*data.Player) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				var templ_7745c5c3_Var5 = []any{"w-12 h-12 bg-gray-900 rounded-full text-white " + RotateAngleCSS(len(players), i, true)}
+				var templ_7745c5c3_Var5 = []any{"w-16 h-16 bg-gray-900 rounded-full text-white " + RotateAngleCSS(len(players), i, true)}
 				templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var5...)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err

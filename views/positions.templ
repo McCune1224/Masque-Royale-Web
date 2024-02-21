@@ -19,18 +19,18 @@ func RotateAngleCSS(count int, position int, reverse bool) string {
   if reverse {
     return "rotate-[" + strconv.Itoa((360 / count * position) * -1) + "deg]"
   }
-    return "rotate-[" + strconv.Itoa(360 / count * position) + "deg]"
+  return "rotate-[" + strconv.Itoa(360 / count * position) + "deg]"
 }
 
 templ Positions(c echo.Context, players []*data.Player) {
-	<ul class="list-none flex justify-center items-center h-64 w-64 bg-gray-400 rounded-full mx-auto">
+	<ul class="list-none flex justify-center items-center h-64 w-64 bg-transparent rounded-full mx-auto">
 		for i, v := range rotateCSSGenerator(players) {
 			<li class={ v }>
 				// small circle
-				if len(players) > 12 {
-					<div class={ "w-8 h-8 bg-gray-900 rounded-full text-white " + RotateAngleCSS(len(players), i, true) }>{ string(players[i].Name[0:2]) }</div>
+				if len(players) > 9 {
+					<div class={ "w-12 h-12 bg-gray-900 rounded-full text-white " + RotateAngleCSS(len(players), i, true) }>{ string(players[i].Name[0:2]) }</div>
 				} else {
-					<div class={ "w-12 h-12 bg-gray-900 rounded-full text-white " + RotateAngleCSS(len(players), i, true) }>{ string(players[i].Name[0:2])  }</div>
+					<div class={ "w-16 h-16 bg-gray-900 rounded-full text-white " + RotateAngleCSS(len(players), i, true) }>{ string(players[i].Name[0:2])  }</div>
 				}
 			</li>
 		}

@@ -38,7 +38,7 @@ func FormError(err string) templ.Component {
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(err)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/create/create.templ`, Line: 8, Col: 38}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/create/create.templ`, Line: 8, Col: 37}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -89,7 +89,7 @@ func GameCreate(err string) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" <form action=\"/games/new/generate\"><div class=\"mb-4 text-center flex flex-col gap-4\"><label class=\"block text-gray-700 text-sm font-bold mb-2\" for=\"game_id\">New Game ID</label> <input class=\"shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline\" id=\"game_id\" type=\"text\" placeholder=\"Game Name\" name=\"game_id\" required> <label class=\"block text-gray-700 text-sm font-bold mb-2\" for=\"gameName\">Player Count</label> <input class=\"shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline\" hx-post=\"/games/new/grid\" hx-target=\"#grid_result\" hx-trigger=\"input changed delay:500ms, search\" id=\"player_count\" type=\"text\" placeholder=\"Player Count\" name=\"player_count\" required> <button class=\"bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline\" type=\"submit\">Create Game</button><div id=\"grid_result\"></div></div></form>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" <form action=\"/games/new/generate\"><div class=\"mb-4 text-center flex flex-col gap-4\"><label class=\"block text-gray-700 text-sm font-bold mb-2\" for=\"game_id\">New Game ID</label> <input class=\"shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline\" id=\"game_id\" type=\"text\" placeholder=\"Game Name\" name=\"game_id\" required> <button class=\"bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline\" type=\"submit\">Create Game</button><div id=\"grid_result\"></div></div></form>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

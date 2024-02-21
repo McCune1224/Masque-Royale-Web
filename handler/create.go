@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/labstack/echo/v4"
-	"github.com/mccune1224/betrayal-widget/views/components"
 	"github.com/mccune1224/betrayal-widget/views/create"
 )
 
@@ -76,13 +75,4 @@ func (h *Handler) DeleteGame(c echo.Context) error {
 		return err
 	}
 	return c.Redirect(302, "/")
-}
-
-func (h *Handler) GenerateGrid(c echo.Context) error {
-	player_count := c.FormValue("player_count")
-	pCount, err := strconv.Atoi(player_count)
-	if err != nil {
-		return TemplRender(c, components.Grid(0))
-	}
-	return TemplRender(c, components.Grid(pCount))
 }

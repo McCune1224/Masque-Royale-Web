@@ -1,0 +1,76 @@
+package views
+
+import "github.com/labstack/echo/v4"
+import "github.com/mccune1224/betrayal-widget/data"
+import "github.com/mccune1224/betrayal-widget/util"
+import "strconv"
+
+func RoleIDToRole(roles []*data.Role, id int) *data.Role {
+	for _, role := range roles {
+		if role.ID == id {
+			return role
+		}
+	}
+	return nil
+}
+
+templ playerInfoCard (player *data.Player, roles []*data.Role) {
+	switch RoleIDToRole(roles, player.RoleID).Alignment {
+		case "LAWFUL":
+			<li class="border-2 border-black p-2 bg-green-200">
+				{ player.Name } - { RoleIDToRole(roles, player.RoleID).Name }
+			</li>
+		case "OUTLANDER":
+			<li class="border-2 border-black p-2 bg-yellow-200">
+				{ player.Name } - { RoleIDToRole(roles,player.RoleID).Name }
+			</li>
+		default:
+			<li class="border-2 border-black p-2 bg-red-200">
+				{ player.Name } - { RoleIDToRole(roles, player.RoleID).Name }
+			</li>
+	}
+}
+
+templ PlayerList(c echo.Context, players []*data.Player, roles []*data.Role, errs []string) {
+	//if there are errors, display them (at the top of the page)
+	<div class="flex flex-row justify-center items-center">
+		<ul>
+			for _, err := range errs {
+				<li class="border-2 border-black p-2 bg-red-200">❌{ err } ❌</li>
+			}
+		</ul>
+	</div>
+	<div id="player-list">
+		<p>Total Players: { strconv.Itoa(len(players)) }</p>
+		<ul class="flex flex-col gap-3">
+			for _, player := range players {
+				@playerInfoCard(player, roles)
+			}
+		</ul>
+	</div>
+}
+
+templ PlayerDashboard(c echo.Context, game *data.Game, players []*data.Player, roles []*data.Role) {
+	@Dashboard(c) {
+		//banner that should fully spam the width of the page and allow to input a new player
+		<div class="flex flex-row justify-center items-center">
+			<form hx-post={ util.GetGameIDURL(c) + "/players/add" } hx-target="#player-list">
+				<input required type="text" name="name" placeholder="Player Name" class="border-2 w-full border-black p-2"/>
+				<div class="realtive">
+					<select
+						required
+						name="role"
+						class=" w-full p-2 border-2 border-black  bg-gray-200 text-gray-700  rounded-md  focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+						id="grid-state"
+					>
+						for _, role := range roles {
+							<option>{ role.Name }</option>
+						}
+					</select>
+				</div>
+				<input type="submit" value="Add Player" class="border-2 border-black p-2 bg-blue-500 text-white"/>
+			</form>
+		</div>
+		@PlayerList(c, players, roles, nil)
+	}
+}

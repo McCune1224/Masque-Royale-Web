@@ -43,12 +43,21 @@ func Navbar(c echo.Context) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><i class=\"fas fa-home\"></i></a> <a class=\"navbar-brand\" href=\"/search\"><i class=\"fa-solid fa-user-plus\"></i></a> <a class=\"navbar-brand\" href=\"/create\"><i class=\"fa-solid fa-user-tag\"></i></a> <a class=\"navbar-brand\" href=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><i class=\"fas fa-home\"></i></a> <a class=\"navbar-brand\" href=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var3 templ.SafeURL = templ.SafeURL(GetGameIDURL(c)) + "/positions"
+		var templ_7745c5c3_Var3 templ.SafeURL = templ.SafeURL(GetGameIDURL(c)) + "/players"
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var3)))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><i class=\"fa-solid fa-user-plus\"></i></a> <a class=\"navbar-brand\" href=\"/create\"><i class=\"fa-solid fa-user-tag\"></i></a> <a class=\"navbar-brand\" href=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var4 templ.SafeURL = templ.SafeURL(GetGameIDURL(c)) + "/positions"
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var4)))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

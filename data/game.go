@@ -49,6 +49,22 @@ func (gm *GameModel) InsertGame(gameID string, playerCount int) (*Game, error) {
 	return gm.GetByGameID(gameID)
 }
 
+func (gm *GameModel) Update(game *Game) error {
+	_, err := gm.Exec("UPDATE games SET game_id = $1, player_count = $2 WHERE id = $3", game.GameID, game.PlayerCount, game.ID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (gm *GameModel) UpdatePlayerCount(gID string, playerCount int) error {
+	_, err := gm.Exec("UPDATE games SET player_count = $1 WHERE game_id = $2", playerCount, gID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (gm *GameModel) DeleteGame(gID string) error {
 	_, err := gm.Exec("DELETE FROM games WHERE game_id = $1", gID)
 	if err != nil {

@@ -44,13 +44,15 @@ func main() {
 	game := app.Group("/games")
 	game.GET("/new", handler.CreateGame)
 	game.GET("/new/generate", handler.GenerateGame)
-	game.POST("/new/grid", handler.GenerateGrid)
 	game.GET("/join/:game_id", handler.JoinGame)
 	game.GET("/delete/:game_id", handler.DeleteGame)
 
 	dashboard := app.Group("/games/dashboard")
 	dashboard.GET("/:game_id", handler.Dashboard)
-	// dashboard.GET("/:game_id/positions", handler.Positions)
+
+	playerDashboard := dashboard.Group("/:game_id/players")
+	playerDashboard.GET("", handler.PlayerDashboard)
+	playerDashboard.POST("/add", handler.PlayerAdd)
 
 	log.Fatal(app.Start(":" + os.Getenv("PORT")))
 }

@@ -12,8 +12,19 @@ import "bytes"
 
 import "github.com/labstack/echo/v4"
 import "strconv"
+import "github.com/mccune1224/betrayal-widget/data"
 
-func Positions(c echo.Context, playerCount int, tStyles []string) templ.Component {
+func rotateCSSGenerator(players []*data.Player) []string {
+	res := []string{}
+	for i := 0; i < len(players); i++ {
+		foo := strconv.Itoa(360 / len(players) * i)
+		bar := "absolute transform h-64 w-1  bg-transparent rotate-[" + foo + "deg]"
+		res = append(res, bar)
+	}
+	return res
+}
+
+func Positions(c echo.Context, players []*data.Player) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -26,11 +37,11 @@ func Positions(c echo.Context, playerCount int, tStyles []string) templ.Componen
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<ul class=\"list-none flex justify-center items-center h-64 w-64 bg-gray-400 rounded-full\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<ul class=\"list-none flex justify-center items-center h-64 w-64 bg-gray-400 rounded-full mx-auto\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		for i, v := range tStyles {
+		for i, v := range rotateCSSGenerator(players) {
 			var templ_7745c5c3_Var2 = []any{v}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var2...)
 			if templ_7745c5c3_Err != nil {
@@ -48,15 +59,15 @@ func Positions(c echo.Context, playerCount int, tStyles []string) templ.Componen
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			if len(tStyles) > 12 {
+			if len(players) > 12 {
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"w-8 h-8 bg-gray-900 rounded-full text-white\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var3 string
-				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(i + 1))
+				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(string(players[i].Name[0:2]))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/positions.templ`, Line: 11, Col: 81}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/positions.templ`, Line: 23, Col: 92}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 				if templ_7745c5c3_Err != nil {
@@ -72,9 +83,9 @@ func Positions(c echo.Context, playerCount int, tStyles []string) templ.Componen
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var4 string
-				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(i + 1))
+				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(string(players[i].Name[0:2]))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/positions.templ`, Line: 13, Col: 83}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/positions.templ`, Line: 25, Col: 95}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 				if templ_7745c5c3_Err != nil {

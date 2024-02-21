@@ -6,18 +6,16 @@ import (
 )
 
 type Role struct {
-	ID          int             `db:"id"`
-	Name        string          `db:"name"`
-	Description string          `db:"description"`
-	Alignment   string          `db:"alignment"`
-	AbilityIDs  []pq.Int32Array `db:"ability_ids"`
-	PassiveIDs  []pq.Int32Array `db:"passive_ids"`
+	ID          int           `db:"id"`
+	Name        string        `db:"name"`
+	Alignment   string        `db:"alignment"`
+	AbilityIDs  pq.Int32Array `db:"ability_ids"`
+	PassiveIDs  pq.Int32Array `db:"passive_ids"`
 }
 
 type ComplexRole struct {
 	ID          int        `db:"id"`
 	Name        string     `db:"name"`
-	Description string     `db:"description"`
 	Alignment   string     `db:"alignment"`
 	Abilities   []*Ability `db:"abilities"`
 	Passives    []*Passive `db:"passives"`
@@ -47,7 +45,7 @@ func (rm *RoleModel) GetByName(name string) (*Role, error) {
 }
 
 func (rm *RoleModel) GetComplex(id int) (*ComplexRole, error) {
-	query := `SELECT r.id, r.name, r.description, r.alignment, 
+	query := `SELECT r.id, r.name, r.alignment, 
   (SELECT array_agg(a) FROM abilities a WHERE a.id = ANY(r.ability_ids)) as abilities,
   (SELECT array_agg(p) FROM passives p WHERE p.id = ANY(r.passive_ids)) as passives
   FROM roles r WHERE r.id = $1`
@@ -60,7 +58,7 @@ func (rm *RoleModel) GetComplex(id int) (*ComplexRole, error) {
 }
 
 func (rm *RoleModel) GetComplexByName(name string) (*ComplexRole, error) {
-	query := `SELECT r.id, r.name, r.description, r.alignment, 
+	query := `SELECT r.id, r.name, r.alignment, 
   (SELECT array_agg(a) FROM abilities a WHERE a.id = ANY(r.ability_ids)) as abilities,
   (SELECT array_agg(p) FROM passives p WHERE p.id = ANY(r.passive_ids)) as passives
   FROM roles r WHERE r.name ILIKE $1`

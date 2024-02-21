@@ -2,19 +2,30 @@ package views
 
 import "github.com/labstack/echo/v4"
 import "strconv"
+import "github.com/mccune1224/betrayal-widget/data"
 
-templ Positions(c echo.Context, playerCount int, tStyles []string ) {
-	<ul class="list-none flex justify-center items-center h-64 w-64 bg-gray-400 rounded-full">
-		for i, v := range tStyles {
+
+func rotateCSSGenerator(players []*data.Player) []string {
+	res := []string{}
+	for i := 0; i < len(players); i++ {
+		foo := strconv.Itoa(360 / len(players) * i)
+		bar := "absolute transform h-64 w-1  bg-transparent rotate-[" + foo + "deg]"
+		res = append(res, bar)
+	}
+	return res
+}
+
+templ Positions(c echo.Context, players []*data.Player) {
+	<ul class="list-none flex justify-center items-center h-64 w-64 bg-gray-400 rounded-full mx-auto">
+		for i, v := range rotateCSSGenerator(players) {
 			<li class={ v }>
 				// small circle
-				if len(tStyles) > 12 {
-					<div class="w-8 h-8 bg-gray-900 rounded-full text-white">{ strconv.Itoa(i+1) }</div>
+				if len(players) > 12 {
+					<div class="w-8 h-8 bg-gray-900 rounded-full text-white">{ string(players[i].Name[0:2]) }</div>
 				} else {
-					<div class="w-12 h-12 bg-gray-900 rounded-full text-white">{ strconv.Itoa(i+1) }</div>
+					<div class="w-12 h-12 bg-gray-900 rounded-full text-white">{ string(players[i].Name[0:2])  }</div>
 				}
 			</li>
-			// i.e bg-orange-100, bg-orange-200, bg-orange-300 etc
 		}
 	</ul>
 }

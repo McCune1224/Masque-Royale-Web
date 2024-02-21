@@ -11,7 +11,7 @@ type Ability struct {
 	Description  string         `db:"description"`
 	Charges      int            `db:"charges"`
 	AnyAbility   bool           `db:"any_ability"`
-	RoleSpecific bool           `db:"role_specific"`
+	RoleSpecific string         `db:"role_specific"`
 	Categories   pq.StringArray `db:"categories"`
 }
 

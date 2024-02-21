@@ -11,8 +11,9 @@ import "io"
 import "bytes"
 
 import "github.com/labstack/echo/v4"
+import "github.com/mccune1224/betrayal-widget/data"
 
-func Home(c echo.Context, playerCount int, tStyles []string) templ.Component {
+func Home(c echo.Context, players []*data.Player) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -38,7 +39,7 @@ func Home(c echo.Context, playerCount int, tStyles []string) templ.Component {
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(c.Get("game_id").(string))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/home.templ`, Line: 6, Col: 33}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/home.templ`, Line: 7, Col: 33}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -48,7 +49,7 @@ func Home(c echo.Context, playerCount int, tStyles []string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = Positions(c, playerCount, tStyles).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = Positions(c, players).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

@@ -54,5 +54,8 @@ func main() {
 	playerDashboard.GET("", handler.PlayerDashboard)
 	playerDashboard.POST("/add", handler.PlayerAdd)
 
+	components := app.Group("/components")
+	components.GET("/modal", handler.PlayerDropdownModal)
+
 	log.Fatal(app.Start(":" + os.Getenv("PORT")))
 }

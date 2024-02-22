@@ -3,14 +3,13 @@ package handler
 import (
 	"fmt"
 	"log"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 	"github.com/mccune1224/betrayal-widget/data"
+	"github.com/mccune1224/betrayal-widget/util"
 	"github.com/mccune1224/betrayal-widget/views"
 )
-
-// func (h *Handler) AddPlayer(c echo.Context) error {
-// }
 
 func (h *Handler) PlayerDashboard(c echo.Context) error {
 	players, err := h.models.Players.GetByGameID(c.Param("game_id"))
@@ -45,6 +44,8 @@ func (h *Handler) PlayerAdd(c echo.Context) error {
 		log.Println(err)
 		return c.Redirect(302, "/")
 	}
+	currPlayers = util.OrderPlayers(currPlayers)
+
 	existingRoles, err := h.models.Roles.GetAll()
 	if err != nil {
 		log.Println(err)
@@ -118,4 +119,53 @@ func (h *Handler) PlayerRemove(c echo.Context) error {
 	}
 
 	return TemplRender(c, views.PlayerList(c, existingPlayers, roles, nil))
+}
+
+func (h *Handler) PlayerReposition(c echo.Context) error {
+	targetSeat, err := strconv.Atoi(c.FormValue("seat"))
+	if err != nil {
+		log.Println(err)
+		return c.Redirect(302, "/")
+	}
+
+	playerName := c.FormValue("player")
+
+	players, err := h.models.Players.GetByGameID(c.Param("game_id"))
+	if err != nil {
+		log.Println(err)
+		return c.Redirect(302, "/")
+	}
+
+	if targetSeat < 1 || targetSeat > len(players) {
+		return c.Redirect(302, "/")
+	}
+
+	targetPlayer := &data.Player{}
+	for _, p := range players {
+		if p.Name == playerName {
+			targetPlayer = p
+			break
+		}
+	}
+
+	swapped := false
+	for _, p := range players {
+		if p.Seat == targetSeat && p.Name != targetPlayer.Name {
+			p.Seat = targetPlayer.Seat
+			targetPlayer.Seat = targetSeat
+			h.models.Players.Update(p)
+			h.models.Players.Update(targetPlayer)
+			swapped = true
+			break
+		}
+	}
+
+	if !swapped {
+		targetPlayer.Seat = targetSeat
+		h.models.Players.Update(targetPlayer)
+	}
+
+	players = util.OrderPlayers(players)
+
+	return TemplRender(c, views.PlayerList(c, players, nil, nil))
 }

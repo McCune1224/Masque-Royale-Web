@@ -12,6 +12,7 @@ import "bytes"
 
 import "github.com/labstack/echo/v4"
 import "github.com/mccune1224/betrayal-widget/data"
+import "github.com/mccune1224/betrayal-widget/views/components"
 
 func Home(c echo.Context, players []*data.Player) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
@@ -39,7 +40,7 @@ func Home(c echo.Context, players []*data.Player) templ.Component {
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(c.Get("game_id").(string))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/home.templ`, Line: 7, Col: 31}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/home.templ`, Line: 8, Col: 31}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -53,7 +54,11 @@ func Home(c echo.Context, players []*data.Player) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" <button id=\"openModal\" class=\"bg-blue-500 text-white p-2 rounded\">Open Modal</button><div id=\"modal\" class=\"hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center\"><div class=\"bg-white p-4 rounded shadow-md\"><!-- Modal content goes here --><p>This is your modal content.</p><!-- Close button --><button id=\"closeModal\" class=\"mt-2 bg-blue-500 text-white p-2 rounded\">Close</button></div></div><script>\n  // Vanilla JavaScript code to handle modal functionality\n  document.getElementById('openModal').addEventListener('click', function () {\n    document.getElementById('modal').classList.remove('hidden');\n  });\n\n  document.getElementById('closeModal').addEventListener('click', function () {\n    document.getElementById('modal').classList.add('hidden');\n  });\n</script>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = components.Dropdown().Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

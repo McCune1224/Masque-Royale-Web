@@ -6,12 +6,12 @@ import (
 )
 
 func (h *Handler) PlayerDropdownModal(c echo.Context) error {
-  playerName := c.QueryParam("player")
+	playerName := c.QueryParam("player")
 
-  dbPlayer, err := h.models.Players.GetByGameIDAndName(c.Param("game_id"), playerName)
-  if err != nil {
-    return err
-  }
+	dbPlayer, err := h.models.Players.GetByName(playerName)
+	if err != nil {
+		return err
+	}
 
 	return TemplRender(c, components.PlayerModal(dbPlayer))
 }

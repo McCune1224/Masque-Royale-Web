@@ -36,6 +36,15 @@ func (m *PlayerModel) GetByID(id int) (*Player, error) {
 	return player, nil
 }
 
+func (m *PlayerModel) GetByName(name string) (*Player, error) {
+	player := &Player{}
+	err := m.DB.Get(player, "SELECT * FROM players WHERE name = $1", name)
+	if err != nil {
+		return nil, err
+	}
+	return player, nil
+}
+
 func (m *PlayerModel) GetByGameIDAndName(gameID string, name string) (*Player, error) {
 	player := &Player{}
 	err := m.DB.Get(player, "SELECT * FROM players WHERE game_id = $1 AND name = $2", gameID, name)

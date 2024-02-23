@@ -31,7 +31,7 @@ func cssScale(playerCount int, limit int) string {
 }
 
 templ PlayerToken(c echo.Context, player *data.Player, classes string) {
-  <div class={ classes }>{ player.Name  }</div>
+  <div class={ classes }>{ player.Name[:2]  }</div>
 }
 
 templ Positions(c echo.Context, players []*data.Player) {

@@ -7,12 +7,15 @@ import "github.com/mccune1224/betrayal-widget/util"
 templ Dropdown(c echo.Context, playerName string, parentComp templ.Component) {
 <div id="showButton" hx-get={ "/components/modal?player=" + playerName + "&game_id=" + util.GetGameIDURL(c) }
   hx-target="#modals-here" class="uk-button uk-button-primary"
-  _="on htmx:afterOnLoad wait 10ms then add .uk-open to #modal">@parentComp</div>
+  _="on htmx:afterOnLoad wait 10ms then add .uk-open to #modal">
+  @parentComp
+</div>
 <div id="modals-here"></div>
 }
 
 templ PlayerModal(player *data.Player) {
-<div id="modal" class="" style="display:block;">
+
+<div id="modal" class="z-50" aria-labelledby="modal-title" role="dialog" aria-modal="true">
   <div class="">
     <div class="">
       <h2 class="">Modal Dialog</h2>

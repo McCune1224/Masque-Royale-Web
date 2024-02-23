@@ -67,14 +67,14 @@ func PlayerModal(player *data.Player) templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"modal\" class=\"\" style=\"display:block;\"><div class=\"\"><div class=\"\"><h2 class=\"\">Modal Dialog</h2><p>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"modal\" class=\"z-50\" aria-labelledby=\"modal-title\" role=\"dialog\" aria-modal=\"true\"><div class=\"\"><div class=\"\"><h2 class=\"\">Modal Dialog</h2><p>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(player.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/dropdown.templ`, Line: 18, Col: 22}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/dropdown.templ`, Line: 21, Col: 22}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {

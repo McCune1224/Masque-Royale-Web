@@ -2,12 +2,10 @@ package views
 
 import "github.com/labstack/echo/v4"
 import "github.com/mccune1224/betrayal-widget/data"
-import "github.com/mccune1224/betrayal-widget/views/components"
 
 templ Home(c echo.Context, players []*data.Player) {
 @Dashboard(c) {
 <h1>{ c.Get("game_id").(string) }</h1>
 @Positions(c, players)
-@components.Dropdown()
 }
 }

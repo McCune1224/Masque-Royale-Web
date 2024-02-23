@@ -11,15 +11,7 @@ import "io"
 import "bytes"
 
 import "github.com/labstack/echo/v4"
-import "strings"
-
-func GetGameIDURL(c echo.Context) string {
-	// get the full url of the current path
-	url := c.Request().URL.String()
-
-	// split the url by the / and join up until dashboard/:gameid
-	return strings.Join(strings.Split(url, "/")[:4], "/")
-}
+import "github.com/mccune1224/betrayal-widget/util"
 
 func Navbar(c echo.Context) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
@@ -38,7 +30,7 @@ func Navbar(c echo.Context) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var2 templ.SafeURL = templ.SafeURL(GetGameIDURL(c))
+		var templ_7745c5c3_Var2 templ.SafeURL = templ.SafeURL(util.GetGameIDURL(c))
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var2)))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -47,7 +39,7 @@ func Navbar(c echo.Context) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var3 templ.SafeURL = templ.SafeURL(GetGameIDURL(c)) + "/players"
+		var templ_7745c5c3_Var3 templ.SafeURL = templ.SafeURL(util.GetGameIDURL(c)) + "/players"
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var3)))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -56,7 +48,7 @@ func Navbar(c echo.Context) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var4 templ.SafeURL = templ.SafeURL(GetGameIDURL(c)) + "/positions"
+		var templ_7745c5c3_Var4 templ.SafeURL = templ.SafeURL(util.GetGameIDURL(c)) + "/positions"
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var4)))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

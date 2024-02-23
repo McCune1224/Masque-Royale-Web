@@ -1,41 +1,31 @@
 package components
 
 import "github.com/mccune1224/betrayal-widget/data"
+import "github.com/labstack/echo/v4"
+import "github.com/mccune1224/betrayal-widget/util"
 
-templ Dropdown() {
-	<button
-		id="showButton"
-		hx-get="/components/modal?player=Alex"
-		hx-target="#modals-here"
-		class="uk-button uk-button-primary"
-		_="on htmx:afterOnLoad wait 10ms then add .uk-open to #modal"
-	>Open Modal</button>
-	<div id="modals-here"></div>
+templ Dropdown(c echo.Context, playerName string, parentComp templ.Component) {
+<div id="showButton" hx-get={ "/components/modal?player=" + playerName + "&game_id=" + util.GetGameIDURL(c) }
+  hx-target="#modals-here" class="uk-button uk-button-primary"
+  _="on htmx:afterOnLoad wait 10ms then add .uk-open to #modal">@parentComp</div>
+<div id="modals-here"></div>
 }
 
 templ PlayerModal(player *data.Player) {
-	<div
-		id="modal"
-		class=""
-		style="display:block;"
-	>
-		<div class="">
-			<div class="">
-				<h2 class="">Modal Dialog</h2>
-				<p>{player.Name}</p>
-				<form _="on submit take .uk-open from #modal">
-					<div class="">
-						<input class="" placeholder="Luck"/>
-					</div>
-					<button type="button" class="">Save Changes</button>
-					<button
-						id="cancelButton"
-						type="button"
-						class=""
-						_="on click take .uk-open from #modal wait 200ms then remove #modal"
-					>Close</button>
-				</form>
-			</div>
-		</div>
-	</div>
+<div id="modal" class="" style="display:block;">
+  <div class="">
+    <div class="">
+      <h2 class="">Modal Dialog</h2>
+      <p>{ player.Name }</p>
+      <form _="on submit take .uk-open from #modal">
+        <div class="">
+          <input class="" placeholder="Luck Modifier" />
+        </div>
+        <button type="button" class="">Save Changes</button>
+        <button id="cancelButton" type="button" class=""
+          _="on click take .uk-open from #modal wait 200ms then remove #modal">Close</button>
+      </form>
+    </div>
+  </div>
+</div>
 }

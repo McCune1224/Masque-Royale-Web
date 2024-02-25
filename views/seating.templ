@@ -1,0 +1,46 @@
+package views
+
+import "github.com/labstack/echo/v4"
+import "strconv"
+import "github.com/mccune1224/betrayal-widget/data"
+import "github.com/mccune1224/betrayal-widget/util"
+
+templ ReseatingMenu(c echo.Context, players []*data.Player) {
+	<div class="flex flex-row justify-center items-center">
+		<form hx-post={ util.GetGameIDURL(c) + "/seating/swap" } hx-target="#player-wheel">
+			<div class="realtive">
+				<select
+					required
+					name="player1"
+					class=" w-full p-2 border-2 border-black  bg-gray-200 text-gray-700  rounded-md  focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+					id="grid-state"
+				>
+					for _, player := range players {
+						<option>{ player.Name } - { strconv.Itoa(player.Seat) }</option>
+					}
+				</select>
+				<select
+					required
+					name="player2"
+					class=" w-full p-2 border-2 border-black  bg-gray-200 text-gray-700  rounded-md  focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+					id="grid-state"
+				>
+					for _, player := range players {
+						<option>{ player.Name } - { strconv.Itoa(player.Seat) }</option>
+					}
+				</select>
+			</div>
+			<input type="submit" value="Swap Players" class="border-2 border-black p-2 bg-blue-500 text-white"/>
+		</form>
+	</div>
+}
+
+templ Seating(c echo.Context, players []*data.Player) {
+	@Dashboard(c) {
+		<h1>{ c.Get("game_id").(string) } - Seating</h1>
+		@Positions(c, players)
+	}
+	<div class="p-8">
+		@ReseatingMenu(c, players)
+	</div>
+}

@@ -54,7 +54,7 @@ templ PlayerDashboard(c echo.Context, game *data.Game, players []*data.Player, r
 	@Dashboard(c) {
 		//banner that should fully spam the width of the page and allow to input a new player
 		<div class="flex flex-row justify-center items-center">
-			<form hx-post={ util.GetGameIDURL(c) + "/players/add" } hx-target="#player-list">
+			<form hx-post={ util.GetGameIDURL(c) + "/players/add" } hx-target="#player-wheel">
 				<input required type="text" name="name" placeholder="Player Name" class="border-2 w-full border-black p-2"/>
 				<div class="realtive">
 					<select

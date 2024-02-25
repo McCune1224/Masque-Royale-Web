@@ -236,7 +236,7 @@ func PlayerDashboard(c echo.Context, game *data.Game, players []*data.Player, ro
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-target=\"#player-list\"><input required type=\"text\" name=\"name\" placeholder=\"Player Name\" class=\"border-2 w-full border-black p-2\"><div class=\"realtive\"><select required name=\"role\" class=\" w-full p-2 border-2 border-black  bg-gray-200 text-gray-700  rounded-md  focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent\" id=\"grid-state\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-target=\"#player-wheel\"><input required type=\"text\" name=\"name\" placeholder=\"Player Name\" class=\"border-2 w-full border-black p-2\"><div class=\"realtive\"><select required name=\"role\" class=\" w-full p-2 border-2 border-black  bg-gray-200 text-gray-700  rounded-md  focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent\" id=\"grid-state\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

@@ -53,6 +53,10 @@ func main() {
 	playerDashboard.GET("", handler.PlayerDashboard)
 	playerDashboard.POST("/add", handler.PlayerAdd)
 
+	seatingDashboard := dashboard.Group("/:game_id/seating")
+	seatingDashboard.GET("", handler.SeatingDashboard)
+	seatingDashboard.POST("/swap", handler.SwapSeats)
+
 	components := app.Group("/components")
 	components.GET("/modal", handler.PlayerDropdownModal)
 

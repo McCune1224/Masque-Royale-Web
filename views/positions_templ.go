@@ -19,7 +19,7 @@ func rotateCSSGenerator(players []*data.Player) []string {
 	res := []string{}
 	for i := 0; i < len(players); i++ {
 		foo := strconv.Itoa(360 / len(players) * i)
-		bar := "absolute transform h-64 w-1  bg-transparent rotate-[" + foo + "deg]"
+		bar := "absolute transform h-64 sm:h-96 w-1  bg-transparent rotate-[" + foo + "deg]"
 		res = append(res, bar)
 	}
 	return res
@@ -102,7 +102,7 @@ func Positions(c echo.Context, players []*data.Player) templ.Component {
 			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<ul id=\"player-wheel\" class=\"list-none flex justify-center items-center h-64 w-64 bg-transparent rounded-full mx-auto\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<ul id=\"player-wheel\" class=\"sm:py-48 list-none flex justify-center items-center h-64 w-64 bg-transparent rounded-full mx-auto\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -124,7 +124,7 @@ func Positions(c echo.Context, players []*data.Player) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = components.Dropdown(c, players[i].Name, PlayerToken(players[i], "w-16 h-16 bg-gray-900 rounded-full text-white "+RotateAngleCSS(len(players), i, true)+cssScale(len(players), 9))).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = components.Dropdown(c, players[i].Name, PlayerToken(players[i], "sm:w-24 sm:h-24 w-16 h-16 bg-gray-900 rounded-full text-white "+RotateAngleCSS(len(players), i, true)+cssScale(len(players), 9))).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

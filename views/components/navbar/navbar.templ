@@ -6,7 +6,7 @@ import "github.com/mccune1224/betrayal-widget/util"
 templ Navbar(c echo.Context) {
 	// navbar that is at the bottom of the page with 4 links (font awesome icons)
 	// tailwindcss sticky navbar at the bottom of the page
-	<nav class="text-2xl fixed flex justify-around bottom-0 left-0 z-50 w-full h-12 ">
+	<nav class="text-2xl fixed bottom-0 p-4 flex justify-around left-0 w-full h-12 ">
 		<a class="navbar-brand" href={ templ.SafeURL(util.GetGameIDURL(c)) }><i class="fas fa-home"></i></a>
 		<a class="navbar-brand" href={ templ.SafeURL(util.GetGameIDURL(c)) + "/players" }>
 			<i class="fa-solid fa-user-plus"></i>

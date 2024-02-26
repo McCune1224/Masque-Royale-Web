@@ -26,7 +26,7 @@ func Navbar(c echo.Context) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<nav class=\"text-2xl fixed flex justify-around bottom-0 left-0 z-50 w-full h-12 \"><a class=\"navbar-brand\" href=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<nav class=\"text-2xl fixed bottom-0 p-4 flex justify-around left-0 w-full h-12 \"><a class=\"navbar-brand\" href=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

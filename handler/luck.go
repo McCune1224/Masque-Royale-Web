@@ -19,12 +19,16 @@ func (h *Handler) Luck(c echo.Context) error {
 
 	for i := range players {
 		target := players[i]
-		// get previous index and next index (wrapping around if on the edge)
 		prev := players[(i-1+len(players))%len(players)]
 		next := players[(i+1)%len(players)]
 		luck := util.CalculateLuck(&target.P, &target.R, &prev.P, &prev.R, &next.P, &next.R)
-
-		log.Println("LUCK %s - %d", target.P.Name, luck)
+		log.Printf("LUCK %s - %d - %s (%s)", target.P.Name, luck, target.R.Name, target.R.Alignment[:1])
+		players[i].P.Luck = luck
+		err := h.models.Players.Update(&players[i].P)
+		if err != nil {
+			log.Println(err)
+			return c.Redirect(302, "/")
+		}
 	}
 
 	return TemplRender(c, views.Luck(c, players))

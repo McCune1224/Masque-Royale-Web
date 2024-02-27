@@ -6,6 +6,11 @@ func CalculateLuck(tPlayer *data.Player, tRole *data.Role, lPlayer *data.Player,
 	if !lPlayer.Alive && !rPlayer.Alive {
 		return 0 + tPlayer.LuckModifier
 	}
+
+	if tRole.Name == "Vagabond" {
+		return 0 + tPlayer.LuckModifier
+	}
+
 	luck := 0
 
 	if !lPlayer.Alive || lRole.Name == "Vagabond" {

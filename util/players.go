@@ -9,3 +9,11 @@ func OrderPlayers(players []*data.Player) []*data.Player {
 	}
 	return orderedPlayers
 }
+
+func OrderComplexPlayers(players []*data.ComplexPlayer) []*data.ComplexPlayer {
+	orderedPlayers := make([]*data.ComplexPlayer, len(players))
+	for _, player := range players {
+		orderedPlayers[player.P.Seat-1] = player
+	}
+	return orderedPlayers
+}

@@ -5,7 +5,7 @@ import "strconv"
 import "github.com/mccune1224/betrayal-widget/data"
 import "github.com/mccune1224/betrayal-widget/util"
 
-templ ReseatingMenu(c echo.Context, players []*data.Player) {
+templ ReseatingMenu(c echo.Context, players []*data.ComplexPlayer) {
 	<div class="flex flex-row justify-center items-center">
 		<form hx-post={ util.GetGameIDURL(c) + "/seating/swap" } hx-target="#player-wheel">
 			<div class="realtive">
@@ -16,7 +16,7 @@ templ ReseatingMenu(c echo.Context, players []*data.Player) {
 					id="grid-state"
 				>
 					for _, player := range players {
-						<option>{ player.Name } - { strconv.Itoa(player.Seat) }</option>
+						<option>{ player.P.Name } - { strconv.Itoa(player.P.Seat) }</option>
 					}
 				</select>
 				<select
@@ -26,7 +26,7 @@ templ ReseatingMenu(c echo.Context, players []*data.Player) {
 					id="grid-state"
 				>
 					for _, player := range players {
-						<option>{ player.Name } - { strconv.Itoa(player.Seat) }</option>
+						<option>{ player.P.Name } - { strconv.Itoa(player.P.Seat) }</option>
 					}
 				</select>
 			</div>
@@ -35,7 +35,7 @@ templ ReseatingMenu(c echo.Context, players []*data.Player) {
 	</div>
 }
 
-templ Seating(c echo.Context, players []*data.Player) {
+templ Seating(c echo.Context, players []*data.ComplexPlayer) {
 	@Dashboard(c) {
 		<h1>{ c.Get("game_id").(string) } - Seating</h1>
 		@Positions(c, players)

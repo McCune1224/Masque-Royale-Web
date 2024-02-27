@@ -17,7 +17,7 @@ func (h *Handler) SeatingDashboard(c echo.Context) error {
 		log.Println(err)
 		return c.Redirect(302, "/")
 	}
-	players, err := h.models.Players.GetByGameID(game_id)
+	players, err := h.models.Players.GetComplexByGameID(game_id)
 	if err != nil {
 		log.Println(err)
 		return c.Redirect(302, "/")
@@ -25,7 +25,7 @@ func (h *Handler) SeatingDashboard(c echo.Context) error {
 	c.Set("players", players)
 	c.Set("game_id", game_id)
 
-	return TemplRender(c, views.Seating(c, util.OrderPlayers(players)))
+	return TemplRender(c, views.Seating(c, util.OrderComplexPlayers(players)))
 }
 
 func (h *Handler) SwapSeats(c echo.Context) error {
@@ -72,6 +72,6 @@ func (h *Handler) SwapSeats(c echo.Context) error {
 		return c.Redirect(302, "/")
 	}
 
-	updatedPlayers, _ := h.models.Players.GetByGameID(c.Param("game_id"))
-	return TemplRender(c, views.Positions(c, util.OrderPlayers(updatedPlayers)))
+	updatedPlayers, _ := h.models.Players.GetComplexByGameID(c.Param("game_id"))
+	return TemplRender(c, views.Positions(c, util.OrderComplexPlayers(updatedPlayers)))
 }

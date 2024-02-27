@@ -16,7 +16,10 @@ type Player struct {
 }
 
 // ComplexPlayer is a player with a role
-type ComplexPlayer struct{}
+type ComplexPlayer struct {
+	P Player
+	R Role
+}
 
 type PlayerModel struct {
 	DB *sqlx.DB
@@ -89,4 +92,22 @@ func (m *PlayerModel) GetRole(roleID int) (*Role, error) {
 		return nil, err
 	}
 	return role, nil
+}
+
+func (m *PlayerModel) GetComplexByGameID(gameID string) ([]*ComplexPlayer, error) {
+	players := []*ComplexPlayer{}
+	simplePlayers, err := m.GetByGameID(gameID)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, player := range simplePlayers {
+		role, err := m.GetRole(player.RoleID)
+		if err != nil {
+			return nil, err
+		}
+		players = append(players, &ComplexPlayer{P: *player, R: *role})
+	}
+
+	return players, nil
 }

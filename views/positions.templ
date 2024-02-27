@@ -6,7 +6,7 @@ import "github.com/mccune1224/betrayal-widget/data"
 import "github.com/mccune1224/betrayal-widget/views/components"
 
 
-func rotateCSSGenerator(players []*data.Player) []string {
+func rotateCSSGenerator(players []*data.ComplexPlayer) []string {
 	res := []string{}
 	for i := 0; i < len(players); i++ {
 		foo := strconv.Itoa(360 / len(players) * i)
@@ -30,16 +30,21 @@ func cssScale(playerCount int, limit int) string {
   return ""
 }
 
-templ PlayerToken(player *data.Player, classes string) {
-  <div class={ classes }>{ player.Name[:2]  }</div>
+templ PlayerToken(player *data.ComplexPlayer, classes string) {
+
+  <div class={ classes + " border-2 border-pink-500" }>
+  <p>{ player.P.Name[:2]  }</p>
+  <p>{ player.R.Name  }</p>
+  <p>{strconv.Itoa(player.P.Luck)}</p>
+  </div>
 }
 
-templ Positions(c echo.Context, players []*data.Player) {
+templ Positions(c echo.Context, players []*data.ComplexPlayer) {
 	<ul id="player-wheel" class="sm:py-48 list-none flex justify-center items-center h-64 w-64 bg-transparent rounded-full mx-auto">
 		for i, v := range rotateCSSGenerator(players) {
 			<li class={ v }>
 				// small circle
-      @components.Dropdown(c, players[i].Name, PlayerToken(players[i], "sm:w-24 sm:h-24 w-16 h-16 bg-gray-900 rounded-full text-white " + RotateAngleCSS(len(players), i, true) + cssScale(len(players), 9)))
+      @components.Dropdown(c, players[i].P.Name, PlayerToken(players[i], "sm:w-24 sm:h-24 w-16 h-16 bg-gray-900 rounded-full text-white " + RotateAngleCSS(len(players), i, true) + cssScale(len(players), 9)))
 			</li>
 		}
 	</ul>

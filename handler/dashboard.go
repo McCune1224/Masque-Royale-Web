@@ -15,7 +15,7 @@ func (h *Handler) Dashboard(c echo.Context) error {
 		log.Println(err)
 		return c.Redirect(302, "/")
 	}
-	players, err := h.models.Players.GetByGameID(game_id)
+	players, err := h.models.Players.GetComplexByGameID(game_id)
 	if err != nil {
 		log.Println(err)
 		return c.Redirect(302, "/")
@@ -23,5 +23,5 @@ func (h *Handler) Dashboard(c echo.Context) error {
 	c.Set("players", players)
 	c.Set("game_id", game_id)
 
-	return TemplRender(c, views.Home(c, util.OrderPlayers(players)))
+	return TemplRender(c, views.Home(c, util.OrderComplexPlayers(players)))
 }

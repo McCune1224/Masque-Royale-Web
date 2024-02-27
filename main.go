@@ -57,6 +57,9 @@ func main() {
 	seatingDashboard.GET("", handler.SeatingDashboard)
 	seatingDashboard.POST("/swap", handler.SwapSeats)
 
+	luckDashboard := dashboard.Group("/:game_id/luck")
+	luckDashboard.GET("", handler.Luck)
+
 	components := app.Group("/components")
 	components.GET("/modal", handler.PlayerDropdownModal)
 

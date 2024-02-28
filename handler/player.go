@@ -18,6 +18,8 @@ func (h *Handler) PlayerDashboard(c echo.Context) error {
 		return c.Redirect(302, "/")
 	}
 
+	players = util.OrderPlayers(players)
+
 	game, err := h.models.Games.GetByGameID(c.Param("game_id"))
 	if err != nil {
 		log.Println(err)

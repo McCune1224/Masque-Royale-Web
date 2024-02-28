@@ -5,7 +5,6 @@ import "strconv"
 import "github.com/mccune1224/betrayal-widget/data"
 import "github.com/mccune1224/betrayal-widget/views/components"
 
-
 func rotateCSSGenerator(players []*data.ComplexPlayer) []string {
 	res := []string{}
 	for i := 0; i < len(players); i++ {
@@ -17,26 +16,25 @@ func rotateCSSGenerator(players []*data.ComplexPlayer) []string {
 }
 
 func RotateAngleCSS(count int, position int, reverse bool) string {
-  if reverse {
-    return "rotate-[" + strconv.Itoa((360 / count * position) * -1) + "deg]"
-  }
-  return "rotate-[" + strconv.Itoa(360 / count * position) + "deg]"
+	if reverse {
+		return "rotate-[" + strconv.Itoa((360/count*position)*-1) + "deg]"
+	}
+	return "rotate-[" + strconv.Itoa(360/count*position) + "deg]"
 }
 
 func cssScale(playerCount int, limit int) string {
-  if playerCount > limit {
-    return "scale-75"
-  }
-  return ""
+	if playerCount > limit {
+		return "scale-75"
+	}
+	return ""
 }
 
 templ PlayerToken(player *data.ComplexPlayer, classes string) {
-
-  <div class={ classes + " border-2 border-pink-500" }>
-  <p>{ player.P.Name[:2]  }</p>
-  <p>{ player.R.Name  }</p>
-  <p>{strconv.Itoa(player.P.Luck)}</p>
-  </div>
+	<div class={ classes + " border-2 border-pink-500" }>
+		<p>{ player.P.Name }</p>
+		<p>{ player.R.Name  }</p>
+		<p>{ strconv.Itoa(player.P.Luck) }</p>
+	</div>
 }
 
 templ Positions(c echo.Context, players []*data.ComplexPlayer) {
@@ -44,7 +42,7 @@ templ Positions(c echo.Context, players []*data.ComplexPlayer) {
 		for i, v := range rotateCSSGenerator(players) {
 			<li class={ v }>
 				// small circle
-      @components.Dropdown(c, players[i].P.Name, PlayerToken(players[i], "sm:w-24 sm:h-24 w-16 h-16 bg-gray-900 rounded-full text-white " + RotateAngleCSS(len(players), i, true) + cssScale(len(players), 9)))
+				@components.Dropdown(c, players[i].P.Name, PlayerToken(players[i], "sm:w-24 sm:h-24 w-16 h-16 bg-gray-900 rounded-full text-white "+RotateAngleCSS(len(players), i, true)+cssScale(len(players), 9)))
 			</li>
 		}
 	</ul>

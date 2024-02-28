@@ -73,5 +73,15 @@ func (h *Handler) SwapSeats(c echo.Context) error {
 	}
 
 	updatedPlayers, _ := h.models.Players.GetComplexByGameID(c.Param("game_id"))
+
+	updatedPlayers = util.BulkCalculateLuck(updatedPlayers)
+	for _, p := range updatedPlayers {
+		err := h.models.Players.Update(&p.P)
+		if err != nil {
+			log.Println(err)
+			return c.Redirect(302, "/")
+		}
+	}
+
 	return TemplRender(c, views.Positions(c, util.OrderComplexPlayers(updatedPlayers)))
 }

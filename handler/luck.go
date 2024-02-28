@@ -16,15 +16,9 @@ func (h *Handler) Luck(c echo.Context) error {
 	}
 
 	players = util.OrderComplexPlayers(players)
-
-	for i := range players {
-		target := players[i]
-		prev := players[(i-1+len(players))%len(players)]
-		next := players[(i+1)%len(players)]
-		luck := util.CalculateLuck(&target.P, &target.R, &prev.P, &prev.R, &next.P, &next.R)
-		log.Printf("LUCK %s - %d - %s (%s)", target.P.Name, luck, target.R.Name, target.R.Alignment[:1])
-		players[i].P.Luck = luck
-		err := h.models.Players.Update(&players[i].P)
+	players = util.BulkCalculateLuck(players)
+	for _, p := range players {
+		err := h.models.Players.Update(&p.P)
 		if err != nil {
 			log.Println(err)
 			return c.Redirect(302, "/")

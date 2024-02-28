@@ -17,8 +17,8 @@ type Player struct {
 
 // ComplexPlayer is a player with a role
 type ComplexPlayer struct {
-	P Player
-	R Role
+	P Player `db:"players"`
+	R Role   `db:"roles"`
 }
 
 type PlayerModel struct {

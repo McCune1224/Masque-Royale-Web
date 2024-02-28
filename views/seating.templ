@@ -1,7 +1,6 @@
 package views
 
 import "github.com/labstack/echo/v4"
-import "strconv"
 import "github.com/mccune1224/betrayal-widget/data"
 import "github.com/mccune1224/betrayal-widget/util"
 
@@ -16,7 +15,7 @@ templ ReseatingMenu(c echo.Context, players []*data.ComplexPlayer) {
 					id="grid-state"
 				>
 					for _, player := range players {
-						<option>{ player.P.Name } - { strconv.Itoa(player.P.Seat) }</option>
+						<option>{ player.P.Name }</option>
 					}
 				</select>
 				<select
@@ -26,7 +25,7 @@ templ ReseatingMenu(c echo.Context, players []*data.ComplexPlayer) {
 					id="grid-state"
 				>
 					for _, player := range players {
-						<option>{ player.P.Name } - { strconv.Itoa(player.P.Seat) }</option>
+						<option>{ player.P.Name }</option>
 					}
 				</select>
 			</div>

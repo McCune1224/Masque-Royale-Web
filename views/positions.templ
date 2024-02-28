@@ -29,8 +29,21 @@ func cssScale(playerCount int, limit int) string {
 	return ""
 }
 
+func cssBorderColor(role *data.Role) string {
+	switch role.Alignment {
+	case "LAWFUL":
+		return "border-green-500"
+	case "CHAOTIC":
+		return "border-red-500"
+	case "OUTLANDER":
+		return "border-yellow-500"
+	default:
+		return "border-black-200"
+	}
+}
+
 templ PlayerToken(player *data.ComplexPlayer, classes string) {
-	<div class={ classes + " border-2 border-pink-500" }>
+	<div class={ classes + " border-2 " + cssBorderColor(&player.R) }>
 		<p>{ player.P.Name }</p>
 		<p>{ player.R.Name  }</p>
 		<p>{ strconv.Itoa(player.P.Luck) }</p>

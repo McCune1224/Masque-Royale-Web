@@ -39,7 +39,7 @@ func playerInfoCard(player *data.Player, roles []*data.Role) templ.Component {
 		ctx = templ.ClearChildren(ctx)
 		switch RoleIDToRole(roles, player.RoleID).Alignment {
 		case "LAWFUL":
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li class=\"border-2 border-black p-2 bg-green-200\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li class=\"border-2 border-black p-2 bg-green-600 text-black\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -70,7 +70,7 @@ func playerInfoCard(player *data.Player, roles []*data.Role) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		case "OUTLANDER":
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li class=\"border-2 border-black p-2 bg-yellow-200\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li class=\"border-2 border-black p-2 bg-yellow-600 text-black\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -101,7 +101,7 @@ func playerInfoCard(player *data.Player, roles []*data.Role) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		default:
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li class=\"border-2 border-black p-2 bg-red-200\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li class=\"border-2 border-black p-2 bg-red-600 text-black\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

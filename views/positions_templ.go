@@ -19,7 +19,8 @@ func rotateCSSGenerator(players []*data.ComplexPlayer) []string {
 	res := []string{}
 	for i := 0; i < len(players); i++ {
 		foo := strconv.Itoa(360 / len(players) * i)
-		bar := "absolute transform h-64 sm:h-96 w-1  bg-transparent rotate-[" + foo + "deg]"
+		//TODO: Fix padding on new vertical layout
+		bar := "absolute transform h-64 sm:h-[32rem] w-1 bg-transparent rotate-[" + foo + "deg]"
 		res = append(res, bar)
 	}
 	return res
@@ -40,12 +41,14 @@ func cssScale(playerCount int, limit int) string {
 }
 
 func cssBorderColor(role *data.Role) string {
+	return "border-black-200"
+
 	switch role.Alignment {
-	case "LAWFUL":
+	case "Lawful":
 		return "border-green-500"
-	case "CHAOTIC":
+	case "Chaotic":
 		return "border-red-500"
-	case "OUTLANDER":
+	case "Outlander":
 		return "border-yellow-500"
 	default:
 		return "border-black-200"
@@ -85,7 +88,7 @@ func PlayerToken(player *data.ComplexPlayer, classes string) templ.Component {
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(player.P.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/positions.templ`, Line: 46, Col: 20}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/positions.templ`, Line: 50, Col: 20}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
@@ -98,7 +101,7 @@ func PlayerToken(player *data.ComplexPlayer, classes string) templ.Component {
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(player.R.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/positions.templ`, Line: 47, Col: 21}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/positions.templ`, Line: 51, Col: 21}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
@@ -111,7 +114,7 @@ func PlayerToken(player *data.ComplexPlayer, classes string) templ.Component {
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(player.P.Luck))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/positions.templ`, Line: 48, Col: 34}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/positions.templ`, Line: 52, Col: 34}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
@@ -141,7 +144,7 @@ func Positions(c echo.Context, players []*data.ComplexPlayer) templ.Component {
 			templ_7745c5c3_Var6 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<ul id=\"player-wheel\" class=\"sm:py-48 list-none flex justify-center items-center h-64 w-64 bg-transparent rounded-full mx-auto\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<ul id=\"player-wheel\" class=\"sm:p-64 list-none flex justify-center items-center h-64 w-64 bg-transparent rounded-full mx-auto\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -163,7 +166,7 @@ func Positions(c echo.Context, players []*data.ComplexPlayer) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = components.Dropdown(c, players[i].P.Name, PlayerToken(players[i], "sm:w-24 sm:h-24 w-16 h-16 bg-gray-900 rounded-full text-white "+RotateAngleCSS(len(players), i, true)+cssScale(len(players), 9))).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = components.Dropdown(c, players[i].P.Name, PlayerToken(players[i], "sm:w-32 sm:h-32 w-16 h-16 bg-gray-900 rounded-full text-white "+RotateAngleCSS(len(players), i, true)+cssScale(len(players), 9))).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

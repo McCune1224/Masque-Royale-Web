@@ -28,10 +28,6 @@ func main() {
 		},
 	))
 
-	// app.Use(middleware.Recover())
-
-	// trailling slash
-
 	app.HTTPErrorHandler = appMiddleware.TemplHTTPErrorHandler
 
 	handler := handler.NewHandler(db)

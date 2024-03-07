@@ -81,7 +81,7 @@ func ReseatingMenu(c echo.Context, players []*data.ComplexPlayer) templ.Componen
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</select></div><input type=\"submit\" value=\"Swap Players\" class=\"border-2 border-black p-2 bg-blue-500 text-white\"></form></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</select></div><input type=\"submit\" value=\"Swap Players\" class=\"bg-blue-500 text-white\"></form></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

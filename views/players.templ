@@ -16,11 +16,11 @@ func RoleIDToRole(roles []*data.Role, id int) *data.Role {
 
 templ playerInfoCard (player *data.Player, roles []*data.Role) {
 	switch RoleIDToRole(roles, player.RoleID).Alignment {
-		case "LAWFUL":
+		case "Lawful":
 			<li class="border-2 border-black p-2 bg-green-600 text-black">
 				{ player.Name } - { RoleIDToRole(roles, player.RoleID).Name }
 			</li>
-		case "OUTLANDER":
+		case "Outlander":
 			<li class="border-2 border-black p-2 bg-yellow-600 text-black">
 				{ player.Name } - { RoleIDToRole(roles,player.RoleID).Name }
 			</li>

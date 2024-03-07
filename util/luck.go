@@ -42,27 +42,27 @@ func CalculateLuck(tPlayer *data.Player, tRole *data.Role, lPlayer *data.Player,
 
 func calculateNeighborLuck(targetAlignment string, neighborAlignment string) int {
 	switch targetAlignment {
-	case "LAWFUL":
+	case "Lawful":
 		switch neighborAlignment {
-		case "LAWFUL":
+		case "Lawful":
 			return 5
-		case "CHAOTIC":
+		case "Chaotic":
 			return 0
-		case "OUTLANDER":
+		case "Outlander":
 			return 3
 		}
 
-	case "CHAOTIC":
+	case "Chaotic":
 		switch neighborAlignment {
-		case "LAWFUL":
+		case "Lawful":
 			return 0
-		case "CHAOTIC":
+		case "Chaotic":
 			return 5
-		case "OUTLANDER":
+		case "Outlander":
 			return 3
 		}
 
-	case "OUTLANDER":
+	case "Outlander":
 		return 3
 	}
 

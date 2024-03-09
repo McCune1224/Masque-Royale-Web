@@ -21,6 +21,11 @@ func main() {
 		log.Fatal("error opening database,", err)
 	}
 
+	app.HTTPErrorHandler = appMiddleware.TemplHTTPErrorHandler
+
+	handler := handler.NewHandler(db)
+	app.Static("static/", "static")
+	app.Pre(middleware.RemoveTrailingSlash())
 	app.Use(middleware.CORS())
 	app.Use(middleware.LoggerWithConfig(
 		middleware.LoggerConfig{
@@ -28,12 +33,8 @@ func main() {
 		},
 	))
 
-	app.HTTPErrorHandler = appMiddleware.TemplHTTPErrorHandler
-
-	handler := handler.NewHandler(db)
-	app.Static("static/", "static")
-	app.Pre(middleware.RemoveTrailingSlash())
-
+	sm := appMiddleware.NewSyncMiddleware(db)
+	app.Use(sm.SyncPlayerInfo)
 	app.GET("/", handler.Index)
 
 	game := app.Group("/games")
@@ -42,8 +43,9 @@ func main() {
 	game.GET("/join/:game_id", handler.JoinGame)
 	game.GET("/delete/:game_id", handler.DeleteGame)
 
-	dashboard := app.Group("/games/dashboard")
-	dashboard.GET("/:game_id", handler.Dashboard)
+	dashboard := app.Group("/games/dashboard/:game_id")
+	dashboard.GET("", handler.Dashboard)
+	dashboard.GET("/menu", handler.PlayerMenu)
 
 	playerDashboard := dashboard.Group("/:game_id/players")
 	playerDashboard.GET("", handler.PlayerDashboard)
@@ -56,9 +58,6 @@ func main() {
 	luckDashboard := dashboard.Group("/:game_id/luck")
 	luckDashboard.GET("", handler.Luck)
 	luckDashboard.POST("/update", handler.LuckUpdate)
-
-	components := app.Group("/components")
-	components.GET("/modal", handler.PlayerDropdownModal)
 
 	log.Fatal(app.Start(":" + os.Getenv("PORT")))
 }

@@ -4,13 +4,13 @@ import "github.com/labstack/echo/v4"
 import "github.com/mccune1224/betrayal-widget/views/components/navbar"
 
 templ Dashboard(c echo.Context) {
-@Base() {
-@navbar.VerticalNavbar(c)
-<div class="container mx-auto px-4 text-center">
-  <div class="flex flex-row">
-    { children... }
-    <section id="menu-section"></section>
-  </div>
-</div>
-}
+	@Base() {
+		@navbar.VerticalNavbar(c)
+		<div class="container mx-auto px-4 text-center">
+			<div class="flex flex-row">
+				{ children... }
+				<section id="menu-section"></section>
+			</div>
+		</div>
+	}
 }

@@ -1,6 +1,9 @@
 package util
 
-import "github.com/mccune1224/betrayal-widget/data"
+import (
+	"github.com/labstack/echo/v4"
+	"github.com/mccune1224/betrayal-widget/data"
+)
 
 func OrderPlayers(players []*data.Player) []*data.Player {
 	orderedPlayers := make([]*data.Player, len(players))
@@ -16,4 +19,27 @@ func OrderComplexPlayers(players []*data.ComplexPlayer) []*data.ComplexPlayer {
 		orderedPlayers[player.P.Seat-1] = player
 	}
 	return orderedPlayers
+}
+
+type PlayerContext struct {
+	echo.Context
+}
+
+func (pc *PlayerContext) GetPlayers() ([]*data.ComplexPlayer, bool) {
+	// safely attempt to access the value from context, if it doesn't exist, return false
+	players, ok := pc.Get("players").([]*data.ComplexPlayer)
+	return players, ok
+}
+
+func (pc *PlayerContext) SetPlayers(players []*data.ComplexPlayer) {
+	pc.Set("players", players)
+}
+
+func GetPlayerContext(c echo.Context) *PlayerContext {
+	return c.(*PlayerContext)
+}
+
+func GetPlayers(c echo.Context) ([]*data.ComplexPlayer, bool) {
+	players, ok := c.Get("players").([]*data.ComplexPlayer)
+	return players, ok
 }

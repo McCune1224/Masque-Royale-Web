@@ -12,27 +12,15 @@ import (
 )
 
 func (h *Handler) PlayerDashboard(c echo.Context) error {
-	players, err := h.models.Players.GetByGameID(c.Param("game_id"))
-	if err != nil {
-		log.Println(err)
-		return c.Redirect(302, "/")
+	players := c.Get("players").([]*data.ComplexPlayer)
+	p := []*data.Player{}
+	r := []*data.Role{}
+	for _, player := range players {
+		p = append(p, &player.P)
+		r = append(r, &player.R)
 	}
 
-	players = util.OrderPlayers(players)
-
-	game, err := h.models.Games.GetByGameID(c.Param("game_id"))
-	if err != nil {
-		log.Println(err)
-		return c.Redirect(302, "/")
-	}
-
-	roles, err := h.models.Roles.GetAll()
-	if err != nil {
-		log.Println(err)
-		return c.Redirect(302, "/")
-	}
-
-	return TemplRender(c, views.PlayerDashboard(c, game, players, roles))
+	return TemplRender(c, views.PlayerDashboard(c, p, r))
 }
 
 func (h *Handler) PlayerAdd(c echo.Context) error {
@@ -170,4 +158,11 @@ func (h *Handler) PlayerReposition(c echo.Context) error {
 	players = util.OrderPlayers(players)
 
 	return TemplRender(c, views.PlayerList(c, players, nil, nil))
+}
+
+func (h *Handler) PlayerMenu(c echo.Context) error {
+	// formPlayerName := c.QueryParam("name")
+	players := c.Get("players").([]*data.ComplexPlayer)
+	log.Println(players)
+	return nil
 }

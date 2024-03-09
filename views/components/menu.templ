@@ -1,0 +1,17 @@
+package components
+
+import "github.com/mccune1224/betrayal-widget/data"
+import "github.com/labstack/echo/v4"
+import "github.com/mccune1224/betrayal-widget/views"
+
+func toPlayerNames(players []*data.ComplexPlayer) []string {
+	names := make([]string, len(players))
+	for i, p := range players {
+		names[i] = p.P.Name
+	}
+	return names
+}
+
+templ PlayerMenu(c echo.Context, target *data.ComplexPlayer, players []*data.ComplexPlayer) {
+	@views.LuckBonusMenu(c, toPlayerNames(players))
+}

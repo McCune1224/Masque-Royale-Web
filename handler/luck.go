@@ -5,14 +5,21 @@ import (
 	"strconv"
 
 	"github.com/labstack/echo/v4"
+	"github.com/mccune1224/betrayal-widget/data"
 	"github.com/mccune1224/betrayal-widget/views"
 )
 
 func (h *Handler) Luck(c echo.Context) error {
-	playerNames, err := h.models.Players.GetPlayerNames(c.Param("game_id"))
-	if err != nil {
-		log.Println(err)
-		return c.Redirect(302, "/")
+	// playerNames, err := h.models.Players.GetPlayerNames(c.Param("game_id"))
+	// if err != nil {
+	// 	log.Println(err)
+	// 	return c.Redirect(302, "/")
+	// }
+	//
+	playerNames := []string{}
+	for _, player := range c.Get("players").([]*data.ComplexPlayer) {
+		playerNames = append(playerNames, player.P.Name)
+		log.Println(player)
 	}
 	return TemplRender(c, views.Luck(c, playerNames))
 }
@@ -38,5 +45,5 @@ func (h *Handler) LuckUpdate(c echo.Context) error {
 		return c.Redirect(302, "/")
 	}
 
-  return TemplRender(c, views.PlayerToken(player))
+	return TemplRender(c, views.PlayerToken(player))
 }

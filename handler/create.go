@@ -3,7 +3,6 @@ package handler
 import (
 	"fmt"
 	"log"
-	"net/http"
 	"strings"
 
 	"github.com/labstack/echo/v4"
@@ -44,13 +43,8 @@ func (h *Handler) JoinGame(c echo.Context) error {
 		log.Println(err)
 		return c.HTML(500, "<div>Error getting game</div>")
 	}
-	c.SetCookie(&http.Cookie{
-		Name:     "game_id",
-		Value:    gameID,
-		Path:     "/",
-		SameSite: http.SameSiteNoneMode,
-		Secure:   true,
-	})
+  players, _ := h.models.Players.GetAllComplexByGameID(gameID)
+  c.Set("players", players)
 
 	return c.Redirect(302, "/games/dashboard/"+gameID)
 }

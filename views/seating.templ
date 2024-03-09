@@ -36,7 +36,7 @@ templ ReseatingMenu(c echo.Context, players []*data.ComplexPlayer) {
 
 templ Seating(c echo.Context, players []*data.ComplexPlayer) {
 	@Dashboard(c) {
-		<h1>{ c.Get("game_id").(string) } - Seating</h1>
+		<h1>{ c.Param("game_id") } - Seating</h1>
 		@Positions(c, players)
 	}
 	<div class="p-8">

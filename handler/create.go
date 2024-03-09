@@ -18,6 +18,7 @@ func (h *Handler) GenerateGame(c echo.Context) error {
 	if gameID == "" {
 		return TemplRender(c, create.GameCreate("Game ID is required"))
 	}
+
 	existingID, _ := h.models.Games.GetByGameID(gameID)
 	if existingID != nil {
 		return TemplRender(c, create.GameCreate(fmt.Sprintf("Game ID %s already exists", gameID)))
@@ -27,8 +28,6 @@ func (h *Handler) GenerateGame(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-
-	c.Set("game_id", gameID)
 	return c.Redirect(302, "/games/dashboard/"+gameID)
 }
 
@@ -43,8 +42,6 @@ func (h *Handler) JoinGame(c echo.Context) error {
 		log.Println(err)
 		return c.HTML(500, "<div>Error getting game</div>")
 	}
-  players, _ := h.models.Players.GetAllComplexByGameID(gameID)
-  c.Set("players", players)
 
 	return c.Redirect(302, "/games/dashboard/"+gameID)
 }

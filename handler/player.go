@@ -120,11 +120,7 @@ func (h *Handler) PlayerReposition(c echo.Context) error {
 
 	playerName := c.FormValue("player")
 
-	players, err := h.models.Players.GetByGameID(c.Param("game_id"))
-	if err != nil {
-		log.Println(err)
-		return c.Redirect(302, "/")
-	}
+	players, _ := util.GetPlayers(c)
 
 	if targetSeat < 1 || targetSeat > len(players) {
 		return c.Redirect(302, "/")
@@ -132,18 +128,18 @@ func (h *Handler) PlayerReposition(c echo.Context) error {
 
 	targetPlayer := &data.Player{}
 	for _, p := range players {
-		if p.Name == playerName {
-			targetPlayer = p
+		if p.P.Name == playerName {
+			targetPlayer = &p.P
 			break
 		}
 	}
 
 	swapped := false
 	for _, p := range players {
-		if p.Seat == targetSeat && p.Name != targetPlayer.Name {
-			p.Seat = targetPlayer.Seat
+		if p.P.Seat == targetSeat && p.P.Name != targetPlayer.Name {
+			p.P.Seat = targetPlayer.Seat
 			targetPlayer.Seat = targetSeat
-			h.models.Players.Update(p)
+			h.models.Players.Update(&p.P)
 			h.models.Players.Update(targetPlayer)
 			swapped = true
 			break
@@ -154,10 +150,14 @@ func (h *Handler) PlayerReposition(c echo.Context) error {
 		targetPlayer.Seat = targetSeat
 		h.models.Players.Update(targetPlayer)
 	}
+	p := util.ComplexToSimplePlayers(players)
 
-	players = util.OrderPlayers(players)
-
-	return TemplRender(c, views.PlayerList(c, players, nil, nil))
+	//  r := []*data.Role{}
+	// for _, player := range players {
+	// 	r = append(r, &player.R)
+	// }
+	//
+	return TemplRender(c, views.PlayerList(c, p, nil, nil))
 }
 
 func (h *Handler) PlayerMenu(c echo.Context) error {

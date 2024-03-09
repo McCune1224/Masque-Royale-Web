@@ -43,3 +43,11 @@ func GetPlayers(c echo.Context) ([]*data.ComplexPlayer, bool) {
 	players, ok := c.Get("players").([]*data.ComplexPlayer)
 	return players, ok
 }
+
+func ComplexToSimplePlayers(players []*data.ComplexPlayer) []*data.Player {
+	simplePlayers := make([]*data.Player, len(players))
+	for i, player := range players {
+		simplePlayers[i] = &player.P
+	}
+	return simplePlayers
+}

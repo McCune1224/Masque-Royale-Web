@@ -11,29 +11,14 @@ import (
 )
 
 func (h *Handler) SeatingDashboard(c echo.Context) error {
-	game_id := c.Param("game_id")
-	game, err := h.models.Games.GetByGameID(game_id)
-	if err != nil || game == nil {
-		log.Println(err)
-		return c.Redirect(302, "/")
+	if players, ok := util.GetPlayers(c); ok {
+		return TemplRender(c, views.Seating(c, util.OrderComplexPlayers(players)))
 	}
-	players, err := h.models.Players.GetAllComplexByGameID(game_id)
-	if err != nil {
-		log.Println(err)
-		return c.Redirect(302, "/")
-	}
-	c.Set("players", players)
-	c.Set("game_id", game_id)
-
-	return TemplRender(c, views.Seating(c, util.OrderComplexPlayers(players)))
+	return c.Redirect(302, "/")
 }
 
 func (h *Handler) SwapSeats(c echo.Context) error {
-	players, err := h.models.Players.GetByGameID(c.Param("game_id"))
-	if err != nil {
-		log.Println(err)
-		return c.Redirect(302, "/")
-	}
+	players, _ := util.GetPlayers(c)
 
 	var player1 *data.Player
 	var player2 *data.Player
@@ -42,11 +27,11 @@ func (h *Handler) SwapSeats(c echo.Context) error {
 	p2 := strings.TrimSpace(strings.Split(c.FormValue("player2"), "-")[0])
 
 	for _, player := range players {
-		if player.Name == p1 {
-			player1 = player
+		if player.P.Name == p1 {
+			player1 = &player.P
 		}
-		if player.Name == p2 {
-			player2 = player
+		if player.P.Name == p2 {
+			player2 = &player.P
 		}
 	}
 
@@ -61,7 +46,7 @@ func (h *Handler) SwapSeats(c echo.Context) error {
 	player1.Seat = seat2
 	player2.Seat = seat1
 
-	err = h.models.Players.Update(player1)
+	err := h.models.Players.Update(player1)
 	if err != nil {
 		log.Println(err)
 		return c.Redirect(302, "/")

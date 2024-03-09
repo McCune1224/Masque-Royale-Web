@@ -13,7 +13,6 @@ import "bytes"
 import "github.com/labstack/echo/v4"
 import "strconv"
 import "github.com/mccune1224/betrayal-widget/data"
-import "github.com/mccune1224/betrayal-widget/views/components"
 
 func rotateCSSGenerator(players []*data.ComplexPlayer) []string {
 	res := []string{}
@@ -88,7 +87,7 @@ func PlayerToken(player *data.ComplexPlayer, classes string) templ.Component {
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(player.P.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/positions.templ`, Line: 50, Col: 20}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/positions.templ`, Line: 49, Col: 20}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
@@ -101,7 +100,7 @@ func PlayerToken(player *data.ComplexPlayer, classes string) templ.Component {
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(player.R.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/positions.templ`, Line: 51, Col: 21}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/positions.templ`, Line: 50, Col: 21}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
@@ -114,7 +113,7 @@ func PlayerToken(player *data.ComplexPlayer, classes string) templ.Component {
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(player.P.Luck))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/positions.templ`, Line: 52, Col: 34}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/positions.templ`, Line: 51, Col: 34}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
@@ -166,7 +165,7 @@ func Positions(c echo.Context, players []*data.ComplexPlayer) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = components.Dropdown(c, players[i].P.Name, PlayerToken(players[i], "sm:w-32 sm:h-32 w-16 h-16 bg-gray-900 rounded-full text-white "+RotateAngleCSS(len(players), i, true)+cssScale(len(players), 9))).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = PlayerToken(players[i], "sm:w-32 sm:h-32 w-16 h-16 bg-gray-900 rounded-full text-white "+RotateAngleCSS(len(players), i, true)+cssScale(len(players), 9)).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

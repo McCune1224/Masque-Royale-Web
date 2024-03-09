@@ -15,8 +15,10 @@ type Handler struct {
 }
 
 func NewHandler(db *sqlx.DB) *Handler {
+	models := data.NewModels(db)
+
 	return &Handler{
-		models: data.NewModels(db),
+		models: models,
 	}
 }
 

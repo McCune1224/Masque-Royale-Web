@@ -3,7 +3,6 @@ package views
 import "github.com/labstack/echo/v4"
 import "strconv"
 import "github.com/mccune1224/betrayal-widget/data"
-import "github.com/mccune1224/betrayal-widget/views/components"
 
 
 func rotateCSSGenerator(players []*data.ComplexPlayer) []string {
@@ -59,7 +58,7 @@ templ Positions(c echo.Context, players []*data.ComplexPlayer) {
 		for i, v := range rotateCSSGenerator(players) {
 			<li class={ v }>
 				// small circle
-				@components.Dropdown(c, players[i].P.Name, PlayerToken(players[i], "sm:w-32 sm:h-32 w-16 h-16 bg-gray-900 rounded-full text-white "+RotateAngleCSS(len(players), i, true)+cssScale(len(players), 9)))
+				@PlayerToken(players[i], "sm:w-32 sm:h-32 w-16 h-16 bg-gray-900 rounded-full text-white "+RotateAngleCSS(len(players), i, true)+cssScale(len(players), 9))
 			</li>
 		}
 	</ul>

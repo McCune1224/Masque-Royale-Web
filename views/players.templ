@@ -53,22 +53,21 @@ templ PlayerList(c echo.Context, players []*data.Player, roles []*data.Role, err
 templ PlayerDashboard(c echo.Context, game *data.Game, players []*data.Player, roles []*data.Role) {
 @Dashboard(c) {
 //banner that should fully spam the width of the page and allow to input a new player
-<div class="flex flex-row justify-center items-center">
-  <form hx-post={ util.GetGameIDURL(c) + "/players/add" } hx-target="#player-list">
-    <input required type="text" name="name" placeholder="Player Name"
-      class="text-black border-2 w-full border-black p-2" />
-    <div class="realtive">
-      <select required name="role"
-        class=" w-full p-2 border-2 border-black  bg-gray-200 text-gray-700  rounded-md  focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-        id="grid-state">
-        for _, role := range roles {
-        <option>{ role.Name }</option>
-        }
-      </select>
-    </div>
-    <input type="submit" value="Add Player" class="border-2 border-black p-2 bg-blue-500 text-white" />
-  </form>
-</div>
+<form class="flex flex-row justify-center items-center" hx-post={ util.GetGameIDURL(c) + "/players/add" }
+  hx-target="#player-list">
+  <input required type="text" name="name" placeholder="Player Name"
+    class="text-black border-2 w-full border-black p-2" />
+  <div class="realtive">
+    <select required name="role"
+      class=" w-full p-2 border-2 border-black  bg-gray-200 text-gray-700  rounded-md  focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+      id="grid-state">
+      for _, role := range roles {
+      <option>{ role.Name }</option>
+      }
+    </select>
+  </div>
+  <input type="submit" value="Add Player" class="border-2 border-black p-2 bg-blue-500 text-white" />
+</form>
 @PlayerList(c, players, roles, nil)
 }
 }

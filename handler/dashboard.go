@@ -15,7 +15,7 @@ func (h *Handler) Dashboard(c echo.Context) error {
 		log.Println(err)
 		return c.Redirect(302, "/")
 	}
-	players, err := h.models.Players.GetComplexByGameID(game_id)
+	players, err := h.models.Players.GetAllComplexByGameID(game_id)
 	if err != nil {
 		log.Println(err)
 		return c.Redirect(302, "/")

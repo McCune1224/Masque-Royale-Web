@@ -55,6 +55,7 @@ func main() {
 
 	luckDashboard := dashboard.Group("/:game_id/luck")
 	luckDashboard.GET("", handler.Luck)
+	luckDashboard.POST("/update", handler.LuckUpdate)
 
 	components := app.Group("/components")
 	components.GET("/modal", handler.PlayerDropdownModal)

@@ -17,7 +17,7 @@ func (h *Handler) SeatingDashboard(c echo.Context) error {
 		log.Println(err)
 		return c.Redirect(302, "/")
 	}
-	players, err := h.models.Players.GetComplexByGameID(game_id)
+	players, err := h.models.Players.GetAllComplexByGameID(game_id)
 	if err != nil {
 		log.Println(err)
 		return c.Redirect(302, "/")
@@ -72,7 +72,7 @@ func (h *Handler) SwapSeats(c echo.Context) error {
 		return c.Redirect(302, "/")
 	}
 
-	updatedPlayers, _ := h.models.Players.GetComplexByGameID(c.Param("game_id"))
+	updatedPlayers, _ := h.models.Players.GetAllComplexByGameID(c.Param("game_id"))
 
 	updatedPlayers = util.BulkCalculateLuck(updatedPlayers)
 	for _, p := range updatedPlayers {

@@ -74,6 +74,15 @@ func (m *PlayerModel) GetByName(name string) (*Player, error) {
 	return player, nil
 }
 
+func (m *PlayerModel) GetPlayerNames(gameID string) ([]string, error) {
+	names := []string{}
+	err := m.DB.Select(&names, "SELECT name FROM players WHERE game_id = $1", gameID)
+	if err != nil {
+		return nil, err
+	}
+	return names, nil
+}
+
 func (m *PlayerModel) GetByGameIDAndName(gameID string, name string) (*Player, error) {
 	player := &Player{}
 	err := m.DB.Get(player, "SELECT * FROM players WHERE game_id = $1 AND name ILIKE $2", gameID, name)
@@ -99,6 +108,14 @@ func (m *PlayerModel) Update(player *Player) error {
 	return nil
 }
 
+func (m *PlayerModel) UpdateProperrty(id int, property string, value interface{}) error {
+	_, err := m.DB.Exec("UPDATE players SET $1 = $2 WHERE id = $3", property, value, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (m *PlayerModel) Delete(id int) error {
 	_, err := m.DB.Exec("DELETE FROM players WHERE id = $1", id)
 	if err != nil {
@@ -116,7 +133,39 @@ func (m *PlayerModel) GetRole(roleID int) (*Role, error) {
 	return role, nil
 }
 
-func (m *PlayerModel) GetComplexByGameID(gameID string) ([]*ComplexPlayer, error) {
+func (m *PlayerModel) GetComplexByGameID(gameID string, name string) (*ComplexPlayer, error) {
+	playerQuery := &playerRoleJoin{}
+	query := `SELECT p.id AS player_id, p.name AS player_name, p.game_id AS player_game_id, p.role_id AS player_role_id, p.alive AS player_alive, p.seat AS player_seat, p.luck AS player_luck, p.luck_modifier AS player_luck_modifier, p.created_at AS player_created_at, p.updated_at AS player_updated_at, r.id AS role_id, r.name AS role_name, r.alignment AS role_alignment, r.ability_ids AS role_ability_ids, r.passive_ids AS role_passive_ids FROM players p JOIN roles r ON p.role_id = r.id WHERE p.game_id = $1 AND p.name ILIKE $2`
+	err := m.DB.Get(playerQuery, query, gameID, name)
+	if err != nil {
+		return nil, err
+	}
+	player := &Player{
+		ID:           playerQuery.PlayerID,
+		Name:         playerQuery.PlayerName,
+		GameID:       playerQuery.PlayerGameID,
+		RoleID:       playerQuery.PlayerRoleID,
+		Alive:        playerQuery.PlayerAlive,
+		Seat:         playerQuery.PlayerSeat,
+		Luck:         playerQuery.PlayerLuck,
+		LuckModifier: playerQuery.PlayerLuckMod,
+		CreatedAt:    playerQuery.PlayerCreated,
+		UpdatedAt:    playerQuery.PlayerUpdated,
+	}
+	role := &Role{
+		ID:         playerQuery.RoleID,
+		Name:       playerQuery.RoleName,
+		Alignment:  playerQuery.RoleAlignment,
+		AbilityIDs: playerQuery.RoleAbilityIDs,
+		PassiveIDs: playerQuery.RolePassiveIDs,
+	}
+	return &ComplexPlayer{
+		P: *player,
+		R: *role,
+	}, nil
+}
+
+func (m *PlayerModel) GetAllComplexByGameID(gameID string) ([]*ComplexPlayer, error) {
 	playerQuery := []*playerRoleJoin{}
 	players := []*ComplexPlayer{}
 	query := `SELECT p.id AS player_id, p.name AS player_name, p.game_id AS player_game_id, p.role_id AS player_role_id, p.alive AS player_alive, p.seat AS player_seat, p.luck AS player_luck, p.luck_modifier AS player_luck_modifier, p.created_at AS player_created_at, p.updated_at AS player_updated_at, r.id AS role_id, r.name AS role_name, r.alignment AS role_alignment, r.ability_ids AS role_ability_ids, r.passive_ids AS role_passive_ids FROM players p JOIN roles r ON p.role_id = r.id WHERE p.game_id = $1`

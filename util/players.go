@@ -26,7 +26,6 @@ type PlayerContext struct {
 }
 
 func (pc *PlayerContext) GetPlayers() ([]*data.ComplexPlayer, bool) {
-	// safely attempt to access the value from context, if it doesn't exist, return false
 	players, ok := pc.Get("players").([]*data.ComplexPlayer)
 	return players, ok
 }
@@ -50,4 +49,20 @@ func ComplexToSimplePlayers(players []*data.ComplexPlayer) []*data.Player {
 		simplePlayers[i] = &player.P
 	}
 	return simplePlayers
+}
+
+func GetNeighbor(target *data.ComplexPlayer, players []*data.ComplexPlayer, side string) *data.ComplexPlayer {
+	ti := -1
+	for i := range players {
+		if players[i] == target {
+			ti = i
+			break
+		}
+	}
+
+	if side == "next" {
+		return players[(ti+1)%len(players)]
+	} else {
+		return players[(ti-1+len(players))%len(players)]
+	}
 }

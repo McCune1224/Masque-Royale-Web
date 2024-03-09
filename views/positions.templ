@@ -46,10 +46,10 @@ func cssBorderColor(role *data.Role) string {
 }
 
 templ PlayerToken(player *data.ComplexPlayer) {
-	<div id={ player.P.Name + "-seat" }>
+	<div id={ player.P.Name + "-token" }>
 		<p>{ player.P.Name }</p>
 		<p>{ player.R.Name  }</p>
-		<p>{ strconv.Itoa(player.P.Luck) }</p>
+		<p>{ strconv.Itoa(player.P.Luck + player.P.LuckModifier) }</p>
 	</div>
 }
 

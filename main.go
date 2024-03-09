@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"log"
 	"os"
 
@@ -47,6 +48,9 @@ func main() {
 	dashboard.GET("", handler.Dashboard)
 	dashboard.GET("/menu", handler.PlayerMenu)
 
+	playerUpdate := dashboard.Group("/menu/update/:player")
+	playerUpdate.POST("/modifier", handler.UpdatePlayerLuckModifier)
+
 	playerDashboard := dashboard.Group("/:game_id/players")
 	playerDashboard.GET("", handler.PlayerDashboard)
 	playerDashboard.POST("/add", handler.PlayerAdd)
@@ -58,6 +62,14 @@ func main() {
 	luckDashboard := dashboard.Group("/:game_id/luck")
 	luckDashboard.GET("", handler.Luck)
 	luckDashboard.POST("/update", handler.LuckUpdate)
+
+	if os.Getenv("PORT") == "3000" {
+		data, err := json.MarshalIndent(app.Routes(), "", "  ")
+		if err != nil {
+			panic(err)
+		}
+		os.WriteFile("routes.json", data, 0644)
+	}
 
 	log.Fatal(app.Start(":" + os.Getenv("PORT")))
 }

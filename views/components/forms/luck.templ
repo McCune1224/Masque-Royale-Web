@@ -1,0 +1,32 @@
+package forms
+
+import "github.com/mccune1224/betrayal-widget/data"
+import "strconv"
+import "github.com/mccune1224/betrayal-widget/util"
+import "github.com/labstack/echo/v4"
+
+func p(target *data.ComplexPlayer, players []*data.ComplexPlayer) *data.ComplexPlayer {
+	return util.GetNeighbor(target, players, "previous")
+}
+
+func n(target *data.ComplexPlayer, players []*data.ComplexPlayer) *data.ComplexPlayer {
+	return util.GetNeighbor(target, players, "next")
+}
+
+templ LuckForm(c echo.Context, target *data.ComplexPlayer, players []*data.ComplexPlayer) {
+	<section>
+		<h3>Luck Breakdown:</h3>
+		<p>Previous: { p(target, players).P.Name } (+{ strconv.Itoa(util.CalculateNeighborLuck(target, n(target, players))) })</p>
+		<p>Next: { util.GetNeighbor(target, players, "next").P.Name } (+{ strconv.Itoa(util.CalculateNeighborLuck(target, util.GetNeighbor(target, players, "next"))) })</p>
+		<p>Bonus Modifier: { strconv.Itoa(target.P.LuckModifier) }</p>
+	</section>
+	<form
+		hx-post={ util.GetPlayerUpdateURL(c, target) + "/modifier" }
+		hx-target={ "#" + target.P.Name + "-token" }
+	>
+		<label for="luck">Luck Modifier</label>
+		<input class="text-black" type="number" id="modifier" name="modifier" value={ strconv.Itoa(target.P.LuckModifier) }/>
+		//tailwind button for submit
+		<button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" type="submit">Update</button>
+	</form>
+}

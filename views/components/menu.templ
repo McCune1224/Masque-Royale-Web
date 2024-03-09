@@ -2,7 +2,7 @@ package components
 
 import "github.com/mccune1224/betrayal-widget/data"
 import "github.com/labstack/echo/v4"
-import "github.com/mccune1224/betrayal-widget/views"
+import "github.com/mccune1224/betrayal-widget/views/components/forms"
 
 func toPlayerNames(players []*data.ComplexPlayer) []string {
 	names := make([]string, len(players))
@@ -13,5 +13,8 @@ func toPlayerNames(players []*data.ComplexPlayer) []string {
 }
 
 templ PlayerMenu(c echo.Context, target *data.ComplexPlayer, players []*data.ComplexPlayer) {
-	@views.LuckBonusMenu(c, toPlayerNames(players))
+	<section class="text-white flex flex-col">
+		<h1>{ target.P.Name }</h1>
+		@forms.LuckForm(c, target, players)
+	</section>
 }

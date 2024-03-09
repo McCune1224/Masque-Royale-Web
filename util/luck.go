@@ -9,13 +9,13 @@ func BulkCalculateLuck(players []*data.ComplexPlayer) []*data.ComplexPlayer {
 		target := players[i]
 		prev := players[(i-1+len(players))%len(players)]
 		next := players[(i+1)%len(players)]
-		luck := CalculateLuck(&target.P, &target.R, &prev.P, &prev.R, &next.P, &next.R)
+		luck := CalculateNeighboringLuck(&target.P, &target.R, &prev.P, &prev.R, &next.P, &next.R)
 		players[i].P.Luck = luck
 	}
 	return players
 }
 
-func CalculateLuck(tPlayer *data.Player, tRole *data.Role, lPlayer *data.Player, lRole *data.Role, rPlayer *data.Player, rRole *data.Role) int {
+func CalculateNeighboringLuck(tPlayer *data.Player, tRole *data.Role, lPlayer *data.Player, lRole *data.Role, rPlayer *data.Player, rRole *data.Role) int {
 	if !lPlayer.Alive && !rPlayer.Alive {
 		return 0 + tPlayer.LuckModifier
 	}
@@ -29,21 +29,21 @@ func CalculateLuck(tPlayer *data.Player, tRole *data.Role, lPlayer *data.Player,
 	if !lPlayer.Alive || lRole.Name == "Vagabond" {
 		luck += 0
 	} else {
-		luck += calculateNeighborLuck(tRole.Alignment, lRole.Alignment)
+		luck += CalculateAlignmentLuck(tRole.Alignment, lRole.Alignment)
 	}
 
 	if !rPlayer.Alive || rRole.Name == "Vagabond" {
 		luck += 0
 	} else {
-		luck += calculateNeighborLuck(tRole.Alignment, rRole.Alignment)
+		luck += CalculateAlignmentLuck(tRole.Alignment, rRole.Alignment)
 	}
 	return luck + tPlayer.LuckModifier
 }
 
-func calculateNeighborLuck(targetAlignment string, neighborAlignment string) int {
+func CalculateAlignmentLuck(targetAlignment string, comparedAlignment string) int {
 	switch targetAlignment {
 	case "Lawful":
-		switch neighborAlignment {
+		switch comparedAlignment {
 		case "Lawful":
 			return 5
 		case "Chaotic":
@@ -53,7 +53,7 @@ func calculateNeighborLuck(targetAlignment string, neighborAlignment string) int
 		}
 
 	case "Chaotic":
-		switch neighborAlignment {
+		switch comparedAlignment {
 		case "Lawful":
 			return 0
 		case "Chaotic":
@@ -67,4 +67,23 @@ func calculateNeighborLuck(targetAlignment string, neighborAlignment string) int
 	}
 
 	return 0
+}
+
+func CalculateNeighborLuck(target *data.ComplexPlayer, compared *data.ComplexPlayer) int {
+	if !compared.P.Alive {
+		return 0
+	}
+
+	if target.R.Name == "Vagabond" || compared.R.Name == "Vagabond" {
+		return 0
+	}
+
+	luck := 0
+
+	if !compared.P.Alive || compared.R.Name == "Vagabond" {
+		luck += 0
+	} else {
+		luck += CalculateAlignmentLuck(target.R.Alignment, compared.R.Alignment)
+	}
+	return luck
 }

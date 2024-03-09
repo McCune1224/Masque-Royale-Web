@@ -27,3 +27,4 @@ go.work
 tmp
 Makefile
 *.txt
+routes.json

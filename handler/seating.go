@@ -58,7 +58,6 @@ func (h *Handler) SwapSeats(c echo.Context) error {
 	}
 
 	updatedPlayers, _ := h.models.Players.GetAllComplexByGameID(c.Param("game_id"))
-
 	updatedPlayers = util.BulkCalculateLuck(updatedPlayers)
 	for _, p := range updatedPlayers {
 		err := h.models.Players.Update(&p.P)

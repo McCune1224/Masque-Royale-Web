@@ -9,6 +9,7 @@ import (
 	"github.com/mccune1224/betrayal-widget/data"
 	"github.com/mccune1224/betrayal-widget/util"
 	"github.com/mccune1224/betrayal-widget/views"
+	"github.com/mccune1224/betrayal-widget/views/components"
 )
 
 func (h *Handler) PlayerDashboard(c echo.Context) error {
@@ -161,8 +162,42 @@ func (h *Handler) PlayerReposition(c echo.Context) error {
 }
 
 func (h *Handler) PlayerMenu(c echo.Context) error {
-	// formPlayerName := c.QueryParam("name")
-	players := c.Get("players").([]*data.ComplexPlayer)
-	log.Println(players)
-	return nil
+	players, _ := util.GetPlayers(c)
+	playerName := c.QueryParam("name")
+	var targetPlayer *data.ComplexPlayer
+	for _, player := range players {
+		if player.P.Name == playerName {
+			targetPlayer = player
+			break
+		}
+	}
+	return TemplRender(c, components.PlayerMenu(c, targetPlayer, players))
+}
+
+func (h *Handler) UpdatePlayerLuckModifier(c echo.Context) error {
+	log.Println("HIT----------------------------------")
+	player := c.Param("player")
+	mod := c.FormValue("modifier")
+
+	players, _ := util.GetPlayers(c)
+	var targetPlayer *data.ComplexPlayer
+	for _, p := range players {
+		if p.P.Name == player {
+			targetPlayer = p
+			break
+		}
+	}
+	iMod, err := strconv.Atoi(mod)
+	if err != nil {
+		log.Println(err)
+		return c.Redirect(302, "/")
+	}
+
+	targetPlayer.P.LuckModifier = iMod
+	err = h.models.Players.Update(&targetPlayer.P)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	return TemplRender(c, views.PlayerToken(targetPlayer))
 }

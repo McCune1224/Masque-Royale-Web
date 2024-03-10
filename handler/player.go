@@ -212,10 +212,10 @@ func (h *Handler) UpdatePlayerDeathStatus(c echo.Context) error {
 		}
 	}
 	targetPlayer.P.Alive = !targetPlayer.P.Alive
-  err := h.models.Players.Update(&targetPlayer.P)
+	err := h.models.Players.Update(&targetPlayer.P)
 	if err != nil {
 		log.Println(err)
 		return err
 	}
-	return TemplRender(c, views.PlayerToken(targetPlayer))
+	return TemplRender(c, views.Positions(c, players))
 }

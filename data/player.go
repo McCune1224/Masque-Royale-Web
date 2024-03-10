@@ -108,8 +108,16 @@ func (m *PlayerModel) Update(player *Player) error {
 	return nil
 }
 
-func (m *PlayerModel) UpdateProperrty(id int, property string, value interface{}) error {
+func (m *PlayerModel) UpdateProperty(id int, property string, value interface{}) error {
 	_, err := m.DB.Exec("UPDATE players SET $1 = $2 WHERE id = $3", property, value, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *PlayerModel) UpdateSeat(id int, seat int) error {
+	_, err := m.DB.Exec("UPDATE players SET seat = $1 WHERE id = $2", seat, id)
 	if err != nil {
 		return err
 	}

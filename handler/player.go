@@ -231,3 +231,59 @@ func (h *Handler) UpdatePlayerDeathStatus(c echo.Context) error {
 
 	return TemplRender(c, views.Positions(c, players))
 }
+
+func (h *Handler) UpdatePlayerSeating(c echo.Context) error {
+	basePlayerName := c.Param("player")
+	targetPlayerName := c.FormValue("target")
+	players, _ := util.GetPlayers(c)
+
+	var basePlayer *data.ComplexPlayer
+	var targetPlayer *data.ComplexPlayer
+	for i := range players {
+		if players[i].P.Name == targetPlayerName {
+			targetPlayer = players[i]
+		}
+		if players[i].P.Name == basePlayerName {
+			basePlayer = players[i]
+		}
+	}
+
+	if targetPlayer == nil || basePlayer == nil {
+		return c.Redirect(302, "/")
+	}
+
+	targetPlayer.P.Seat, basePlayer.P.Seat = basePlayer.P.Seat, targetPlayer.P.Seat
+
+	err := h.models.Players.UpdateSeat(targetPlayer.P.ID, targetPlayer.P.Seat)
+	if err != nil {
+		log.Println(err)
+		return c.Redirect(302, "/")
+	}
+	err = h.models.Players.UpdateSeat(basePlayer.P.ID, basePlayer.P.Seat)
+	if err != nil {
+		log.Println(err)
+		return c.Redirect(302, "/")
+	}
+
+	for i := range players {
+		if players[i].P.Name == basePlayerName {
+			players[i] = basePlayer
+		}
+		if players[i].P.Name == targetPlayerName {
+			players[i] = targetPlayer
+		}
+	}
+
+	players = util.OrderComplexPlayers(players)
+	diff := util.BulkCalculateLuck(players)
+	for i := range players {
+		if players[i].P.Luck != diff[i].P.Luck {
+			err := h.models.Players.UpdateProperty(diff[i].P.ID, "luck", diff[i].P.Luck)
+			if err != nil {
+				log.Println(err)
+				return c.Redirect(302, "/")
+			}
+		}
+	}
+	return TemplRender(c, views.Positions(c, players))
+}

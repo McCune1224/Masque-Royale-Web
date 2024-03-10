@@ -18,6 +18,7 @@ templ PlayerMenu(c echo.Context, target *data.ComplexPlayer, players []*data.Com
 		<div class="flex flex-col gap-4">
 			@forms.LuckForm(c, target, players)
 			@forms.AliveForm(c, target)
+			@forms.SeatingForm(c, target, players)
 		</div>
 	</section>
 }

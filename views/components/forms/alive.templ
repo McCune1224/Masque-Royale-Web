@@ -10,6 +10,6 @@ templ AliveForm(c echo.Context, target *data.ComplexPlayer) {
 			class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
 			hx-post={ util.GetPlayerUpdateURL(c, target) + "/alive" }
 			hx-target={ "#player-wheel" }
-		>Toggle Status</button>
+		>Toggle Death Status</button>
 	</section>
 }

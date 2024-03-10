@@ -29,17 +29,17 @@ func (s *SyncMiddleware) SyncPlayerInfo(next echo.HandlerFunc) echo.HandlerFunc 
 		if err != nil {
 			return err
 		}
+		players = util.OrderComplexPlayers(players)
 		diff := util.BulkCalculateLuck(players)
 		for i := range players {
 			if players[i].P.Luck != diff[i].P.Luck {
-				err := s.models.Players.Update(&diff[i].P)
+				err := s.models.Players.UpdateProperty(diff[i].P.ID, "luck", diff[i].P.Luck)
 				if err != nil {
 					log.Println(err)
 					return c.Redirect(302, "/")
 				}
 			}
 		}
-		players = util.OrderComplexPlayers(players)
 		// pc := util.PlayerContext{Context: c}
 		// pc.SetPlayers(players)
 		c.Set("players", players)

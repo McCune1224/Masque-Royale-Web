@@ -45,10 +45,30 @@ func cssBorderColor(role *data.Role) string {
 	}
 }
 
+func cssAlignmentTextColor(role *data.Role) string {
+	switch role.Alignment {
+	case "Lawful":
+		return "text-green-500"
+	case "Chaotic":
+		return "text-red-500"
+	case "Outlander":
+		return "text-yellow-500"
+	default:
+		return "text-white-200"
+	}
+}
+
+func cssAlive(player *data.ComplexPlayer) string {
+	if !player.P.Alive {
+		return "opacity-40"
+	}
+	return ""
+}
+
 templ PlayerToken(player *data.ComplexPlayer) {
 	<div id={ player.P.Name + "-token" }>
 		<p>{ player.P.Name }</p>
-		<p>{ player.R.Name  }</p>
+		<p class={ cssAlignmentTextColor(&player.R) }>{ player.R.Name  }</p>
 		<p>{ strconv.Itoa(player.P.Luck + player.P.LuckModifier) }</p>
 	</div>
 }
@@ -57,8 +77,8 @@ templ Positions(c echo.Context, players []*data.ComplexPlayer) {
 	<ul id="player-wheel" class="sm:p-64 list-none flex justify-center items-center h-64 w-64 bg-transparent rounded-full mx-auto">
 		for i, v := range rotateCSSGenerator(players) {
 			<li class={ v }>
-				<button class="hover:opacity-75" hx-get={ util.GetGameIDURL(c) + "/menu?name=" + players[i].P.Name } hx-target="#menu-section">
-					<div class={ "sm:w-32 sm:h-32 w-16 h-16 bg-gray-900 rounded-full text-white border-2 " + RotateAngleCSS(len(players), i, true) + cssScale(len(players), 9) }>
+				<button class="hover:opacity-85 " hx-get={ util.GetGameIDURL(c) + "/menu?name=" + players[i].P.Name } hx-target="#menu-section">
+					<div class={ "sm:w-32 sm:h-32 w-16 h-16 bg-gray-900 rounded-full text-white border-2 " + cssAlive(players[i]) + " " + RotateAngleCSS(len(players), i, true) + cssScale(len(players), 9) }>
 						@PlayerToken(players[i])
 					</div>
 				</button>

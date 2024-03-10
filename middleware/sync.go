@@ -1,6 +1,8 @@
 package middleware
 
 import (
+	"log"
+
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
 	"github.com/mccune1224/betrayal-widget/data"
@@ -26,6 +28,16 @@ func (s *SyncMiddleware) SyncPlayerInfo(next echo.HandlerFunc) echo.HandlerFunc 
 		players, err := s.models.Players.GetAllComplexByGameID(c.Param("game_id"))
 		if err != nil {
 			return err
+		}
+		diff := util.BulkCalculateLuck(players)
+		for i := range players {
+			if players[i].P.Luck != diff[i].P.Luck {
+				err := s.models.Players.Update(&diff[i].P)
+				if err != nil {
+					log.Println(err)
+					return c.Redirect(302, "/")
+				}
+			}
 		}
 		players = util.OrderComplexPlayers(players)
 		// pc := util.PlayerContext{Context: c}

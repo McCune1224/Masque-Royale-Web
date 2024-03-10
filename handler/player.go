@@ -175,7 +175,6 @@ func (h *Handler) PlayerMenu(c echo.Context) error {
 }
 
 func (h *Handler) UpdatePlayerLuckModifier(c echo.Context) error {
-	log.Println("HIT----------------------------------")
 	player := c.Param("player")
 	mod := c.FormValue("modifier")
 
@@ -195,6 +194,25 @@ func (h *Handler) UpdatePlayerLuckModifier(c echo.Context) error {
 
 	targetPlayer.P.LuckModifier = iMod
 	err = h.models.Players.Update(&targetPlayer.P)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	return TemplRender(c, views.PlayerToken(targetPlayer))
+}
+
+func (h *Handler) UpdatePlayerDeathStatus(c echo.Context) error {
+	player := c.Param("player")
+	players, _ := util.GetPlayers(c)
+	var targetPlayer *data.ComplexPlayer
+	for _, p := range players {
+		if p.P.Name == player {
+			targetPlayer = p
+			break
+		}
+	}
+	targetPlayer.P.Alive = !targetPlayer.P.Alive
+  err := h.models.Players.Update(&targetPlayer.P)
 	if err != nil {
 		log.Println(err)
 		return err

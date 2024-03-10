@@ -50,10 +50,11 @@ func main() {
 
 	playerUpdate := dashboard.Group("/menu/update/:player")
 	playerUpdate.POST("/modifier", handler.UpdatePlayerLuckModifier)
+	playerUpdate.POST("/alive", handler.UpdatePlayerDeathStatus)
 
-	playerDashboard := dashboard.Group("/:game_id/players")
-	playerDashboard.GET("", handler.PlayerDashboard)
-	playerDashboard.POST("/add", handler.PlayerAdd)
+	playerInsert := dashboard.Group("/:game_id/players")
+	playerInsert.GET("", handler.PlayerDashboard)
+	playerInsert.POST("/add", handler.PlayerAdd)
 
 	seatingDashboard := dashboard.Group("/:game_id/seating")
 	seatingDashboard.GET("", handler.SeatingDashboard)

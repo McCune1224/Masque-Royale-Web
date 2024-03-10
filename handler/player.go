@@ -217,5 +217,17 @@ func (h *Handler) UpdatePlayerDeathStatus(c echo.Context) error {
 		log.Println(err)
 		return err
 	}
+	diff := util.BulkCalculateLuck(players)
+	for i := range players {
+		if players[i].P.Luck != diff[i].P.Luck {
+			err := h.models.Players.Update(&diff[i].P)
+			if err != nil {
+				log.Println(err)
+				return c.Redirect(302, "/")
+			}
+		}
+	}
+	players = util.OrderComplexPlayers(players)
+
 	return TemplRender(c, views.Positions(c, players))
 }

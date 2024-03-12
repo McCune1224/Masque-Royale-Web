@@ -57,6 +57,9 @@ func main() {
 	playerInsert.GET("", handler.PlayerDashboard)
 	playerInsert.POST("/add", handler.PlayerAdd)
 
+	alliancesDashboard := dashboard.Group("/alliances")
+  alliancesDashboard.GET("", handler.AllianceDashboard)
+
 	seatingDashboard := dashboard.Group("/:game_id/seating")
 	seatingDashboard.GET("", handler.SeatingDashboard)
 	seatingDashboard.POST("/swap", handler.SwapSeats)

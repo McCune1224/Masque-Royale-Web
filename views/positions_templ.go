@@ -35,7 +35,7 @@ func RotateAngleCSS(count int, position int, reverse bool) string {
 
 func cssScale(playerCount int, limit int) string {
 	if playerCount > limit {
-		return "scale-75"
+		return " scale-75"
 	}
 	return ""
 }

@@ -26,6 +26,11 @@ func (h *Handler) AllianceCreate(c echo.Context) error {
 
 	p1 := c.FormValue("player1")
 	p2 := c.FormValue("player2")
+	allianceName := c.FormValue("name")
+	if allianceName == "" {
+		log.Println("Alliance name is required")
+		return c.Redirect(302, "/")
+	}
 
 	var player1 *data.ComplexPlayer
 	var player2 *data.ComplexPlayer
@@ -38,7 +43,16 @@ func (h *Handler) AllianceCreate(c echo.Context) error {
 			player2 = p
 		}
 	}
-	log.Println("GOT PLAYERS", player1, player2)
+
+	if player1 == nil || player2 == nil {
+		log.Println("Could not find players")
+		return c.Redirect(302, "/")
+	}
+	// alliance := &data.Alliance{
+	//   Name: allianceName,
+	//   Players: pq.StringArray{player1.P.ID, player2.P.ID},
+	// }
+
 	log.Println(c.FormParams())
 	return nil
 }

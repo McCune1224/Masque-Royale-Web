@@ -1,44 +1,52 @@
 package views
 
+import "strconv"
 import "github.com/mccune1224/betrayal-widget/views/components/navbar"
 import "github.com/labstack/echo/v4"
 import "github.com/mccune1224/betrayal-widget/data"
 import "github.com/mccune1224/betrayal-widget/util"
 
-templ AllianceCard(alliance *data.Alliance) {
-//tailwindcss card to add an alliance
-<div class="bg-white shadow-md rounded-lg p-4">
-  <div class="flex justify-between items-center">
-    <div class="flex items-center">
-      <p>Todo</p>
-    </div>
-  </div>
-</div>
-}
-
-templ AllianceAddCard(c echo.Context, players []*data.ComplexPlayer) {
-//tailwindcss card to add an alliance
-<div class="bg-white shadow-md rounded-lg p-4">
-  <div class="flex justify-between items-center">
-    <form hx-post={ util.GetGameIDURL(c) }>
-      <div class="flex items-center">
-        <label for="grid-state" class="mr-2">Alliance Name</label>
-        <input type="text" id="alliance-name" name="alliance-name" class="border-2 rounded-lg p-2" />
-        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Add</button>
-      </div>
-    </form>
-  </div>
-</div>
+templ AllianceCards(c echo.Context, alliances []*data.Alliance) {
+	for _, alliance := range alliances {
+		<div class="border border-black rounded-lg p-4 my-4">
+			<h1 class="text-2xl font-bold">alliance.Name</h1>
+			<div class="flex justify-center">
+				<a href="/alliance/alliance.ID" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+					View Alliance { alliance.Name }
+				</a>
+			</div>
+		</div>
+	}
 }
 
 templ AllianceDashboard(c echo.Context, alliances []*data.Alliance, players []*data.ComplexPlayer) {
-@Base() {
-@navbar.VerticalNavbar(c)
-<div class="container mx-auto px-4 text-center text-black">
-  for _, alliance := range alliances {
-  @AllianceCard(alliance)
-  }
-  @AllianceAddCard(c, players)
-</div>
-}
+	@Base() {
+		@navbar.VerticalNavbar(c)
+		<div class="container mx-auto px-4 text-center">
+			// Nice tailwincss form to add a new alliance (needs a name, and 4 drop downs for the players to add)
+			<form hx-post={ util.GetGameIDURL(c) + "/alliances/new" }>
+				<div class="border border-black rounded-lg p-4 my-4 text-black">
+					<h1 class="text-2xl font-bold text-white">Create New Alliance</h1>
+					<div class="flex justify-center">
+						<input type="text" name="name" placeholder="Alliance Name" class="border border-black rounded-lg p-2 m-2"/>
+					</div>
+					<div class="flex justify-center">
+						for i := range [2]int{} {
+							<select name={ "player" + strconv.Itoa(i+1) } class="border border-black rounded-lg p-2 m-2">
+								for _, player := range players {
+									<option value={ player.P.Name }>{ player.P.Name }</option>
+								}
+							</select>
+						}
+					</div>
+					<div class="flex justify-center">
+						<button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+							Create Alliance
+						</button>
+					</div>
+				</div>
+			</form>
+			@AllianceCards(c, alliances)
+		</div>
+	}
 }

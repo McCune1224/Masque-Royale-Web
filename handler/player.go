@@ -13,15 +13,19 @@ import (
 )
 
 func (h *Handler) PlayerDashboard(c echo.Context) error {
-	players := c.Get("players").([]*data.ComplexPlayer)
+	players, _ := util.GetPlayers(c)
 	p := []*data.Player{}
-	r := []*data.Role{}
 	for _, player := range players {
 		p = append(p, &player.P)
-		r = append(r, &player.R)
 	}
 
-	return TemplRender(c, views.PlayerDashboard(c, p, r))
+	roles, err := h.models.Roles.GetAll()
+	if err != nil {
+		log.Println(err)
+		return c.Redirect(302, "/")
+	}
+
+	return TemplRender(c, views.PlayerDashboard(c, p, roles))
 }
 
 func (h *Handler) PlayerAdd(c echo.Context) error {

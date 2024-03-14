@@ -1,6 +1,5 @@
 package views
 
-import "strconv"
 import "github.com/mccune1224/betrayal-widget/views/components/navbar"
 import "github.com/labstack/echo/v4"
 import "github.com/mccune1224/betrayal-widget/data"
@@ -8,7 +7,7 @@ import "github.com/mccune1224/betrayal-widget/util"
 
 func ColorChoices(alliances []*data.Alliance) []string {
 
-	var colorChoices = []string{"blue", "purple", "orange", "pink", "teal", "sky"}
+	var colorChoices = []string{"blue", "purple", "orange", "pink", "teal", "sky", "lime", "rose", "amber"}
 	removes := []string{}
 	for _, alliance := range alliances {
 		removes = append(removes, alliance.Color)
@@ -19,7 +18,7 @@ func ColorChoices(alliances []*data.Alliance) []string {
 	return newChoices
 }
 
-func PlayerChoices(players []*data.ComplexPlayer, alliances []*data.Alliance) []*data.ComplexPlayer {
+func PlayerChoices(players []*data.ComplexPlayer, alliances []*data.Alliance, reverse ...bool) []*data.ComplexPlayer {
 	// check if the player is already in an alliance, if not, add them to the list
 	var choices []*data.ComplexPlayer
 	for _, player := range players {
@@ -35,6 +34,15 @@ func PlayerChoices(players []*data.ComplexPlayer, alliances []*data.Alliance) []
 			choices = append(choices, player)
 		}
 	}
+
+  if len(reverse) > 0 {
+    for i, j := 0, len(choices)-1; i < j; i, j = i+1, j-1 {
+      choices[i], choices[j] = choices[j], choices[i]
+    }
+  }
+
+
+
 	return choices
 }
 
@@ -80,13 +88,16 @@ templ AllianceDashboard(c echo.Context, alliances []*data.Alliance, players []*d
 					<div>
 						<h3 class="text-lg text-white font-bold ">Select Players</h3>
 						<div class="flex justify-center">
-							for i := range [2]int{} {
-								<select name={ "player" + strconv.Itoa(i+1) } class="rounded-lg p-2 m-2">
+								<select name={ "player1" } class="rounded-lg p-2 m-2">
 									for _, player := range PlayerChoices(players, alliances) {
 										<option value={ player.P.Name }>{ player.P.Name }</option>
 									}
 								</select>
-							}
+								<select name={ "player2" } class="rounded-lg p-2 m-2">
+									for _, player := range PlayerChoices(players, alliances, true) {
+										<option value={ player.P.Name }>{ player.P.Name }</option>
+									}
+								</select>
 						</div>
 					</div>
 					<div>

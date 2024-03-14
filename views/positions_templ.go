@@ -33,8 +33,13 @@ func RotateAngleCSS(count int, position int, reverse bool) string {
 	return "rotate-[" + strconv.Itoa(360/count*position) + "deg]"
 }
 
-func cssScale(playerCount int, limit int) string {
-	if playerCount > limit {
+func cssScale(playerCount int) string {
+
+	if playerCount > 14 {
+		return " scale-[0.6]"
+	}
+
+	if playerCount > 9 {
 		return " scale-75"
 	}
 	return ""
@@ -98,7 +103,7 @@ func PlayerToken(c echo.Context, player *data.ComplexPlayer) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(player.P.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/positions.templ`, Line: 64, Col: 24}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/positions.templ`, Line: 69, Col: 24}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -128,7 +133,7 @@ func PlayerToken(c echo.Context, player *data.ComplexPlayer) templ.Component {
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(player.R.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/positions.templ`, Line: 65, Col: 68}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/positions.templ`, Line: 70, Col: 68}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
@@ -141,7 +146,7 @@ func PlayerToken(c echo.Context, player *data.ComplexPlayer) templ.Component {
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(player.P.Luck + player.P.LuckModifier))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/positions.templ`, Line: 66, Col: 62}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/positions.templ`, Line: 71, Col: 62}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
@@ -189,7 +194,7 @@ func Positions(c echo.Context, players []*data.ComplexPlayer) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><button class=\"hover:opacity-85 \" hx-get=\"")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><button class=\"hover:opacity-85 focus:scale-110 focus:border-2 focus:border-dotted focus:rounded-full\" hx-get=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -201,7 +206,7 @@ func Positions(c echo.Context, players []*data.ComplexPlayer) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var8 = []any{"sm:w-32 sm:h-32 w-16 h-16 bg-gray-900 rounded-full text-white border-2 " + cssAlive(players[i]) + " " + RotateAngleCSS(len(players), i, true) + cssScale(len(players), 9) + cssBorderColor(c, players[i])}
+			var templ_7745c5c3_Var8 = []any{"sm:w-32 sm:h-32 w-16 h-16 bg-gray-900 rounded-full text-white border-2 " + cssAlive(players[i]) + " " + RotateAngleCSS(len(players), i, true) + cssScale(len(players)) + cssBorderColor(c, players[i])}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var8...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err

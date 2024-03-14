@@ -10,7 +10,6 @@ import "context"
 import "io"
 import "bytes"
 
-import "strconv"
 import "github.com/mccune1224/betrayal-widget/views/components/navbar"
 import "github.com/labstack/echo/v4"
 import "github.com/mccune1224/betrayal-widget/data"
@@ -18,7 +17,7 @@ import "github.com/mccune1224/betrayal-widget/util"
 
 func ColorChoices(alliances []*data.Alliance) []string {
 
-	var colorChoices = []string{"blue", "purple", "orange", "pink", "teal", "sky"}
+	var colorChoices = []string{"blue", "purple", "orange", "pink", "teal", "sky", "lime", "rose", "amber"}
 	removes := []string{}
 	for _, alliance := range alliances {
 		removes = append(removes, alliance.Color)
@@ -29,7 +28,7 @@ func ColorChoices(alliances []*data.Alliance) []string {
 	return newChoices
 }
 
-func PlayerChoices(players []*data.ComplexPlayer, alliances []*data.Alliance) []*data.ComplexPlayer {
+func PlayerChoices(players []*data.ComplexPlayer, alliances []*data.Alliance, reverse ...bool) []*data.ComplexPlayer {
 	// check if the player is already in an alliance, if not, add them to the list
 	var choices []*data.ComplexPlayer
 	for _, player := range players {
@@ -45,6 +44,13 @@ func PlayerChoices(players []*data.ComplexPlayer, alliances []*data.Alliance) []
 			choices = append(choices, player)
 		}
 	}
+
+	if len(reverse) > 0 {
+		for i, j := 0, len(choices)-1; i < j; i, j = i+1, j-1 {
+			choices[i], choices[j] = choices[j], choices[i]
+		}
+	}
+
 	return choices
 }
 
@@ -86,7 +92,7 @@ func AllianceCards(c echo.Context, alliances []*data.Alliance) templ.Component {
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(alliance.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/alliances.templ`, Line: 43, Col: 83}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/alliances.templ`, Line: 51, Col: 83}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -99,7 +105,7 @@ func AllianceCards(c echo.Context, alliances []*data.Alliance) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(alliance.Color)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/alliances.templ`, Line: 46, Col: 84}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/alliances.templ`, Line: 54, Col: 84}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -133,7 +139,7 @@ func AllianceCards(c echo.Context, alliances []*data.Alliance) templ.Component {
 				var templ_7745c5c3_Var5 string
 				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(color)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/alliances.templ`, Line: 49, Col: 60}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/alliances.templ`, Line: 57, Col: 60}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 				if templ_7745c5c3_Err != nil {
@@ -195,56 +201,85 @@ func AllianceDashboard(c echo.Context, alliances []*data.Alliance, players []*da
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-target=\"#alliance-cards\"><div class=\"flex flex-col gap-6 p-4 my-4 text-black\"><div><h1 class=\"text-2xl font-bold text-white\">Create New Alliance</h1><div class=\"flex justify-center\"><input required type=\"text\" name=\"name\" placeholder=\"Alliance Name\" class=\"rounded-lg p-2 m-2\"></div></div><div><h3 class=\"text-lg text-white font-bold \">Select Players</h3><div class=\"flex justify-center\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-target=\"#alliance-cards\"><div class=\"flex flex-col gap-6 p-4 my-4 text-black\"><div><h1 class=\"text-2xl font-bold text-white\">Create New Alliance</h1><div class=\"flex justify-center\"><input required type=\"text\" name=\"name\" placeholder=\"Alliance Name\" class=\"rounded-lg p-2 m-2\"></div></div><div><h3 class=\"text-lg text-white font-bold \">Select Players</h3><div class=\"flex justify-center\"><select name=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			for i := range [2]int{} {
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<select name=\"")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString("player1"))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"rounded-lg p-2 m-2\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			for _, player := range PlayerChoices(players, alliances) {
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<option value=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString("player" + strconv.Itoa(i+1)))
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(player.P.Name))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"rounded-lg p-2 m-2\">")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				for _, player := range PlayerChoices(players, alliances) {
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<option value=\"")
-					if templ_7745c5c3_Err != nil {
-						return templ_7745c5c3_Err
-					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(player.P.Name))
-					if templ_7745c5c3_Err != nil {
-						return templ_7745c5c3_Err
-					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\">")
-					if templ_7745c5c3_Err != nil {
-						return templ_7745c5c3_Err
-					}
-					var templ_7745c5c3_Var8 string
-					templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(player.P.Name)
-					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/alliances.templ`, Line: 85, Col: 57}
-					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
-					if templ_7745c5c3_Err != nil {
-						return templ_7745c5c3_Err
-					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</option>")
-					if templ_7745c5c3_Err != nil {
-						return templ_7745c5c3_Err
-					}
+				var templ_7745c5c3_Var8 string
+				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(player.P.Name)
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/alliances.templ`, Line: 92, Col: 57}
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</select>")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</option>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div><div><h3 class=\"text-lg text-white font-bold \">Select Alliance Color</h3><select name=\"color\" class=\"rounded-lg p-2 m-2\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</select> <select name=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString("player2"))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"rounded-lg p-2 m-2\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			for _, player := range PlayerChoices(players, alliances, true) {
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<option value=\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(player.P.Name))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\">")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var9 string
+				templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(player.P.Name)
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/alliances.templ`, Line: 97, Col: 57}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</option>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</select></div></div><div><h3 class=\"text-lg text-white font-bold \">Select Alliance Color</h3><select name=\"color\" class=\"rounded-lg p-2 m-2\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -261,12 +296,12 @@ func AllianceDashboard(c echo.Context, alliances []*data.Alliance, players []*da
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var9 string
-				templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(color)
+				var templ_7745c5c3_Var10 string
+				templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(color)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/alliances.templ`, Line: 95, Col: 39}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/alliances.templ`, Line: 106, Col: 39}
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

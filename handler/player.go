@@ -35,17 +35,21 @@ func (h *Handler) PlayerAdd(c echo.Context) error {
 	formRoleName := c.FormValue("role")
 
 	currPlayers, err := h.models.Players.GetByGameID(c.Param("game_id"))
+
 	if err != nil {
 		log.Println(err)
 		return c.Redirect(302, "/")
 	}
-	currPlayers = util.OrderPlayers(currPlayers)
 
+  log.Println("Passed currPlayers")
+
+	currPlayers = util.OrderPlayers(currPlayers)
 	existingRoles, err := h.models.Roles.GetAll()
 	if err != nil {
 		log.Println(err)
 		return c.Redirect(302, "/")
 	}
+  log.Println("Passed existingRoles")
 
 	for _, player := range currPlayers {
 		if player.Name == formPlayerName {
@@ -74,8 +78,11 @@ func (h *Handler) PlayerAdd(c echo.Context) error {
 		RoleID: selectedRoleID,
 		Alive:  true,
 		Seat:   len(currPlayers) + 1,
+    LuckStatus: "",
+    AlignmentOverride: "",
 	}
 
+  log.Println("HITTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT")
 	err = h.models.Players.Create(newPlayer)
 	if err != nil {
 		log.Println(err)

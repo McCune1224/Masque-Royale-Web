@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"log"
+	"sort"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
@@ -45,6 +46,10 @@ func (s *SyncMiddleware) SyncGameInfo(next echo.HandlerFunc) echo.HandlerFunc {
 		if err != nil {
 			return err
 		}
+		sort.Slice(alliances, func(i, j int) bool {
+			return alliances[i].Name < alliances[j].Name
+		})
+
 		c.Set("players", players)
 		c.Set("alliances", alliances)
 		return next(c)

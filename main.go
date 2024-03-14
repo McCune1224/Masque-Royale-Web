@@ -61,7 +61,10 @@ func main() {
 	alliancesDashboard := dashboard.Group("/alliances")
 	alliancesDashboard.GET("", handler.AllianceDashboard)
 	alliancesDashboard.POST("/new", handler.AllianceCreate)
-	// alliancesDashboard.POST("/update", handler.AllianceUpdate)
+	alliancesDashboard.POST("/change", handler.AllianceChange)
+	alliancesDashboard.POST("/leave", handler.AllianceLeave)
+	alliancesDashboard.DELETE("/delete", handler.AllianceDelete)
+	alliancesDashboard.POST("/color", handler.UpdateAllianceColor)
 
 	seatingDashboard := dashboard.Group("/:game_id/seating")
 	seatingDashboard.GET("", handler.SeatingDashboard)

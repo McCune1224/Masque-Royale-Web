@@ -20,10 +20,10 @@ func AllianceContainsPlayer(a *data.Alliance, p *data.Player) bool {
 }
 
 func PlayerWithinAlliance(p *data.Player, alliances []*data.Alliance) *data.Alliance {
-  for _, alliance := range alliances {
-    if AllianceContainsPlayer(alliance, p) {
-      return alliance
-    }
-  }
-  return nil
+	for _, alliance := range alliances {
+		if AllianceContainsPlayer(alliance, p) {
+			return alliance
+		}
+	}
+	return nil
 }

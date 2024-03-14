@@ -11,6 +11,7 @@ import "io"
 import "bytes"
 
 import "github.com/mccune1224/betrayal-widget/data"
+import "github.com/mccune1224/betrayal-widget/util"
 import "github.com/labstack/echo/v4"
 import "github.com/mccune1224/betrayal-widget/views/components/forms"
 
@@ -22,7 +23,7 @@ func toPlayerNames(players []*data.ComplexPlayer) []string {
 	return names
 }
 
-func PlayerMenu(c echo.Context, target *data.ComplexPlayer, players []*data.ComplexPlayer) templ.Component {
+func PlayerMenu(c echo.Context, target *data.ComplexPlayer, players []*data.ComplexPlayer, alliances []*data.Alliance) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -42,7 +43,7 @@ func PlayerMenu(c echo.Context, target *data.ComplexPlayer, players []*data.Comp
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(target.P.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/menu.templ`, Line: 16, Col: 21}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/menu.templ`, Line: 17, Col: 21}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -63,6 +64,12 @@ func PlayerMenu(c echo.Context, target *data.ComplexPlayer, players []*data.Comp
 		templ_7745c5c3_Err = forms.SeatingForm(c, target, players).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
+		}
+		if util.PlayerWithinAlliance(&target.P, alliances) != nil {
+			templ_7745c5c3_Err = forms.AllianceForm(c, target, players, alliances).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></section>")
 		if templ_7745c5c3_Err != nil {

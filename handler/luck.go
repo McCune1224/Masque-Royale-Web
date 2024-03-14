@@ -47,5 +47,5 @@ func (h *Handler) LuckUpdate(c echo.Context) error {
 		return c.Redirect(302, "/")
 	}
 
-	return TemplRender(c, views.PlayerToken(targetPlayer))
+	return TemplRender(c, views.PlayerToken(c, targetPlayer))
 }

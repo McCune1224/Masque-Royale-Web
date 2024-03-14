@@ -1,24 +1,28 @@
 package components
 
 import "github.com/mccune1224/betrayal-widget/data"
+import "github.com/mccune1224/betrayal-widget/util"
 import "github.com/labstack/echo/v4"
 import "github.com/mccune1224/betrayal-widget/views/components/forms"
 
 func toPlayerNames(players []*data.ComplexPlayer) []string {
-	names := make([]string, len(players))
-	for i, p := range players {
-		names[i] = p.P.Name
-	}
-	return names
+names := make([]string, len(players))
+for i, p := range players {
+names[i] = p.P.Name
+}
+return names
 }
 
-templ PlayerMenu(c echo.Context, target *data.ComplexPlayer, players []*data.ComplexPlayer) {
-	<section class="text-white flex flex-col">
-		<h1>{ target.P.Name }</h1>
-		<div class="flex flex-col gap-4">
-			@forms.LuckForm(c, target, players)
-			@forms.AliveForm(c, target)
-			@forms.SeatingForm(c, target, players)
-		</div>
-	</section>
+templ PlayerMenu(c echo.Context, target *data.ComplexPlayer, players []*data.ComplexPlayer, alliances []*data.Alliance) {
+<section class="text-white flex flex-col">
+  <h1>{ target.P.Name }</h1>
+  <div class="flex flex-col gap-4">
+    @forms.LuckForm(c, target, players)
+    @forms.AliveForm(c, target)
+    @forms.SeatingForm(c, target, players)
+    if (util.PlayerWithinAlliance(&target.P, alliances) != nil) {
+      @forms.AllianceForm(c, target, players, alliances)
+    }
+  </div>
+</section>
 }

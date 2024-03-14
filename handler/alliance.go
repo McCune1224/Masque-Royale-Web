@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/labstack/echo/v4"
+	"github.com/lib/pq"
 	"github.com/mccune1224/betrayal-widget/data"
 	"github.com/mccune1224/betrayal-widget/util"
 	"github.com/mccune1224/betrayal-widget/views"
@@ -22,13 +23,24 @@ func (h *Handler) AllianceDashboard(c echo.Context) error {
 }
 
 func (h *Handler) AllianceCreate(c echo.Context) error {
-	// gameID := c.Param("game_id")
+	gameID := c.Param("game_id")
 
 	p1 := c.FormValue("player1")
 	p2 := c.FormValue("player2")
+	color := c.FormValue("color")
 	allianceName := c.FormValue("name")
+
+	if color == "" {
+		color = "white"
+	}
+
 	if allianceName == "" {
 		log.Println("Alliance name is required")
+		return c.Redirect(302, "/")
+	}
+
+	if p1 == p2 {
+		log.Println("Players cannot be the same")
 		return c.Redirect(302, "/")
 	}
 
@@ -48,11 +60,25 @@ func (h *Handler) AllianceCreate(c echo.Context) error {
 		log.Println("Could not find players")
 		return c.Redirect(302, "/")
 	}
-	// alliance := &data.Alliance{
-	//   Name: allianceName,
-	//   Players: pq.StringArray{player1.P.ID, player2.P.ID},
-	// }
 
-	log.Println(c.FormParams())
-	return nil
+	alliance := &data.Alliance{
+		Name:        allianceName,
+		Description: "",
+		Members:     pq.StringArray{player1.P.Name, player2.P.Name},
+		GameID:      gameID,
+		Color:       color,
+	}
+	err := h.models.Alliances.Create(alliance)
+	if err != nil {
+		log.Println(err)
+		return c.String(500, "Error creating alliance")
+	}
+
+	updatedAlliances, err := h.models.Alliances.GetAllByGame(gameID)
+	if err != nil {
+		log.Println(err)
+		return c.Redirect(302, "/")
+	}
+
+	return TemplRender(c, views.AllianceCards(c, updatedAlliances))
 }

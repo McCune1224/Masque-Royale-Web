@@ -48,7 +48,7 @@ func SeatingForm(c echo.Context, target *data.ComplexPlayer, players []*data.Com
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" with:</label><div class=\"realtive\"><select required name=\"target\" class=\" w-full p-2 border-2 border-black  bg-gray-200 text-gray-700  rounded-md  focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent\" id=\"grid-state\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("'s Seat with:</label><div class=\"realtive\"><select required name=\"target\" class=\" w-full p-2 border-2 border-black  bg-gray-200 text-gray-700  rounded-md  focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent\" id=\"grid-state\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

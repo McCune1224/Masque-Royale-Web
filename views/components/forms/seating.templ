@@ -7,7 +7,7 @@ import "github.com/mccune1224/betrayal-widget/util"
 templ SeatingForm(c echo.Context, target *data.ComplexPlayer, players []*data.ComplexPlayer) {
 	<section>
 		<form hx-post={ util.GetPlayerUpdateURL(c, target) + "/seat" } hx-target="#player-wheel">
-			<label for="swap">Swap { target.P.Name } with:</label>
+			<label for="swap">Swap { target.P.Name }'s Seat with:</label>
 			<div class="realtive">
 				<select
 					required

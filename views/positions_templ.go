@@ -40,19 +40,14 @@ func cssScale(playerCount int, limit int) string {
 	return ""
 }
 
-func cssBorderColor(role *data.Role) string {
-	return "border-black-200"
-
-	switch role.Alignment {
-	case "Lawful":
-		return "border-green-500"
-	case "Chaotic":
-		return "border-red-500"
-	case "Outlander":
-		return "border-yellow-500"
-	default:
-		return "border-black-200"
+func cssBorderColor(c echo.Context, player *data.ComplexPlayer) string {
+	alliances, _ := util.GetAlliances(c)
+	for _, alliance := range alliances {
+		if util.AllianceContainsPlayer(alliance, &player.P) {
+			return " border-" + alliance.Color + "-500 "
+		}
 	}
+	return ""
 }
 
 func cssAlignmentTextColor(role *data.Role) string {
@@ -75,7 +70,7 @@ func cssAlive(player *data.ComplexPlayer) string {
 	return ""
 }
 
-func PlayerToken(player *data.ComplexPlayer) templ.Component {
+func PlayerToken(c echo.Context, player *data.ComplexPlayer) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -103,7 +98,7 @@ func PlayerToken(player *data.ComplexPlayer) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(player.P.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/positions.templ`, Line: 69, Col: 20}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/positions.templ`, Line: 64, Col: 24}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -133,7 +128,7 @@ func PlayerToken(player *data.ComplexPlayer) templ.Component {
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(player.R.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/positions.templ`, Line: 70, Col: 64}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/positions.templ`, Line: 65, Col: 68}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
@@ -146,7 +141,7 @@ func PlayerToken(player *data.ComplexPlayer) templ.Component {
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(player.P.Luck + player.P.LuckModifier))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/positions.templ`, Line: 71, Col: 58}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/positions.templ`, Line: 66, Col: 62}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
@@ -206,7 +201,7 @@ func Positions(c echo.Context, players []*data.ComplexPlayer) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var8 = []any{"sm:w-32 sm:h-32 w-16 h-16 bg-gray-900 rounded-full text-white border-2 " + cssAlive(players[i]) + " " + RotateAngleCSS(len(players), i, true) + cssScale(len(players), 9)}
+			var templ_7745c5c3_Var8 = []any{"sm:w-32 sm:h-32 w-16 h-16 bg-gray-900 rounded-full text-white border-2 " + cssAlive(players[i]) + " " + RotateAngleCSS(len(players), i, true) + cssScale(len(players), 9) + cssBorderColor(c, players[i])}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var8...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -223,7 +218,7 @@ func Positions(c echo.Context, players []*data.ComplexPlayer) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = PlayerToken(players[i]).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = PlayerToken(c, players[i]).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

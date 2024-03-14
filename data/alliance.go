@@ -14,6 +14,9 @@ type Alliance struct {
 	Color       string         `db:"color"`
 }
 
+// psql to make name unique:
+// ALTER TABLE alliances ADD CONSTRAINT unique_name UNIQUE (name);
+
 type AllianceModel struct {
 	*sqlx.DB
 }
@@ -38,7 +41,7 @@ func (m *AllianceModel) GetByName(name string) (*Alliance, error) {
 
 func (m *AllianceModel) GetByMember(member string) ([]*Alliance, error) {
 	var alliances []*Alliance
-	err := m.DB.Select(&alliances, "SELECT * FROM alliances WHERE $1 = ANY(members)", member)
+	err := m.Select(&alliances, "SELECT * FROM alliances WHERE $1 = ANY(members)", member)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +49,7 @@ func (m *AllianceModel) GetByMember(member string) ([]*Alliance, error) {
 }
 
 func (m *AllianceModel) Delete(id int) error {
-	_, err := m.DB.Exec("DELETE FROM alliances WHERE id=$1", id)
+	_, err := m.Exec("DELETE FROM alliances WHERE id=$1", id)
 	if err != nil {
 		return err
 	}
@@ -54,7 +57,7 @@ func (m *AllianceModel) Delete(id int) error {
 }
 
 func (m *AllianceModel) Create(a *Alliance) error {
-	_, err := m.DB.Exec("INSERT INTO alliances (name, description, members, color, game_id) VALUES ($1, $2, $3, $4, $5)", a.Name, a.Description, a.Members, a.Color, a.GameID)
+	_, err := m.Exec("INSERT INTO alliances (name, description, members, color, game_id) VALUES ($1, $2, $3, $4, $5)", a.Name, a.Description, a.Members, a.Color, a.GameID)
 	if err != nil {
 		return err
 	}
@@ -62,7 +65,7 @@ func (m *AllianceModel) Create(a *Alliance) error {
 }
 
 func (m *AllianceModel) CreateWithNameAndGameID(name, gameID string) error {
-	_, err := m.DB.Exec("INSERT INTO alliances (name, game_id) VALUES ($1, $2)", name, gameID)
+	_, err := m.Exec("INSERT INTO alliances (name, game_id) VALUES ($1, $2)", name, gameID)
 	if err != nil {
 		return err
 	}
@@ -70,7 +73,7 @@ func (m *AllianceModel) CreateWithNameAndGameID(name, gameID string) error {
 }
 
 func (m *AllianceModel) Update(a *Alliance) error {
-	_, err := m.DB.Exec("UPDATE alliances SET name=$1, description=$2, members=$3, color=$4, game_id=$5 WHERE id=$6", a.Name, a.Description, a.Members, a.Color, a.GameID, a.ID)
+	_, err := m.Exec("UPDATE alliances SET name=$1, description=$2, members=$3, color=$4, game_id=$5 WHERE id=$6", a.Name, a.Description, a.Members, a.Color, a.GameID, a.ID)
 	if err != nil {
 		return err
 	}
@@ -78,7 +81,7 @@ func (m *AllianceModel) Update(a *Alliance) error {
 }
 
 func (m *AllianceModel) UpdateMembers(id int, members pq.StringArray) error {
-	_, err := m.DB.Exec("UPDATE alliances SET members=$1 WHERE id=$2", members, id)
+	_, err := m.Exec("UPDATE alliances SET members=$1 WHERE id=$2", members, id)
 	if err != nil {
 		return err
 	}
@@ -87,7 +90,7 @@ func (m *AllianceModel) UpdateMembers(id int, members pq.StringArray) error {
 
 func (m *AllianceModel) GetAll() ([]*Alliance, error) {
 	var alliances []*Alliance
-	err := m.DB.Select(&alliances, "SELECT * FROM alliances")
+	err := m.Select(&alliances, "SELECT * FROM alliances")
 	if err != nil {
 		return nil, err
 	}
@@ -96,7 +99,7 @@ func (m *AllianceModel) GetAll() ([]*Alliance, error) {
 
 func (m *AllianceModel) GetAllByGame(gameID string) ([]*Alliance, error) {
 	var alliances []*Alliance
-	err := m.DB.Select(&alliances, "SELECT * FROM alliances WHERE game_id=$1", gameID)
+	err := m.Select(&alliances, "SELECT * FROM alliances WHERE game_id=$1", gameID)
 	if err != nil {
 		return nil, err
 	}

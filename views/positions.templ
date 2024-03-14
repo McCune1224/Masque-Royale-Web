@@ -30,19 +30,14 @@ func cssScale(playerCount int, limit int) string {
 	return ""
 }
 
-func cssBorderColor(role *data.Role) string {
-	return "border-black-200"
-
-	switch role.Alignment {
-	case "Lawful":
-		return "border-green-500"
-	case "Chaotic":
-		return "border-red-500"
-	case "Outlander":
-		return "border-yellow-500"
-	default:
-		return "border-black-200"
-	}
+func cssBorderColor(c echo.Context, player *data.ComplexPlayer) string {
+  alliances, _ := util.GetAlliances(c)
+  for _, alliance := range alliances {
+    if util.AllianceContainsPlayer(alliance, &player.P){
+      return " border-" + alliance.Color + "-500 "
+    }
+  }
+  return ""
 }
 
 func cssAlignmentTextColor(role *data.Role) string {
@@ -65,12 +60,12 @@ func cssAlive(player *data.ComplexPlayer) string {
 	return ""
 }
 
-templ PlayerToken(player *data.ComplexPlayer) {
-	<div id={ player.P.Name + "-token" }>
-		<p>{ player.P.Name }</p>
-		<p class={ cssAlignmentTextColor(&player.R) }>{ player.R.Name  }</p>
-		<p>{ strconv.Itoa(player.P.Luck + player.P.LuckModifier) }</p>
-	</div>
+templ PlayerToken(c echo.Context, player *data.ComplexPlayer) {
+    <div id={ player.P.Name + "-token" }>
+      <p>{ player.P.Name }</p>
+      <p class={ cssAlignmentTextColor(&player.R) }>{ player.R.Name  }</p>
+      <p>{ strconv.Itoa(player.P.Luck + player.P.LuckModifier) }</p>
+    </div>
 }
 
 templ Positions(c echo.Context, players []*data.ComplexPlayer) {
@@ -78,8 +73,8 @@ templ Positions(c echo.Context, players []*data.ComplexPlayer) {
 		for i, v := range rotateCSSGenerator(players) {
 			<li class={ v }>
 				<button class="hover:opacity-85 " hx-get={ util.GetGameIDURL(c) + "/menu?name=" + players[i].P.Name } hx-target="#menu-section">
-					<div class={ "sm:w-32 sm:h-32 w-16 h-16 bg-gray-900 rounded-full text-white border-2 " + cssAlive(players[i]) + " " + RotateAngleCSS(len(players), i, true) + cssScale(len(players), 9) }>
-						@PlayerToken(players[i])
+					<div class={ "sm:w-32 sm:h-32 w-16 h-16 bg-gray-900 rounded-full text-white border-2 " + cssAlive(players[i]) + " " + RotateAngleCSS(len(players), i, true) + cssScale(len(players), 9) + cssBorderColor(c, players[i]) }>
+						@PlayerToken(c, players[i])
 					</div>
 				</button>
 			</li>

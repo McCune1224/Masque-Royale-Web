@@ -167,6 +167,7 @@ func (h *Handler) PlayerReposition(c echo.Context) error {
 
 func (h *Handler) PlayerMenu(c echo.Context) error {
 	players, _ := util.GetPlayers(c)
+	alliances, _ := util.GetAlliances(c)
 	playerName := c.QueryParam("name")
 	var targetPlayer *data.ComplexPlayer
 	for _, player := range players {
@@ -175,7 +176,7 @@ func (h *Handler) PlayerMenu(c echo.Context) error {
 			break
 		}
 	}
-	return TemplRender(c, components.PlayerMenu(c, targetPlayer, players))
+	return TemplRender(c, components.PlayerMenu(c, targetPlayer, players, alliances))
 }
 
 func (h *Handler) UpdatePlayerLuckModifier(c echo.Context) error {
@@ -202,7 +203,7 @@ func (h *Handler) UpdatePlayerLuckModifier(c echo.Context) error {
 		log.Println(err)
 		return err
 	}
-	return TemplRender(c, views.PlayerToken(targetPlayer))
+	return TemplRender(c, views.PlayerToken(c, targetPlayer))
 }
 
 func (h *Handler) UpdatePlayerDeathStatus(c echo.Context) error {
@@ -289,5 +290,68 @@ func (h *Handler) UpdatePlayerSeating(c echo.Context) error {
 			}
 		}
 	}
+	return TemplRender(c, views.Positions(c, players))
+}
+
+func (h *Handler) UpdatePlayerAlliance(c echo.Context) error {
+	alliances, _ := util.GetAlliances(c)
+	players, _ := util.GetPlayers(c)
+	if len(alliances) == 0 {
+		return TemplRender(c, views.Positions(c, players))
+	}
+
+	player := c.Param("player")
+	allianceName := c.FormValue("alliance")
+
+	var targetPlayer *data.ComplexPlayer
+	for _, p := range players {
+		if p.P.Name == player {
+			targetPlayer = p
+			break
+		}
+	}
+
+	var targetAlliance *data.Alliance
+	for _, a := range alliances {
+		if a.Name == allianceName {
+			targetAlliance = a
+			break
+		}
+	}
+
+	if allianceName != "Remove" {
+		targetAlliance.Members = append(targetAlliance.Members, targetPlayer.P.Name)
+		err := h.models.Alliances.Update(targetAlliance)
+		if err != nil {
+			log.Println(err)
+			return c.Redirect(302, "/")
+		}
+		return TemplRender(c, views.Positions(c, players))
+	}
+
+	targetAlliance = util.PlayerWithinAlliance(&targetPlayer.P, alliances)
+	log.Println(targetAlliance, "targetAlliance...................")
+
+	for i := range targetAlliance.Members {
+		if targetAlliance.Members[i] == targetPlayer.P.Name {
+			targetAlliance.Members = append(targetAlliance.Members[:i], targetAlliance.Members[i+1:]...)
+			break
+		}
+	}
+
+	if len(targetAlliance.Members) == 0 {
+		err := h.models.Alliances.Delete(targetAlliance.ID)
+		if err != nil {
+			log.Println(err)
+			return c.Redirect(302, "/")
+		}
+	} else {
+		err := h.models.Alliances.Update(targetAlliance)
+		if err != nil {
+			log.Println(err)
+			return c.Redirect(302, "/")
+		}
+	}
+
 	return TemplRender(c, views.Positions(c, players))
 }

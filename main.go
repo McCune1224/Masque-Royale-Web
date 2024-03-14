@@ -35,7 +35,7 @@ func main() {
 	))
 
 	sm := appMiddleware.NewSyncMiddleware(db)
-	app.Use(sm.SyncPlayerInfo)
+	app.Use(sm.SyncGameInfo)
 	app.GET("/", handler.Index)
 
 	game := app.Group("/games")
@@ -52,6 +52,7 @@ func main() {
 	playerUpdate.POST("/modifier", handler.UpdatePlayerLuckModifier)
 	playerUpdate.POST("/alive", handler.UpdatePlayerDeathStatus)
 	playerUpdate.POST("/seat", handler.UpdatePlayerSeating)
+	playerUpdate.POST("/alliance", handler.UpdatePlayerAlliance)
 
 	playerInsert := dashboard.Group("/players")
 	playerInsert.GET("", handler.PlayerDashboard)

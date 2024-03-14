@@ -20,7 +20,7 @@ func NewSyncMiddleware(db *sqlx.DB) *SyncMiddleware {
 	}
 }
 
-func (s *SyncMiddleware) SyncPlayerInfo(next echo.HandlerFunc) echo.HandlerFunc {
+func (s *SyncMiddleware) SyncGameInfo(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		if c.Param("game_id") == "" {
 			return next(c)
@@ -40,9 +40,13 @@ func (s *SyncMiddleware) SyncPlayerInfo(next echo.HandlerFunc) echo.HandlerFunc 
 				}
 			}
 		}
-		// pc := util.PlayerContext{Context: c}
-		// pc.SetPlayers(players)
+
+		alliances, err := s.models.Alliances.GetAllByGame(c.Param("game_id"))
+		if err != nil {
+			return err
+		}
 		c.Set("players", players)
+		c.Set("alliances", alliances)
 		return next(c)
 	}
 }

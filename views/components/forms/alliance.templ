@@ -1,0 +1,42 @@
+package forms
+
+import "github.com/mccune1224/betrayal-widget/data"
+import "github.com/labstack/echo/v4"
+import "github.com/mccune1224/betrayal-widget/util"
+
+func AllianceOptions(target *data.ComplexPlayer, alliances []*data.Alliance) []*data.Alliance {
+  options := []*data.Alliance{}
+  for _, alliance := range alliances {
+    skip := false
+    for _, member := range alliance.Members {
+      if member == target.P.Name {
+        skip = true
+      }
+    }
+    if !skip {
+      options = append(options, alliance)
+    }
+  }
+
+  return options
+}
+
+templ AllianceForm(c echo.Context, target *data.ComplexPlayer, players []*data.ComplexPlayer, alliances []*data.Alliance) {
+<section>
+  <div class="flex flex-row"></div>
+  <form hx-post={ util.GetPlayerUpdateURL(c, target) + "/alliance" } hx-target="#player-wheel">
+    <select required name="alliance"
+      class=" w-full p-2 border-2 border-black  bg-gray-200 text-gray-700  rounded-md  focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+      id="grid-state">
+      for _, alliance := range AllianceOptions(target, alliances) {
+      <option value={ alliance.Name }>{ alliance.Name } ({ alliance.Color }) </option>
+      }
+    </select>
+    <button type="submit">Change Alliance</button>
+  </form>
+  <form hx-post={ util.GetPlayerUpdateURL(c, target) + "/alliance" } hx-target="#player-wheel">
+    <input type="hidden" name="alliance" value={ "Remove" } />
+    <button>Leave Alliance</button>
+  </form>
+</section>
+}

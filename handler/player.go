@@ -35,13 +35,12 @@ func (h *Handler) PlayerAdd(c echo.Context) error {
 	formRoleName := c.FormValue("role")
 
 	currPlayers, err := h.models.Players.GetByGameID(c.Param("game_id"))
-
 	if err != nil {
 		log.Println(err)
 		return c.Redirect(302, "/")
 	}
 
-  log.Println("Passed currPlayers")
+	log.Println("Passed currPlayers")
 
 	currPlayers = util.OrderPlayers(currPlayers)
 	existingRoles, err := h.models.Roles.GetAll()
@@ -49,7 +48,7 @@ func (h *Handler) PlayerAdd(c echo.Context) error {
 		log.Println(err)
 		return c.Redirect(302, "/")
 	}
-  log.Println("Passed existingRoles")
+	log.Println("Passed existingRoles")
 
 	for _, player := range currPlayers {
 		if player.Name == formPlayerName {
@@ -72,17 +71,16 @@ func (h *Handler) PlayerAdd(c echo.Context) error {
 	}
 
 	newPlayer := &data.Player{
-		ID:     selectedRoleID,
-		Name:   formPlayerName,
-		GameID: c.Param("game_id"),
-		RoleID: selectedRoleID,
-		Alive:  true,
-		Seat:   len(currPlayers) + 1,
-    LuckStatus: "",
-    AlignmentOverride: "",
+		ID:                selectedRoleID,
+		Name:              formPlayerName,
+		GameID:            c.Param("game_id"),
+		RoleID:            selectedRoleID,
+		Alive:             true,
+		Seat:              len(currPlayers) + 1,
+		LuckStatus:        "",
+		AlignmentOverride: "",
 	}
 
-  log.Println("HITTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT")
 	err = h.models.Players.Create(newPlayer)
 	if err != nil {
 		log.Println(err)
@@ -337,7 +335,6 @@ func (h *Handler) UpdatePlayerAlliance(c echo.Context) error {
 	}
 
 	targetAlliance = util.PlayerWithinAlliance(&targetPlayer.P, alliances)
-	log.Println(targetAlliance, "targetAlliance...................")
 
 	for i := range targetAlliance.Members {
 		if targetAlliance.Members[i] == targetPlayer.P.Name {
@@ -360,5 +357,26 @@ func (h *Handler) UpdatePlayerAlliance(c echo.Context) error {
 		}
 	}
 
+	return TemplRender(c, views.Positions(c, players))
+}
+
+func (h *Handler) UpdatePlayerAlignment(c echo.Context) error {
+	player := c.Param("player")
+	alignment := c.FormValue("alignment")
+	log.Println(alignment)
+	players, _ := util.GetPlayers(c)
+	var targetPlayer *data.ComplexPlayer
+	for _, p := range players {
+		if p.P.Name == player {
+			targetPlayer = p
+			break
+		}
+	}
+	targetPlayer.P.AlignmentOverride = alignment
+	err := h.models.Players.Update(&targetPlayer.P)
+	if err != nil {
+		log.Println(err)
+		return c.Redirect(302, "/")
+	}
 	return TemplRender(c, views.Positions(c, players))
 }

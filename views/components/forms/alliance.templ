@@ -31,10 +31,18 @@ func GetAssociatedAlliance(target *data.ComplexPlayer, alliances []*data.Allianc
 	return nil
 }
 
+templ DisabledSubmitButton(disabled bool) {
+    if disabled {
+        <button disabled class="bg-gray-500 text-white font-bold py-2 px-4 rounded">Leave Current Alliance</button>
+      }
+    else {
+      <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Leave Current Alliance</button>
+    }
+  }
+
 templ AllianceForm(c echo.Context, target *data.ComplexPlayer, players []*data.ComplexPlayer, alliances []*data.Alliance) {
 	<section>
 		if len(AllianceOptions(target, alliances)) != 0 {
-			<div class="flex flex-row"></div>
         <label for="alliance" class="white">Join/Change Alliance</label>
 				<select
 					required
@@ -53,7 +61,7 @@ templ AllianceForm(c echo.Context, target *data.ComplexPlayer, players []*data.C
 		if (len(alliances) != len(AllianceOptions(target, alliances))) {
 			<form hx-post={ util.GetGameIDURL(c) + "/alliances/leave?name=" + target.P.Name } hx-target="#player-wheel">
 				<input type="hidden" name="alliance" value={ GetAssociatedAlliance(target, alliances).Name }/>
-				<button>Leave Current Alliance</button>
+        @DisabledSubmitButton(len(alliances) == len(AllianceOptions(target, alliances)))
 			</form>
 		}
 	</section>

@@ -45,8 +45,8 @@ func cssBorderColor(c echo.Context, player *data.ComplexPlayer) string {
   return ""
 }
 
-func cssAlignmentTextColor(role *data.Role) string {
-	switch role.Alignment {
+func cssAlignmentTextColor(alignment string) string {
+	switch alignment {
 	case "Lawful":
 		return "text-green-500"
 	case "Chaotic":
@@ -65,10 +65,16 @@ func cssAlive(player *data.ComplexPlayer) string {
 	return ""
 }
 
+
 templ PlayerToken(c echo.Context, player *data.ComplexPlayer) {
     <div id={ player.P.Name + "-token" }>
       <p>{ player.P.Name }</p>
-      <p class={ cssAlignmentTextColor(&player.R) }>{ player.R.Name  }</p>
+      <p >{ player.R.Name  }</p>
+      if player.P.AlignmentOverride != "" {
+            <p class={ cssAlignmentTextColor(player.P.AlignmentOverride) }>{ player.P.AlignmentOverride }</p>
+        } else {
+            <p class={ cssAlignmentTextColor(player.R.Alignment) }>{ player.R.Alignment }</p>
+          }
       <p>{ strconv.Itoa(player.P.Luck + player.P.LuckModifier) }</p>
     </div>
 }

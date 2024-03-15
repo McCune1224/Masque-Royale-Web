@@ -52,6 +52,7 @@ func main() {
 	playerUpdate.POST("/modifier", handler.UpdatePlayerLuckModifier)
 	playerUpdate.POST("/alive", handler.UpdatePlayerDeathStatus)
 	playerUpdate.POST("/seat", handler.UpdatePlayerSeating)
+	playerUpdate.POST("/alignment", handler.UpdatePlayerAlignment)
 	playerUpdate.POST("/alliance", handler.UpdatePlayerAlliance)
 
 	playerInsert := dashboard.Group("/players")

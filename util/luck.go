@@ -79,6 +79,11 @@ func CalculateNeighborLuck(target *data.ComplexPlayer, compared *data.ComplexPla
 		return 0
 	}
 
-	luck := CalculateAlignmentLuck(target.R.Alignment, compared.R.Alignment)
+  var luck int
+  if target.P.AlignmentOverride != "" {
+    luck = CalculateAlignmentLuck(target.P.AlignmentOverride, compared.R.Alignment)
+  } else {
+    luck = CalculateAlignmentLuck(target.R.Alignment, compared.R.Alignment)
+  }
 	return luck
 }

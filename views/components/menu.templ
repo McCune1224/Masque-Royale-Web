@@ -20,6 +20,7 @@ templ PlayerMenu(c echo.Context, target *data.ComplexPlayer, players []*data.Com
 			@forms.AliveForm(c, target)
 			@forms.SeatingForm(c, target, players)
 			@forms.AllianceForm(c, target, players, alliances)
+			@forms.AlignmentForm(c, target, players, alliances)
 		</div>
 	</section>
 }

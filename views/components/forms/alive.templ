@@ -5,7 +5,7 @@ import "github.com/mccune1224/betrayal-widget/data"
 import "github.com/labstack/echo/v4"
 
 templ AliveForm(c echo.Context, target *data.ComplexPlayer) {
-	<section class="bg-zinc-700">
+	<section class="">
 		<button
 			class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
 			hx-post={ util.GetPlayerUpdateURL(c, target) + "/alive" }

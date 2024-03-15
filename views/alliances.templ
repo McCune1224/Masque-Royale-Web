@@ -54,6 +54,7 @@ templ AllianceCards(c echo.Context, alliances []*data.Alliance) {
 				<div class="flex flex-col">
 					<h3 class="text-lg font-bold">Change Alliance Color (currently { alliance.Color })</h3>
 					<select hx-post={ util.GetGameIDURL(c) + "/alliances/color" } hx-target="#alliance-cards" name="color" class="text-black p-2 m-2">
+          <option disabled selected value> -- select an option -- </option>
 						for _, color := range ColorChoices(alliances) {
 							<option value={ alliance.Name + "-" + color }>{ color }</option>
 						}
@@ -89,11 +90,13 @@ templ AllianceDashboard(c echo.Context, alliances []*data.Alliance, players []*d
 						<h3 class="text-lg text-white font-bold ">Select Players</h3>
 						<div class="flex justify-center">
 								<select name={ "player1" } class="rounded-lg p-2 m-2">
+                  <option disabled selected value> -- select an option -- </option>
 									for _, player := range PlayerChoices(players, alliances) {
 										<option value={ player.P.Name }>{ player.P.Name }</option>
 									}
 								</select>
 								<select name={ "player2" } class="rounded-lg p-2 m-2">
+                  <option disabled selected value> -- select an option -- </option>
 									for _, player := range PlayerChoices(players, alliances, true) {
 										<option value={ player.P.Name }>{ player.P.Name }</option>
 									}

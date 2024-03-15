@@ -363,7 +363,6 @@ func (h *Handler) UpdatePlayerAlliance(c echo.Context) error {
 func (h *Handler) UpdatePlayerAlignment(c echo.Context) error {
 	player := c.Param("player")
 	alignment := c.FormValue("alignment")
-	log.Println(alignment)
 	players, _ := util.GetPlayers(c)
 	var targetPlayer *data.ComplexPlayer
 	for _, p := range players {
@@ -378,5 +377,17 @@ func (h *Handler) UpdatePlayerAlignment(c echo.Context) error {
 		log.Println(err)
 		return c.Redirect(302, "/")
 	}
+
+	diff := util.BulkCalculateLuck(players)
+	for i := range players {
+		if players[i].P.Luck != diff[i].P.Luck {
+			err := h.models.Players.UpdateProperty(diff[i].P.ID, "luck", diff[i].P.Luck)
+			if err != nil {
+				log.Println(err)
+				return c.Redirect(302, "/")
+			}
+		}
+	}
+
 	return TemplRender(c, views.Positions(c, players))
 }

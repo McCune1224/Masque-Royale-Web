@@ -22,7 +22,7 @@ templ Navbar(c echo.Context) {
 
 templ VerticalNavbar(c echo.Context) {
 // vertical navbar that is on the left side of the page with 4 links (font awesome icons)
-<nav class="fixed right-0 pr-8 flex flex-col justify-around w-12 h-full">
+<nav class="fixed bottom-0 flex flex-col justify-around w-4 h-full">
   <a class="text-3xl hover:text-gray-300" href={ templ.SafeURL(util.GetGameIDURL(c)) }><i class="fas fa-home"></i></a>
   <a class="text-3xl hover:text-gray-300" href={ templ.SafeURL(util.GetGameIDURL(c)) + "/players" }>
     <i class="fa-solid fa-user-plus"></i>

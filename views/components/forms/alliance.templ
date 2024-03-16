@@ -43,7 +43,7 @@ templ DisabledSubmitButton(disabled bool) {
 templ AllianceForm(c echo.Context, target *data.ComplexPlayer, players []*data.ComplexPlayer, alliances []*data.Alliance) {
 	<section>
 		if len(AllianceOptions(target, alliances)) != 0 {
-        <label for="alliance" class="white">Join/Change Alliance</label>
+        @SectionTitle("Join/Change Alliance")
 				<select
 					required
 					name="alliance"

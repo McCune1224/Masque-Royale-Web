@@ -14,13 +14,13 @@ func toPlayerNames(players []*data.ComplexPlayer) []string {
 
 templ PlayerMenu(c echo.Context, target *data.ComplexPlayer, players []*data.ComplexPlayer, alliances []*data.Alliance) {
 	<section class="text-white flex flex-col">
-		<h1>{ target.P.Name }</h1>
+		<h1 class="text-6xl text-center">{ target.P.Name }</h1>
 		<div class="flex flex-col gap-4">
 			@forms.LuckForm(c, target, players)
-			@forms.AliveForm(c, target)
 			@forms.SeatingForm(c, target, players)
 			@forms.AllianceForm(c, target, players, alliances)
 			@forms.AlignmentForm(c, target, players, alliances)
+			@forms.AliveForm(c, target)
 		</div>
 	</section>
 }

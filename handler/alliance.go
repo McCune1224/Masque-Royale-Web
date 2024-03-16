@@ -83,7 +83,13 @@ func (h *Handler) AllianceCreate(c echo.Context) error {
 		return TemplRender(c, views.AllianceCards(c, updatedAlliances))
 	}
 
-	return TemplRender(c, views.AllianceCards(c, updatedAlliances))
+	alliances, err := h.models.Alliances.GetAllByGame(c.Param("game_id"))
+	if err != nil {
+		log.Println(err)
+		return c.String(500, "Error getting alliances")
+	}
+
+	return TemplRender(c, views.AllianceDashboard(c, alliances, players))
 }
 
 func (h *Handler) UpdateAllianceColor(c echo.Context) error {
@@ -109,7 +115,6 @@ func (h *Handler) UpdateAllianceColor(c echo.Context) error {
 
 func (h *Handler) AllianceDelete(c echo.Context) error {
 	allianceName := c.QueryParam("name")
-	log.Println(allianceName)
 
 	alliances, _ := util.GetAlliances(c)
 	var targetAlliance *data.Alliance
@@ -122,8 +127,9 @@ func (h *Handler) AllianceDelete(c echo.Context) error {
 
 	h.models.Alliances.Delete(targetAlliance.ID)
 	alliances = util.RemoveValue(alliances, targetAlliance)
+	players, _ := util.GetPlayers(c)
 
-	return TemplRender(c, views.AllianceCards(c, alliances))
+	return TemplRender(c, views.AllianceDashboard(c, alliances, players))
 }
 
 func (h *Handler) AllianceChange(c echo.Context) error {
@@ -132,7 +138,6 @@ func (h *Handler) AllianceChange(c echo.Context) error {
 
 	allianceName := c.FormValue("alliance")
 	player := c.QueryParam("name")
-	log.Println(allianceName, player)
 
 	var newAlliance *data.Alliance
 	var oldAlliance *data.Alliance
@@ -152,7 +157,6 @@ func (h *Handler) AllianceChange(c echo.Context) error {
 		}
 	}
 
-	log.Println(oldAlliance, newAlliance)
 	if oldAlliance != nil {
 		oldAlliance.Members = util.RemoveValue(oldAlliance.Members, player)
 
@@ -187,7 +191,6 @@ func (h *Handler) AllianceLeave(c echo.Context) error {
 	allianceName := c.FormValue("alliance")
 	player := c.QueryParam("name")
 
-	log.Println(player, allianceName)
 
 	var oldAlliance *data.Alliance
 	for _, a := range alliances {

@@ -27,7 +27,15 @@ func SeatingForm(c echo.Context, target *data.ComplexPlayer, players []*data.Com
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<section><label for=\"swap\">Swap Seats</label> <select required name=\"target\" class=\" w-full p-2 border-2 border-black  bg-gray-200 text-gray-700  rounded-md  focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent\" id=\"grid-state\" hx-post=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<section>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = SectionTitle("Swap Seats").Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<select required name=\"target\" class=\" w-full p-2 border-2 border-black  bg-gray-200 text-gray-700  rounded-md  focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent\" id=\"grid-state\" hx-post=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

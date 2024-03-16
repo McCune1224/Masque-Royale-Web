@@ -34,20 +34,15 @@ func AlignmentForm(c echo.Context, target *data.ComplexPlayer, players []*data.C
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<section><label for=\"alignment\">Overwrite Alignment (Currently ")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var2 string
-		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(currentAlignment(target))
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/forms/alignment.templ`, Line: 15, Col: 81}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
+		templ_7745c5c3_Err = SectionTitle("Overwrite Alignment").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(")</label> <select required name=\"alignment\" class=\" w-full p-2 border-2 border-black  bg-gray-200 text-gray-700  rounded-md  focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent\" id=\"grid-state\" hx-post=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<select required name=\"alignment\" class=\" w-full p-2 border-2 border-black  bg-gray-200 text-gray-700  rounded-md  focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent\" id=\"grid-state\" hx-post=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

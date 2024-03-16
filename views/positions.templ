@@ -25,9 +25,9 @@ func RotateAngleCSS(count int, position int, reverse bool) string {
 
 func cssScale(playerCount int) string {
 
-  if playerCount > 14 {
-      return " scale-[0.6]"
-    }
+	if playerCount > 14 {
+		return " scale-[.60]"
+	}
 
 	if playerCount > 9 {
 		return " scale-75"
@@ -36,13 +36,13 @@ func cssScale(playerCount int) string {
 }
 
 func cssBorderColor(c echo.Context, player *data.ComplexPlayer) string {
-  alliances, _ := util.GetAlliances(c)
-  for _, alliance := range alliances {
-    if util.AllianceContainsPlayer(alliance, &player.P){
-      return " border-" + alliance.Color + "-500 "
-    }
-  }
-  return ""
+	alliances, _ := util.GetAlliances(c)
+	for _, alliance := range alliances {
+		if util.AllianceContainsPlayer(alliance, &player.P) {
+			return " border-" + alliance.Color + "-500 "
+		}
+	}
+	return ""
 }
 
 func cssAlignmentTextColor(alignment string) string {
@@ -65,25 +65,33 @@ func cssAlive(player *data.ComplexPlayer) string {
 	return ""
 }
 
-
 templ PlayerToken(c echo.Context, player *data.ComplexPlayer) {
-    <div id={ player.P.Name + "-token" }>
-      <p>{ player.P.Name }</p>
-      <p >{ player.R.Name  }</p>
-      if player.P.AlignmentOverride != "" {
-            <p class={ cssAlignmentTextColor(player.P.AlignmentOverride) }>{ player.P.AlignmentOverride }</p>
-        } else {
-            <p class={ cssAlignmentTextColor(player.R.Alignment) }>{ player.R.Alignment }</p>
-          }
-      <p>{ strconv.Itoa(player.P.Luck + player.P.LuckModifier) }</p>
-    </div>
+	<div id={ player.P.Name + "-token" }>
+		<p>{ player.P.Name }</p>
+		<p>{ player.R.Name  }</p>
+		if player.P.AlignmentOverride != "" {
+			<p class={ cssAlignmentTextColor(player.P.AlignmentOverride) }>{ player.P.AlignmentOverride }*</p>
+		} else {
+			<p class={ cssAlignmentTextColor(player.R.Alignment) }>{ player.R.Alignment }</p>
+		}
+    switch player.P.LuckStatus {
+        case "Lucky":
+          <p>{ strconv.Itoa((player.P.Luck + player.P.LuckModifier) * 2) }</p>
+          <p class="text-green-200"> <i class="fa-solid fa-clover"></i> </p>
+        case "Unlucky":
+          <p>{ strconv.Itoa((player.P.Luck + player.P.LuckModifier) / 2) }</p>
+          <p class="text-red-200"> <i class="fa-solid fa-clover"></i></p>
+        default: 
+          <p>{ strconv.Itoa(player.P.Luck + player.P.LuckModifier) }</p>
+      }
+	</div>
 }
 
 templ Positions(c echo.Context, players []*data.ComplexPlayer) {
 	<ul id="player-wheel" class="sm:p-64 list-none flex justify-center items-center h-64 w-64 bg-transparent rounded-full mx-auto">
 		for i, v := range rotateCSSGenerator(players) {
 			<li class={ v }>
-				<button class="hover:opacity-85 focus:scale-110 focus:border-2 focus:border-dotted focus:rounded-full" hx-get={ util.GetGameIDURL(c) + "/menu?name=" + players[i].P.Name } hx-target="#menu-section">
+				<button class="hover:opacity-85 focus:scale-110 focus:border-2 focus:border-dotted focus:border-zinc-300 focus:rounded-full" hx-get={ util.GetGameIDURL(c) + "/menu?name=" + players[i].P.Name } hx-target="#menu-section">
 					<div class={ "sm:w-32 sm:h-32 w-16 h-16 bg-gray-900 rounded-full text-white border-2 " + cssAlive(players[i]) + " " + RotateAngleCSS(len(players), i, true) + cssScale(len(players)) + cssBorderColor(c, players[i]) }>
 						@PlayerToken(c, players[i])
 					</div>

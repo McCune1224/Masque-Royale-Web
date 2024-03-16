@@ -54,6 +54,7 @@ func main() {
 	playerUpdate.POST("/seat", handler.UpdatePlayerSeating)
 	playerUpdate.POST("/alignment", handler.UpdatePlayerAlignment)
 	playerUpdate.POST("/alliance", handler.UpdatePlayerAlliance)
+	playerUpdate.POST("/status", handler.UpdatePlayerStatus)
 
 	playerInsert := dashboard.Group("/players")
 	playerInsert.GET("", handler.PlayerDashboard)

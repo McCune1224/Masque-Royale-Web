@@ -138,6 +138,14 @@ func (m *PlayerModel) UpdateSeat(id int, seat int) error {
 	return nil
 }
 
+func (m *PlayerModel) UpdateLuckStatus(id int, status string) error {
+	_, err := m.DB.Exec("UPDATE players SET luck_status = $1 WHERE id = $2", status, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (m *PlayerModel) Delete(id int) error {
 	_, err := m.DB.Exec("DELETE FROM players WHERE id = $1", id)
 	if err != nil {
@@ -209,18 +217,18 @@ func (m *PlayerModel) GetAllComplexByGameID(gameID string) ([]*ComplexPlayer, er
 
 	for _, p := range playerQuery {
 		player := &Player{
-		ID:                p.PlayerID,
-		Name:              p.PlayerName,
-		GameID:            p.PlayerGameID,
-		RoleID:            p.PlayerRoleID,
-		Alive:             p.PlayerAlive,
-		Seat:              p.PlayerSeat,
-		Luck:              p.PlayerLuck,
-		LuckModifier:      p.PlayerLuckMod,
-		LuckStatus:        p.PlayerLuckStatus,
-		AlignmentOverride: p.PlayerAlignment,
-		CreatedAt:         p.PlayerCreated,
-		UpdatedAt:         p.PlayerUpdated,
+			ID:                p.PlayerID,
+			Name:              p.PlayerName,
+			GameID:            p.PlayerGameID,
+			RoleID:            p.PlayerRoleID,
+			Alive:             p.PlayerAlive,
+			Seat:              p.PlayerSeat,
+			Luck:              p.PlayerLuck,
+			LuckModifier:      p.PlayerLuckMod,
+			LuckStatus:        p.PlayerLuckStatus,
+			AlignmentOverride: p.PlayerAlignment,
+			CreatedAt:         p.PlayerCreated,
+			UpdatedAt:         p.PlayerUpdated,
 		}
 		role := &Role{
 			ID:         p.RoleID,

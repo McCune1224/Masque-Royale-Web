@@ -86,7 +86,7 @@ func VerticalNavbar(c echo.Context) templ.Component {
 			templ_7745c5c3_Var6 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<nav class=\"fixed right-0 pr-8 flex flex-col justify-around w-12 h-full\"><a class=\"text-3xl hover:text-gray-300\" href=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<nav class=\"fixed bottom-0 flex flex-col justify-around w-4 h-full\"><a class=\"text-3xl hover:text-gray-300\" href=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

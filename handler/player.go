@@ -391,3 +391,36 @@ func (h *Handler) UpdatePlayerAlignment(c echo.Context) error {
 
 	return TemplRender(c, views.Positions(c, players))
 }
+
+func (h *Handler) UpdatePlayerStatus(c echo.Context) error {
+	log.Println("HIT")
+	player := c.Param("player")
+	status := c.FormValue("status")
+	players, _ := util.GetPlayers(c)
+	var targetPlayer *data.ComplexPlayer
+	for _, p := range players {
+		if p.P.Name == player {
+			targetPlayer = p
+			break
+		}
+	}
+
+	targetPlayer.P.LuckStatus = status
+	err := h.models.Players.UpdateLuckStatus(targetPlayer.P.ID, status)
+	if err != nil {
+		log.Println(err)
+		return c.Redirect(302, "/")
+	}
+	diff := util.BulkCalculateLuck(players)
+	for i := range players {
+		if players[i].P.Luck != diff[i].P.Luck {
+			err := h.models.Players.UpdateProperty(diff[i].P.ID, "luck", diff[i].P.Luck)
+			if err != nil {
+				log.Println(err)
+				return c.Redirect(302, "/")
+			}
+		}
+	}
+
+	return TemplRender(c, views.Positions(c, players))
+}

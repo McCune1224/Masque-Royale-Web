@@ -4,6 +4,7 @@ import "github.com/mccune1224/betrayal-widget/views/components/navbar"
 import "github.com/labstack/echo/v4"
 import "github.com/mccune1224/betrayal-widget/data"
 import "github.com/mccune1224/betrayal-widget/util"
+import "github.com/mccune1224/betrayal-widget/views/components/forms"
 
 func ColorChoices(alliances []*data.Alliance) []string {
 
@@ -52,7 +53,7 @@ templ AllianceCards(c echo.Context, alliances []*data.Alliance) {
 			<h1 class={ "text-2xl font-bold bg-" + alliance.Color + "-400" }>{ alliance.Name }</h1>
 			<div class="flex justify-center gap-4">
 				<div class="flex flex-col">
-					<h3 class="text-lg font-bold">Change Alliance Color (currently { alliance.Color })</h3>
+					@forms.SectionTitle("Change Alliance Color  (currently " +  alliance.Color + ")")
 					<select hx-post={ util.GetGameIDURL(c) + "/alliances/color" } hx-target="#alliance-cards" name="color" class="text-black p-2 m-2">
           <option disabled selected value> -- select an option -- </option>
 						for _, color := range ColorChoices(alliances) {
@@ -60,7 +61,7 @@ templ AllianceCards(c echo.Context, alliances []*data.Alliance) {
 						}
 					</select>
 				</div>
-				<button hx-delete={ util.GetGameIDURL(c) + "/alliances/delete?name=" + alliance.Name } hx-target="#alliance-cards" class="bg-blue-500 hover:bg-blue-700 text-white font-bold px-4 rounded">Delete Alliance</button>
+				<button hx-delete={ util.GetGameIDURL(c) + "/alliances/delete?name=" + alliance.Name } hx-target="#alliance-dashboard" class="bg-blue-500 hover:bg-blue-700 text-white font-bold px-4 rounded">Delete Alliance</button>
 			</div>
 		</div>
 		<hr/>
@@ -70,9 +71,9 @@ templ AllianceCards(c echo.Context, alliances []*data.Alliance) {
 templ AllianceDashboard(c echo.Context, alliances []*data.Alliance, players []*data.ComplexPlayer) {
 	@Base() {
 		@navbar.VerticalNavbar(c)
-		<div class="container mx-auto px-4 text-center">
+		<div class="container mx-auto px-4 text-center" id="alliance-dashboard">
 			// Nice tailwincss form to add a new alliance (needs a name, and 4 drop downs for the players to add)
-			<form hx-post={ util.GetGameIDURL(c) + "/alliances/new" } hx-target="#alliance-cards">
+			<form hx-post={ util.GetGameIDURL(c) + "/alliances/new" } hx-target="#alliance-dashboard">
 				<div class="flex flex-col gap-6 p-4 my-4 text-black">
 					<div>
 						<h1 class="text-2xl font-bold text-white">Create New Alliance</h1>

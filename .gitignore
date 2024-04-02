@@ -28,3 +28,6 @@ tmp
 Makefile
 *.txt
 routes.json
+
+# Nixos stuff
+result 

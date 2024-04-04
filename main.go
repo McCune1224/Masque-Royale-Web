@@ -72,6 +72,9 @@ func main() {
 	seatingDashboard.GET("", handler.SeatingDashboard)
 	seatingDashboard.POST("/swap", handler.SwapSeats)
 
+	actionDashboard := dashboard.Group("/actions")
+	actionDashboard.GET("", handler.ActionDashboard)
+
 	luckDashboard := dashboard.Group("/:game_id/luck")
 	luckDashboard.GET("", handler.Luck)
 	luckDashboard.POST("/update", handler.LuckUpdate)

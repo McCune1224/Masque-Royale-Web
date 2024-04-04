@@ -8,7 +8,7 @@ require (
 )
 
 require (
-	github.com/a-h/templ v0.2.543
+	github.com/a-h/templ v0.2.648
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/labstack/gommon v0.4.2 // indirect

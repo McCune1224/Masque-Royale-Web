@@ -11,6 +11,7 @@ type Models struct {
 	Abilities AbilityModel
 	Passives  PassiveModel
 	Alliances AllianceModel
+	Actions   ActionModel
 }
 
 func NewModels(db *sqlx.DB) *Models {
@@ -21,5 +22,6 @@ func NewModels(db *sqlx.DB) *Models {
 		Abilities: AbilityModel{DB: db},
 		Passives:  PassiveModel{DB: db},
 		Alliances: AllianceModel{DB: db},
+		Actions:   ActionModel{DB: db},
 	}
 }

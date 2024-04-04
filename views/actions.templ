@@ -1,0 +1,16 @@
+package views
+
+import "github.com/labstack/echo/v4"
+import "github.com/mccune1224/betrayal-widget/data"
+import "strconv"
+
+templ ActionDashboard(c echo.Context, actions []data.Action) {
+	@Base() {
+		<h1>Hi mom</h1>
+		for _, v := range actions {
+			<h1>
+				{ strconv.Itoa(v.ID) } - { v.RoleAssociation }
+			</h1>
+		}
+	}
+}

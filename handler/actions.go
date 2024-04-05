@@ -1,13 +1,13 @@
 package handler
 
 import (
-	"database/sql"
-	"errors"
 	"log"
 	"math"
 	"math/rand"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
+	"github.com/lib/pq"
 	"github.com/mccune1224/betrayal-widget/data"
 	"github.com/mccune1224/betrayal-widget/views"
 )
@@ -102,17 +102,20 @@ func (h *Handler) ActionDashboard(c echo.Context) error {
 		log.Println(err)
 		return c.Redirect(302, "/")
 	}
-	gameActionList, _ := h.models.Actions.GetActionList(c.Param("game_id"))
+	gameActionList, err := h.models.Actions.GetActionList(c.Param("game_id"))
+	if err != nil {
+		log.Print(err)
+		c.Redirect(302, "/")
+	}
 	var queue []data.Action
 
-	if gameActionList != nil {
-		for _, id := range gameActionList.ActionIds {
-			q, err := h.models.Actions.GetByID(int(id))
-			if !(errors.Is(sql.ErrNoRows, err)) {
-				return c.Redirect(302, "/")
-			}
-			queue = append(queue, *q)
+	for _, id := range gameActionList.ActionIds {
+		q, err := h.models.Actions.GetByID(int(id))
+		if err != nil {
+			log.Println(err)
+			return c.Redirect(302, "/")
 		}
+		queue = append(queue, *q)
 	}
 
 	foo := sortActionByPriority(queue)
@@ -120,13 +123,12 @@ func (h *Handler) ActionDashboard(c echo.Context) error {
 	return TemplRender(c, views.ActionDashboard(c, actions, foo))
 }
 
-func (h *Handler) UpdateActionsList(c echo.Context) error {
+func (h *Handler) UpdateActionsListItem(c echo.Context) error {
 	gameActionList, err := h.models.Actions.GetActionList(c.Param("game_id"))
 	if err != nil {
 		log.Print(err)
 		return c.Redirect(302, "/")
 	}
-
 	actionForm := c.FormValue("action")
 	newAction, err := h.models.Actions.GetByName(actionForm)
 	if err != nil {
@@ -140,9 +142,9 @@ func (h *Handler) UpdateActionsList(c echo.Context) error {
 		log.Print(err)
 		return c.Redirect(302, "/")
 	}
+	log.Println("-------", gameActionList.ActionIds)
 
 	var actions []data.Action
-	actions = append(actions, *newAction)
 	for _, id := range gameActionList.ActionIds {
 		action, err := h.models.Actions.GetByID(int(id))
 		if err != nil {
@@ -152,5 +154,50 @@ func (h *Handler) UpdateActionsList(c echo.Context) error {
 		actions = append(actions, *action)
 	}
 
-	return TemplRender(c, views.ActionQueue(actions))
+	actions = sortActionByPriority(actions)
+	return TemplRender(c, views.ActionQueue(c, actions))
+}
+
+func (h *Handler) RemoveActionListItem(c echo.Context) error {
+	gameActionList, err := h.models.Actions.GetActionList(c.Param("game_id"))
+	if err != nil {
+		log.Print(err)
+		return c.Redirect(302, "/")
+	}
+
+	actionForm := c.QueryParam("name")
+	actionID, _ := strconv.Atoi(actionForm)
+
+	for i, id := range gameActionList.ActionIds {
+		if int(id) == actionID {
+			// getting panic when there are 2 Ids with same value in the list to fix this:
+			// we can use a break statement to exit the loop after deleting the first instance of the id
+			if len(gameActionList.ActionIds) == 2 && gameActionList.ActionIds[0] == gameActionList.ActionIds[1] {
+				gameActionList.ActionIds = pq.Int64Array{gameActionList.ActionIds[0]}
+				break
+			}
+			// safe delete from slice (in case of duplicate names, we only want to delete the first instance)
+			gameActionList.ActionIds = append(gameActionList.ActionIds[:i], gameActionList.ActionIds[i+1:]...)
+		}
+	}
+
+	err = h.models.Actions.UpdateActionList(gameActionList)
+	if err != nil {
+		log.Print(err)
+		return c.Redirect(302, "/")
+	}
+	log.Println("-------", gameActionList.ActionIds)
+
+	var actions []data.Action
+	for _, id := range gameActionList.ActionIds {
+		action, err := h.models.Actions.GetByID(int(id))
+		if err != nil {
+			log.Print(err)
+			return c.Redirect(302, "/")
+		}
+		actions = append(actions, *action)
+	}
+
+	actions = sortActionByPriority(actions)
+	return TemplRender(c, views.ActionQueue(c, actions))
 }

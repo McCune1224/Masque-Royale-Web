@@ -5,6 +5,8 @@ import "github.com/mccune1224/betrayal-widget/data"
 import "github.com/mccune1224/betrayal-widget/util"
 import "github.com/mccune1224/betrayal-widget/views/components/forms"
 import "sort"
+import "strconv"
+import "github.com/mccune1224/betrayal-widget/views/components/navbar"
 
 func sortActionByName(a []data.Action) []data.Action {
 	aCopy := make([]data.Action, len(a))
@@ -16,18 +18,28 @@ func sortActionByName(a []data.Action) []data.Action {
 	return aCopy
 }
 
-templ ActionCard(action data.Action) {
+templ ActionCard(c echo.Context, index int, action data.Action) {
 	<div class="bg-zinc-700 border-2 px-4 py-2 rounded-xl flex flex-col">
-		<p>{ action.AbilityName } {  }</p>
-		<button type="button">Remove</button>
+		//span flex to equal spacing
+		<div class="flex gap-9 text-xl justify-center">
+			<span class="text-4xl">{ strconv.Itoa(index + 1) }</span>
+			<span>{ action.AbilityName }</span>
+		</div>
+		<button
+			class="bg-red-400 hover:bg-red-600 py-3 px-2"
+			name="action"
+			hx-delete={ util.GetGameIDURL(c) + "/actions/update?name=" + strconv.Itoa(action.ID) }
+			hx-target="#action-cards"
+			value={ action.AbilityName }
+		>Remove</button>
 	</div>
 }
 
-templ ActionQueue(actionQueue []data.Action) {
+templ ActionQueue(c echo.Context, actionQueue []data.Action) {
 	<div id="action-cards">
 		<div>
-			for _, action := range actionQueue {
-				@ActionCard(action)
+			for i, action := range actionQueue {
+				@ActionCard(c, i, action)
 			}
 		</div>
 	</div>
@@ -35,27 +47,31 @@ templ ActionQueue(actionQueue []data.Action) {
 
 templ ActionDashboard(c echo.Context, actions []data.Action, actionQueue []data.Action) {
 	@Base() {
-		<h1>Hi mom</h1>
-		<form
-			hx-post={ util.GetGameIDURL(c) + "/actions/update" }
-			class="flex flex-col"
-			hx-target="#action-cards"
-		>
-			<select name="action" class="text-black p-2 m-2">
-				@forms.SectionTitle("idk lol")
-				<option disabled selected value>-- select an option -- </option>
-				for _, action := range sortActionByName(actions) {
-					if action.Shorthand != "" {
-						<option value={ action.AbilityName }>{ action.Shorthand } ({ action.AbilityName })</option>
-					} else {
-						<option value={ action.AbilityName }>{ action.AbilityName }</option>
-					}
-				}
-			</select>
-			<button
-				class="bg-zinc-700 border-2 px-4 py-2 rounded-xl"
-			>Add</button>
-		</form>
-		@ActionQueue(actionQueue)
+		<div class="flex flex-row">
+			@navbar.VerticalNavbar(c)
+			<div class="container mx-auto leading-normal tracking-normal bg-zinc-900 text-white py-40 px-20">
+				<form
+					hx-post={ util.GetGameIDURL(c) + "/actions/update" }
+					class="flex flex-col"
+					hx-target="#action-cards"
+				>
+					<select name="action" class="text-black p-2 m-2">
+						@forms.SectionTitle("idk lol")
+						<option disabled selected value>-- select an option -- </option>
+						for _, action := range sortActionByName(actions) {
+							if action.Shorthand != "" {
+								<option value={ action.AbilityName }>{ action.Shorthand } ({ action.AbilityName })</option>
+							} else {
+								<option value={ action.AbilityName }>{ action.AbilityName }</option>
+							}
+						}
+					</select>
+					<button
+						class="bg-blue-400 hover:bg-blue-700 border-2 px-4 py-2 rounded-xl"
+					>Add</button>
+				</form>
+				@ActionQueue(c, actionQueue)
+			</div>
+		</div>
 	}
 }

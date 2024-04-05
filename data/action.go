@@ -7,8 +7,8 @@ import (
 
 type Action struct {
 	ID              int            `db:"id"`
-	Description     string         `db:"description"`
 	AbilityName     string         `db:"ability_name"`
+	Description     string         `db:"description"`
 	Shorthand       string         `db:"shorthand"`
 	Rarity          string         `db:"rarity"`
 	RoleAssociation string         `db:"role_association"`
@@ -32,21 +32,22 @@ func (a *ActionModel) Insert(action *Action) error {
 }
 
 func (a *ActionModel) GetByID(id int) (*Action, error) {
-	var action *Action
+	var action Action
 	err := a.Get(&action, "SELECT * from actions WHERE id = $1", id)
 	if err != nil {
 		return nil, err
 	}
-	return action, nil
+	return &action, nil
 }
 
 func (a *ActionModel) GetByName(name string) (*Action, error) {
-	var action *Action
+	var action Action
 	err := a.Get(&action, "SELECT * from actions WHERE ability_name ILIKE $1", name)
 	if err != nil {
 		return nil, err
 	}
-	return action, nil
+
+	return &action, nil
 }
 
 func (a *ActionModel) GetAll() ([]Action, error) {
@@ -73,9 +74,9 @@ func (a *ActionModel) GetActionList(gameId string) (*ActionList, error) {
 	return &actionList, nil
 }
 
-// overwrite the entire actionList with new one passed in
 func (a *ActionModel) UpdateActionList(actionList *ActionList) error {
-	_, err := a.Exec(`UPDATE action_lists SET action_ids = $1 WHERE game_id = $2`, actionList.ActionIds, actionList.GameID)
+	// update just the action ids field
+	_, err := a.Exec(`UPDATE action_lists SET action_ids = $2 WHERE id = $1`, actionList.ID, actionList.ActionIds)
 	return err
 }
 

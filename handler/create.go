@@ -28,6 +28,12 @@ func (h *Handler) GenerateGame(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+
+	err = h.models.Actions.InsertActionList(gameID)
+	if err != nil {
+		return err
+	}
+
 	return c.Redirect(302, "/games/dashboard/"+gameID)
 }
 

@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"database/sql"
+	"errors"
 	"log"
 	"math"
 	"math/rand"
@@ -69,12 +71,26 @@ func flatten[T any](lists [][]T) []T {
 	return res
 }
 
+func shuffle[T any](items []T) []T {
+	perms := rand.Perm(len(items))
+	newItems := make([]T, len(items))
+	for i := 0; i < len(items); i++ {
+		p := perms[i]
+		newItems[i] = items[p]
+	}
+	return newItems
+}
+
 func sortActionByPriority(actions []data.Action) []data.Action {
 	buckets := make([][]data.Action, len(ActionPriority))
 
 	for _, v := range actions {
 		prio := highestPriority(v)
 		buckets[prio] = append(buckets[prio], v)
+	}
+
+	for i := range buckets {
+		buckets[i] = shuffle(buckets[i])
 	}
 
 	return flatten(buckets)
@@ -86,8 +102,55 @@ func (h *Handler) ActionDashboard(c echo.Context) error {
 		log.Println(err)
 		return c.Redirect(302, "/")
 	}
+	gameActionList, _ := h.models.Actions.GetActionList(c.Param("game_id"))
+	var queue []data.Action
 
-	foo := sortActionByPriority(actions)
+	if gameActionList != nil {
+		for _, id := range gameActionList.ActionIds {
+			q, err := h.models.Actions.GetByID(int(id))
+			if !(errors.Is(sql.ErrNoRows, err)) {
+				return c.Redirect(302, "/")
+			}
+			queue = append(queue, *q)
+		}
+	}
 
-	return TemplRender(c, views.ActionDashboard(c, foo))
+	foo := sortActionByPriority(queue)
+
+	return TemplRender(c, views.ActionDashboard(c, actions, foo))
+}
+
+func (h *Handler) UpdateActionsList(c echo.Context) error {
+	gameActionList, err := h.models.Actions.GetActionList(c.Param("game_id"))
+	if err != nil {
+		log.Print(err)
+		return c.Redirect(302, "/")
+	}
+
+	actionForm := c.FormValue("action")
+	newAction, err := h.models.Actions.GetByName(actionForm)
+	if err != nil {
+		log.Print(err)
+		return c.Redirect(302, "/")
+	}
+
+	gameActionList.ActionIds = append(gameActionList.ActionIds, int64(newAction.ID))
+	err = h.models.Actions.UpdateActionList(gameActionList)
+	if err != nil {
+		log.Print(err)
+		return c.Redirect(302, "/")
+	}
+
+	var actions []data.Action
+	actions = append(actions, *newAction)
+	for _, id := range gameActionList.ActionIds {
+		action, err := h.models.Actions.GetByID(int(id))
+		if err != nil {
+			log.Print(err)
+			return c.Redirect(302, "/")
+		}
+		actions = append(actions, *action)
+	}
+
+	return TemplRender(c, views.ActionQueue(actions))
 }

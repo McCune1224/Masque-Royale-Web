@@ -2,15 +2,46 @@ package views
 
 import "github.com/labstack/echo/v4"
 import "github.com/mccune1224/betrayal-widget/data"
-import "strconv"
+import "github.com/mccune1224/betrayal-widget/util"
+import "github.com/mccune1224/betrayal-widget/views/components/forms"
+import "sort"
+
+func sortActionByName(a []data.Action) []data.Action {
+	aCopy := make([]data.Action, len(a))
+	copy(aCopy, a)
+	sort.Slice(aCopy, func(i, j int) bool {
+		return aCopy[i].AbilityName < aCopy[j].AbilityName
+	})
+
+	return aCopy
+}
+
+templ ActionCard(action data.Action) {
+	<div class="bg-zinc-700 border-2 px-4 py-2 rounded-xl flex flex-col">
+		<p>{ action.AbilityName } {  }</p>
+		<button type="button">Remove</button>
+	</div>
+}
 
 templ ActionDashboard(c echo.Context, actions []data.Action) {
 	@Base() {
 		<h1>Hi mom</h1>
-		for _, v := range actions {
-			<h1>
-				{ strconv.Itoa(v.ID) } - { v.RoleAssociation }
-			</h1>
-		}
+		<div class="flex flex-col">
+			<select hx-post={ util.GetGameIDURL(c) + "/alliances/color" } hx-target="#alliance-cards" name="color" class="text-black p-2 m-2">
+				@forms.SectionTitle("idk lol")
+				<option disabled selected value>-- select an option -- </option>
+				for _, action := range sortActionByName(actions) {
+					if action.Shorthand != "" {
+						<option value={ action.AbilityName }>{ action.Shorthand } ({ action.AbilityName })</option>
+					} else {
+						<option value={ action.AbilityName }>{ action.AbilityName }</option>
+					}
+				}
+			</select>
+			<button
+				class="bg-zinc-700 border-2 px-4 py-2 rounded-xl"
+				type="button"
+			>Add</button>
+		</div>
 	}
 }

@@ -94,7 +94,7 @@ func (h *Handler) Search(c echo.Context) error {
 		matchingRoleNames := fuzzy.FindFold(search, []string{currRole.Name})
 		matchingAbilityNames := fuzzy.FindFold(search, abilityNames)
 		matchingPassiveNames := fuzzy.FindFold(search, passiveNames)
-		matchingAlignmentName := fuzzy.FindFold(search, []string{"Lawful", "Chaotic", "Outlander"})
+		matchingAlignmentName := fuzzy.FindFold(search, []string{currRole.Alignment})
 		roleMatch := len(matchingRoleNames) > 0
 		abilityMatch := len(matchingAbilityNames) > 0
 		passiveMatch := len(matchingPassiveNames) > 0

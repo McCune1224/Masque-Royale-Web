@@ -87,7 +87,7 @@ func RoleCard(c echo.Context, role *data.ComplexRole) templ.Component {
 			templ_7745c5c3_Var3 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		var templ_7745c5c3_Var4 = []any{"flex flex-col gap-3 bg-zinc-800 text-white text-xl border-2 " + borerColor(role.Alignment)}
+		var templ_7745c5c3_Var4 = []any{"flex flex-col gap-3 bg-zinc-800 text-white text-xl border-2 px-3 " + borerColor(role.Alignment)}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var4...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

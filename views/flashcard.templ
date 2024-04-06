@@ -44,7 +44,7 @@ func borerColor(alignment string) string {
 }
 
 templ RoleCard(c echo.Context, role *data.ComplexRole) {
-	<div class={ "flex flex-col gap-3 bg-zinc-800 text-white text-xl border-2 " + borerColor(role.Alignment) }>
+	<div class={ "flex flex-col gap-3 bg-zinc-800 text-white text-xl border-2 px-3 " + borerColor(role.Alignment) }>
 		<span><p class="underline">Role:</p> <p class="font-extrabold text-3xl">{ role.Name }</p></span>
 		<span><p class="underline">Alignment:</p> <p class="font-extrabold text-3xl">{ role.Alignment }</p></span>
 		<span>

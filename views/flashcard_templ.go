@@ -56,7 +56,7 @@ func Flashcard(c echo.Context, roles []*data.ComplexRole) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" href=\"/flashcard/aa\">Search All Abilities</a></button><h3 class=\"text-6xl\">Search Any Abilities</h3></div><input class=\"form-control text-black px-5 py-5 w-full\" type=\"search\" name=\"search\" placeholder=\"role, ability, passive, alignment...\" hx-post=\"/search\" hx-trigger=\"input changed delay:300ms, search\" hx-target=\"#search-results\" hx-indicator=\".htmx-indicator\"><section id=\"search-results\" class=\"grid grid-flow-row-dense grid-cols-1 sm:grid-cols-2 gap-3\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" href=\"/flashcard/aa\">Search All Abilities</a></button><h3 class=\"text-6xl\">Search Roles</h3></div><input class=\"form-control text-black px-5 py-5 w-full\" type=\"search\" name=\"search\" placeholder=\"role, ability, passive, alignment...\" hx-post=\"/search\" hx-trigger=\"input changed delay:300ms, search\" hx-target=\"#search-results\" hx-indicator=\".htmx-indicator\"><section id=\"search-results\" class=\"grid grid-flow-row-dense grid-cols-1 sm:grid-cols-2 gap-3\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

@@ -16,9 +16,24 @@ type Ability struct {
 	Categories   pq.StringArray `db:"categories"`
 }
 
-// psql statement to add categories to ability
-// ALTER TABLE abilities ADD COLUMN categories text[] DEFAULT '{}';
+type AnyAbility struct {
+	ID          int            `db:"id"`
+	Name        string         `db:"name"`
+	Description string         `db:"description"`
+	Rarity      string         `db:"rarity"`
+	Categories  pq.StringArray `db:"categories"`
+}
 
+// create table psql statement for any_ability table
 type AbilityModel struct {
 	*sqlx.DB
+}
+
+func (m *AbilityModel) GetAllAnyAbilities() ([]*AnyAbility, error) {
+	abilities := []*AnyAbility{}
+	err := m.Select(&abilities, "SELECT * FROM any_abilities")
+	if err != nil {
+		return nil, err
+	}
+	return abilities, nil
 }

@@ -12,7 +12,7 @@ import (
 	"github.com/mccune1224/betrayal-widget/views"
 )
 
-var potentialRoles = []string{
+var CurrentGameRoles = []string{
 	"Agent", "Detective", "Gunman", "Lawyer", "Nurse", "Seraph", "Empress", "Succubus", "Wraith", "Actress", "Assassin", "Highwayman", "Jester", "Sommelier", "Witchdoctor",
 }
 
@@ -52,7 +52,7 @@ func (h *Handler) Flashcard(c echo.Context) error {
 	}
 	acceptedRoles := []*data.ComplexRole{}
 	for _, role := range roles {
-		for _, potentialRole := range potentialRoles {
+		for _, potentialRole := range CurrentGameRoles {
 			if role.Name == potentialRole {
 				acceptedRoles = append(acceptedRoles, role)
 			}
@@ -73,7 +73,7 @@ func (h *Handler) Search(c echo.Context) error {
 
 	// log.Println(search, matchingRoleNames)
 	activeGameRoles := []*data.ComplexRole{}
-	for _, roleName := range potentialRoles {
+	for _, roleName := range CurrentGameRoles {
 		for _, dbRole := range roles {
 			if dbRole.Name == roleName {
 				activeGameRoles = append(activeGameRoles, dbRole)
@@ -106,6 +106,44 @@ func (h *Handler) Search(c echo.Context) error {
 	}
 
 	return TemplRender(c, views.Search(c, bestMatches))
+}
+
+var abilities []*data.AnyAbility
+
+func (h *Handler) FlashcardAnyAbilities(c echo.Context) error {
+	abilities, err := h.models.Abilities.GetAllAnyAbilities()
+	if err != nil {
+		log.Println(err)
+		return TemplRender(c, views.Flashcard(c, nil))
+	}
+
+	return TemplRender(c, views.FlashcardAbilities(c, abilities))
+}
+
+func (h *Handler) SearchAA(c echo.Context) error {
+	var abilities []*data.AnyAbility
+	search := c.FormValue("search")
+	abilities, err := h.models.Abilities.GetAllAnyAbilities()
+	if err != nil {
+		log.Println(err)
+		return TemplRender(c, views.Search(c, nil))
+	}
+
+	bestMatches := []*data.AnyAbility{}
+	for _, aa := range abilities {
+		fuzzyName := fuzzy.FindFold(search, []string{aa.Name})
+		fuzzyRarity := fuzzy.FindFold(search, []string{aa.Rarity})
+		fuzzyCategories := fuzzy.FindFold(search, aa.Categories)
+		roleMatch := len(fuzzyName) > 0
+		rarityMatch := len(fuzzyRarity) > 0
+		categoryMatch := len(fuzzyCategories) > 0
+
+		if roleMatch || rarityMatch || categoryMatch {
+			bestMatches = append(bestMatches, aa)
+		}
+	}
+
+	return TemplRender(c, views.SearchAAs(c, bestMatches))
 }
 
 func (h *Handler) Auth(c echo.Context) error {

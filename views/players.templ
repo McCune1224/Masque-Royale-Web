@@ -51,6 +51,25 @@ templ PlayerList(c echo.Context, players []*data.Player, roles []*data.Role, err
 	</div>
 }
 
+func allowedRoles(roles []*data.Role) []*data.Role {
+	var allowedRoles []*data.Role
+
+	var CurrentGameRoles = []string{
+		"Agent", "Detective", "Gunman", "Lawyer", "Nurse", "Seraph", "Empress", "Succubus", "Wraith", "Actress", "Assassin", "Highwayman", "Jester", "Sommelier", "Witchdoctor",
+	}
+
+	for _, allowedRole := range CurrentGameRoles {
+		for _, role := range roles {
+			if role.Name == allowedRole {
+				allowedRoles = append(allowedRoles, role)
+			}
+		}
+
+	}
+
+	return allowedRoles
+}
+
 templ PlayerDashboard(c echo.Context, players []*data.Player, roles []*data.Role) {
 	@Base() {
 		@navbar.VerticalNavbar(c)
@@ -76,7 +95,7 @@ templ PlayerDashboard(c echo.Context, players []*data.Player, roles []*data.Role
 						class=" w-full p-2 border-2 border-black  bg-gray-200 text-gray-700  rounded-md  focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
 						id="grid-state"
 					>
-						for _, role := range roles {
+						for _, role := range allowedRoles(roles) {
 							<option>{ role.Name }</option>
 						}
 					</select>

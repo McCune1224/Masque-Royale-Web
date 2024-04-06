@@ -37,7 +37,7 @@ templ ActionCard(c echo.Context, index int, action data.Action) {
 
 templ ActionQueue(c echo.Context, actionQueue []data.Action) {
 	<div id="action-cards">
-		<div>
+		<div class="gap-4 flex flex-col">
 			for i, action := range actionQueue {
 				@ActionCard(c, i, action)
 			}

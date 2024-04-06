@@ -1,0 +1,63 @@
+package views
+
+import "github.com/labstack/echo/v4"
+import "github.com/mccune1224/betrayal-widget/data"
+
+templ Flashcard(c echo.Context, roles []*data.ComplexRole) {
+	@Base() {
+		<div class="container mx-auto leading-normal tracking-normal bg-zinc-900 text-white py-40 px-20">
+			<h3>
+				Search Contacts 
+				<span class="htmx-indicator">
+					//<img src="/img/bars.svg"/> Searching... 
+				</span>
+			</h3>
+			<input
+				class="form-control"
+				type="search"
+				name="search"
+				placeholder="Begin Typing To Search Users..."
+				hx-post="/search"
+				hx-trigger="input changed delay:200ms, search"
+				hx-target="#search-results"
+				hx-indicator=".htmx-indicator"
+			/>
+			<section id="search-results" class="grid grid-flow-row-dense grid-cols-2 gap-3 border-2">
+				for _, role := range roles {
+					@RoleCard(c, role)
+				}
+			</section>
+		</div>
+	}
+}
+
+templ RoleCard(c echo.Context, role *data.ComplexRole) {
+	<div class="flex flex-col gap-3 bg-zinc-800 text-white text-xl">
+		<span>Role: { role.Name }</span>
+		<span>Alignment: { role.Alignment }</span>
+		<span>
+			Abilities: 
+			<div class="flex flex-col gap-1">
+				for _, ability := range role.Abilities {
+					<span>{ ability.Name } - { ability.Description }</span>
+				}
+			</div>
+		</span>
+		<span>
+			Passives: 
+			<div class="flex flex-col gap-1">
+				for _, passive := range role.Passives {
+					<span>{ passive.Name } - { passive.Description }</span>
+				}
+			</div>
+		</span>
+	</div>
+}
+
+templ Search(c echo.Context, roles []*data.ComplexRole) {
+	@Base() {
+		for _, role := range roles {
+			@RoleCard(c, role)
+		}
+	}
+}

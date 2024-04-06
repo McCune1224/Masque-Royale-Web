@@ -54,7 +54,7 @@ templ PlayerList(c echo.Context, players []*data.Player, roles []*data.Role, err
 templ PlayerDashboard(c echo.Context, players []*data.Player, roles []*data.Role) {
 	@Base() {
 		@navbar.VerticalNavbar(c)
-		<div class="container mx-auto px-4 text-center">
+		<div class="container mx-auto leading-normal tracking-normal bg-zinc-900 text-white py-40 px-20">
 			@PlayerList(c, players, roles, nil)
 			//banner that should fully spam the width of the page and allow to input a new player
 			<form

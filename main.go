@@ -37,6 +37,8 @@ func main() {
 	sm := appMiddleware.NewSyncMiddleware(db)
 	app.Use(sm.SyncGameInfo)
 	app.GET("/", handler.Index)
+	app.GET("/flashcard", handler.Flashcard)
+	app.POST("/search", handler.Search)
 
 	game := app.Group("/games")
 	game.GET("/new", handler.CreateGame)

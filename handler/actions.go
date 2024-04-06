@@ -178,6 +178,7 @@ func (h *Handler) RemoveActionListItem(c echo.Context) error {
 			}
 			// safe delete from slice (in case of duplicate names, we only want to delete the first instance)
 			gameActionList.ActionIds = append(gameActionList.ActionIds[:i], gameActionList.ActionIds[i+1:]...)
+			break
 		}
 	}
 

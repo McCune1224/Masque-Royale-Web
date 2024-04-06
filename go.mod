@@ -7,6 +7,8 @@ require (
 	github.com/labstack/echo/v4 v4.11.4
 )
 
+require github.com/lithammer/fuzzysearch v1.1.8 // indirect
+
 require (
 	github.com/a-h/templ v0.2.648
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect

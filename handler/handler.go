@@ -71,14 +71,36 @@ func (h *Handler) Search(c echo.Context) error {
 		return TemplRender(c, views.Search(c, nil))
 	}
 
-	matchingRoleNames := fuzzy.FindFold(search, potentialRoles)
-	log.Println(search, matchingRoleNames)
+	// log.Println(search, matchingRoleNames)
+	// for _, roleName := range matchingRoleNames {
+	// 	for _, role := range roles {
+	// 		if role.Name == roleName {
+	// 			bestMatches = append(bestMatches, role)
+	// 		}
+	// 	}
+	// }
+
 	bestMatches := []*data.ComplexRole{}
-	for _, roleName := range matchingRoleNames {
-		for _, role := range roles {
-			if role.Name == roleName {
-				bestMatches = append(bestMatches, role)
-			}
+	for _, currRole := range roles {
+		abilityNames := []string{}
+		passiveNames := []string{}
+		for _, a := range currRole.Abilities {
+			abilityNames = append(abilityNames, a.Name)
+		}
+		for _, p := range currRole.Passives {
+			passiveNames = append(passiveNames, p.Name)
+		}
+		matchingRoleNames := fuzzy.FindFold(search, []string{currRole.Name})
+		matchingAbilityNames := fuzzy.FindFold(search, abilityNames)
+		matchingPassiveNames := fuzzy.FindFold(search, passiveNames)
+		matchingAlignmentName := fuzzy.FindFold(search, []string{"Lawful", "Chaotic", "Outlander"})
+		roleMatch := len(matchingRoleNames) > 0
+		abilityMatch := len(matchingAbilityNames) > 0
+		passiveMatch := len(matchingPassiveNames) > 0
+		alignmentMatch := len(matchingAlignmentName) > 0
+
+		if roleMatch || abilityMatch || passiveMatch || alignmentMatch {
+			bestMatches = append(bestMatches, currRole)
 		}
 	}
 
@@ -89,11 +111,11 @@ func (h *Handler) Auth(c echo.Context) error {
 	pw := c.FormValue("password")
 
 	cookie := &http.Cookie{
-		Name:   "password",
-		Value:  pw,
-		Path: "/",
+		Name:  "password",
+		Value: pw,
+		Path:  "/",
 	}
 	c.SetCookie(cookie)
 
-  return nil
+	return nil
 }

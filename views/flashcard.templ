@@ -2,6 +2,7 @@ package views
 
 import "github.com/labstack/echo/v4"
 import "github.com/mccune1224/betrayal-widget/data"
+import "strings"
 
 templ Flashcard(c echo.Context, roles []*data.ComplexRole) {
 	@Base() {
@@ -10,15 +11,15 @@ templ Flashcard(c echo.Context, roles []*data.ComplexRole) {
 				<p>Looking...</p>
 			</span>
 			<h3 class="text-6xl">
-				Search Roles 
+				Search
 			</h3>
 			<input
-				class="form-control text-black px-5 py-5"
+				class="form-control text-black px-5 py-5 w-full"
 				type="search"
 				name="search"
-				placeholder="...."
+				placeholder="role, ability, passive, alignment..."
 				hx-post="/search"
-				hx-trigger="input changed delay:200ms, search"
+				hx-trigger="input changed delay:300ms, search"
 				hx-target="#search-results"
 				hx-indicator=".htmx-indicator"
 			/>
@@ -52,7 +53,7 @@ templ RoleCard(c echo.Context, role *data.ComplexRole) {
 			</p>
 			<div class="flex flex-col gap-1">
 				for _, ability := range role.Abilities {
-					<span><p class="font-extrabold text-3xl">{ ability.Name } </p>{ ability.Description }</span>
+					<span><p class="font-extrabold text-3xl">{ ability.Name } ({ strings.Join(ability.Categories, ", ") }) </p>{ ability.Description }</span>
 				}
 			</div>
 		</span>

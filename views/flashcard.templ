@@ -6,17 +6,17 @@ import "github.com/mccune1224/betrayal-widget/data"
 templ Flashcard(c echo.Context, roles []*data.ComplexRole) {
 	@Base() {
 		<div class="container mx-auto leading-normal tracking-normal bg-zinc-900 text-white py-40 px-20">
-			<h3>
-				Search Contacts 
+			<h3 class="text-6xl">
+				Search Roles 
 				<span class="htmx-indicator">
-					//<img src="/img/bars.svg"/> Searching... 
+					<p>Looking...</p>
 				</span>
 			</h3>
 			<input
-				class="form-control"
+				class="form-control text-black"
 				type="search"
 				name="search"
-				placeholder="Begin Typing To Search Users..."
+				placeholder="...."
 				hx-post="/search"
 				hx-trigger="input changed delay:200ms, search"
 				hx-target="#search-results"
@@ -33,8 +33,8 @@ templ Flashcard(c echo.Context, roles []*data.ComplexRole) {
 
 templ RoleCard(c echo.Context, role *data.ComplexRole) {
 	<div class="flex flex-col gap-3 bg-zinc-800 text-white text-xl">
-		<span>Role: { role.Name }</span>
-		<span>Alignment: { role.Alignment }</span>
+		<span>Role: <p>{ role.Name }</p></span>
+		<span>Alignment: <p>{ role.Alignment }</p></span>
 		<span>
 			Abilities: 
 			<div class="flex flex-col gap-1">

@@ -32,7 +32,7 @@ func Flashcard(c echo.Context, roles []*data.ComplexRole) templ.Component {
 				templ_7745c5c3_Buffer = templ.GetBuffer()
 				defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"container mx-auto leading-normal tracking-normal bg-zinc-900 text-white py-40 px-20\"><h3>Search Contacts  <span class=\"htmx-indicator\"></span></h3><input class=\"form-control\" type=\"search\" name=\"search\" placeholder=\"Begin Typing To Search Users...\" hx-post=\"/search\" hx-trigger=\"input changed delay:200ms, search\" hx-target=\"#search-results\" hx-indicator=\".htmx-indicator\"><section id=\"search-results\" class=\"grid grid-flow-row-dense grid-cols-2 gap-3 border-2\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"container mx-auto leading-normal tracking-normal bg-zinc-900 text-white py-40 px-20\"><h3 class=\"text-6xl\">Search Roles  <span class=\"htmx-indicator\"><p>Looking...</p></span></h3><input class=\"form-control text-black\" type=\"search\" name=\"search\" placeholder=\"....\" hx-post=\"/search\" hx-trigger=\"input changed delay:200ms, search\" hx-target=\"#search-results\" hx-indicator=\".htmx-indicator\"><section id=\"search-results\" class=\"grid grid-flow-row-dense grid-cols-2 gap-3 border-2\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -75,33 +75,33 @@ func RoleCard(c echo.Context, role *data.ComplexRole) templ.Component {
 			templ_7745c5c3_Var3 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex flex-col gap-3 bg-zinc-800 text-white text-xl\"><span>Role: ")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex flex-col gap-3 bg-zinc-800 text-white text-xl\"><span>Role: <p>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(role.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/flashcard.templ`, Line: 36, Col: 25}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/flashcard.templ`, Line: 36, Col: 28}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span> <span>Alignment: ")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</p></span> <span>Alignment: <p>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(role.Alignment)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/flashcard.templ`, Line: 37, Col: 35}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/flashcard.templ`, Line: 37, Col: 38}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span> <span>Abilities: <div class=\"flex flex-col gap-1\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</p></span> <span>Abilities: <div class=\"flex flex-col gap-1\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

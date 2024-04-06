@@ -72,16 +72,17 @@ func (h *Handler) Search(c echo.Context) error {
 	}
 
 	// log.Println(search, matchingRoleNames)
-	// for _, roleName := range matchingRoleNames {
-	// 	for _, role := range roles {
-	// 		if role.Name == roleName {
-	// 			bestMatches = append(bestMatches, role)
-	// 		}
-	// 	}
-	// }
+	activeGameRoles := []*data.ComplexRole{}
+	for _, roleName := range potentialRoles {
+		for _, dbRole := range roles {
+			if dbRole.Name == roleName {
+				activeGameRoles = append(activeGameRoles, dbRole)
+			}
+		}
+	}
 
 	bestMatches := []*data.ComplexRole{}
-	for _, currRole := range roles {
+	for _, currRole := range activeGameRoles {
 		abilityNames := []string{}
 		passiveNames := []string{}
 		for _, a := range currRole.Abilities {

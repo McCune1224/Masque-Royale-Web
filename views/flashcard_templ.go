@@ -33,7 +33,7 @@ func Flashcard(c echo.Context, roles []*data.ComplexRole) templ.Component {
 				templ_7745c5c3_Buffer = templ.GetBuffer()
 				defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"container mx-auto leading-normal tracking-normal bg-zinc-900 text-white py-40 sm:px-20\"><span class=\"htmx-indicator\"><p>Looking...</p></span><h3 class=\"text-6xl\">Search</h3><input class=\"form-control text-black px-5 py-5 w-full\" type=\"search\" name=\"search\" placeholder=\"role, ability, passive, alignment...\" hx-post=\"/search\" hx-trigger=\"input changed delay:300ms, search\" hx-target=\"#search-results\" hx-indicator=\".htmx-indicator\"><section id=\"search-results\" class=\"grid grid-flow-row-dense grid-cols-1 sm:grid-cols-2 gap-3\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"container mx-auto leading-normal tracking-normal bg-zinc-900 text-white py-5 sm:px-20\"><span class=\"htmx-indicator\"><p>Looking...</p></span><h3 class=\"text-6xl\">Search</h3><input class=\"form-control text-black px-5 py-5 w-full\" type=\"search\" name=\"search\" placeholder=\"role, ability, passive, alignment...\" hx-post=\"/search\" hx-trigger=\"input changed delay:300ms, search\" hx-target=\"#search-results\" hx-indicator=\".htmx-indicator\"><section id=\"search-results\" class=\"grid grid-flow-row-dense grid-cols-1 sm:grid-cols-2 gap-3\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

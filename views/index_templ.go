@@ -153,7 +153,7 @@ func Index(games []data.Game) templ.Component {
 				templ_7745c5c3_Buffer = templ.GetBuffer()
 				defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<main class=\"\"><div class=\"flex flex-col items-center justify-center h-full gap-4\"><div class=\"space-y-2\"><h1 class=\"text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none\">Masque Royal</h1></div><button>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<main class=\"\"><div class=\"flex flex-col items-center justify-center h-full gap-4\"><section class=\"w-full\"><div class=\"container px-4 md:px-6\"><div class=\"flex flex-col items-center space-y-4 text-center\"><h1 class=\"text-4xl font-extrabold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl/none\"><span class=\"relative\"><span class=\"z-10\">Masque Royale</span> <span class=\"absolute inset-0 bg-gradient-to-r from-rose-600 to-fuchsia-500 rounded-lg/s-t via-violet-600 via-violet-600 opacity-50 blur-sm pointer-events-none\"></span></span></h1><p class=\"mx-auto max-w-[700px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400\">Watch your back :)</p></div></div></section><button>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -215,7 +215,7 @@ func Index(games []data.Game) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\">Role Info</a></button><form hx-post=\"/auth\" class=\"flex flex-col gap-2\"><label for=\"password\">Admin Password</label> <input type=\"text\" class=\"text-black\" name=\"password\"> ")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\">Flashcard Info</a></button><form hx-post=\"/auth\" class=\"flex flex-col gap-2\"><label for=\"password\">Admin Password</label> <input type=\"text\" class=\"text-black\" name=\"password\"> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

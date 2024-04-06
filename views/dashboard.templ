@@ -2,13 +2,14 @@ package views
 
 import "github.com/labstack/echo/v4"
 import "github.com/mccune1224/betrayal-widget/views/components/navbar"
+import "github.com/mccune1224/betrayal-widget/views/components"
 
 templ Dashboard(c echo.Context) {
 	@Base() {
 		@navbar.VerticalNavbar(c)
 		<div class="container mx-auto px-4 text-center">
-    //title for game style using tailwind
-    <h1 class="py-5 text-6xl font-bold text-center">{c.Param("game_id")}</h1>
+			//title for game style using tailwind
+			@components.Title(c.Param("game_id"))
 			<div class="flex flex-row py-40 px-20">
 				{ children... }
 				<section class="border-dotted border-2 p-10 rounded-lg " id="menu-section"></section>

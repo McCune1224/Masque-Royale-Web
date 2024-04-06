@@ -29,11 +29,21 @@ templ Index(games []data.Game) {
 			// Center content in the middle of the screen
 			<div class="flex flex-col items-center justify-center h-full gap-4">
 				<div class="space-y-2">
-					<h1 class="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none">Betrayal Thingy</h1>
+					<h1 class="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none">Masque Royal</h1>
 				</div>
 				<button class="px-4 py-2 text-lg font-semibold text-white bg-indigo-600 rounded-md hover:bg-indigo-400">
 					<a href={ templ.SafeURL("/games/new") }>New Game</a>
 				</button>
+				<button class="px-4 py-2 text-lg font-semibold text-white bg-indigo-600 rounded-md hover:bg-indigo-400">
+					<a href={ templ.SafeURL("/flashcard") }>Role Info</a>
+				</button>
+				<form
+					hx-post="/auth"
+				>
+					<label for="password">Admin Password</label>
+					<input type="text" class="text-black" name="password"/>
+					<button class="px-2 py-1 text-lg font-semibold text-white bg-indigo-600 rounded-md hover:bg-indigo-400">Submit</button>
+				</form>
 				<h2
 					class="text-2xl font-semibold tracking-tighter sm:text-3xl md:text-4xl lg:text-5xl/none"
 				>

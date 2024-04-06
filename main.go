@@ -39,14 +39,15 @@ func main() {
 	app.GET("/", handler.Index)
 	app.GET("/flashcard", handler.Flashcard)
 	app.POST("/search", handler.Search)
+	app.POST("/auth", handler.Auth)
 
 	game := app.Group("/games")
 	game.GET("/new", handler.CreateGame)
 	game.GET("/new/generate", handler.GenerateGame)
-	game.GET("/join/:game_id", handler.JoinGame)
-	game.GET("/delete/:game_id", handler.DeleteGame)
+	game.GET("/join/:game_id", handler.JoinGame, appMiddleware.AuthMiddleware)
+	game.GET("/delete/:game_id", handler.DeleteGame, appMiddleware.AuthMiddleware)
 
-	dashboard := app.Group("/games/dashboard/:game_id")
+	dashboard := app.Group("/games/dashboard/:game_id", appMiddleware.AuthMiddleware)
 	dashboard.GET("", handler.Dashboard)
 	dashboard.GET("/menu", handler.PlayerMenu)
 

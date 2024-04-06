@@ -2,6 +2,7 @@ package handler
 
 import (
 	"log"
+	"net/http"
 
 	"github.com/a-h/templ"
 	"github.com/jmoiron/sqlx"
@@ -82,4 +83,17 @@ func (h *Handler) Search(c echo.Context) error {
 	}
 
 	return TemplRender(c, views.Search(c, bestMatches))
+}
+
+func (h *Handler) Auth(c echo.Context) error {
+	pw := c.FormValue("password")
+
+	cookie := &http.Cookie{
+		Name:   "password",
+		Value:  pw,
+		Path: "/",
+	}
+	c.SetCookie(cookie)
+
+  return nil
 }

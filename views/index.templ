@@ -3,6 +3,7 @@ package views
 import "strings"
 import "github.com/mccune1224/betrayal-widget/data"
 import "fmt"
+import "github.com/mccune1224/betrayal-widget/views/components/buttons"
 
 // PathToID converts a path to a unique ID for use in HTML for valid IDs
 func PathToID(path string) string {
@@ -16,8 +17,8 @@ templ GamesList(games []data.Game) {
 				<h3 class="text-xl font-semibold text-black">{ game.GameID } - ({ fmt.Sprintf("%d", game.PlayerCount) } Players)</h3>
 			</div>
 			<div class="flex flex-row gap-2">
-				<a href={ templ.SafeURL("/games/join/" + game.GameID) } class="px-4 py-2 text-lg font-semibold text-white bg-indigo-600 rounded-md hover:bg-indigo-400">Join</a>
-				<a href={ templ.SafeURL("/games/delete/" + game.GameID) } class="px-4 py-2 text-lg font-semibold text-white bg-indigo-600 rounded-md hover:bg-indigo-400">Delete</a>
+				<a href={ templ.SafeURL("/games/join/" + game.GameID) } class={ buttons.Style() }>Join</a>
+				<a href={ templ.SafeURL("/games/delete/" + game.GameID) } class={ buttons.Style() }>Delete</a>
 			</div>
 		</li>
 	}
@@ -31,18 +32,27 @@ templ Index(games []data.Game) {
 				<div class="space-y-2">
 					<h1 class="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none">Masque Royal</h1>
 				</div>
-				<button class="px-4 py-2 text-lg font-semibold text-white bg-indigo-600 rounded-md hover:bg-indigo-400">
-					<a href={ templ.SafeURL("/games/new") }>New Game</a>
+				<button>
+					<a
+						class={ buttons.Style() }
+						href={ templ.SafeURL("/games/new") }
+					>New Game</a>
 				</button>
-				<button class="px-4 py-2 text-lg font-semibold text-white bg-indigo-600 rounded-md hover:bg-indigo-400">
-					<a href={ templ.SafeURL("/flashcard") }>Role Info</a>
+				<button>
+					<a
+						class={ buttons.Style() }
+						href={ templ.SafeURL("/flashcard") }
+					>Role Info</a>
 				</button>
 				<form
 					hx-post="/auth"
+					class="flex flex-col gap-2"
 				>
 					<label for="password">Admin Password</label>
 					<input type="text" class="text-black" name="password"/>
-					<button class="px-2 py-1 text-lg font-semibold text-white bg-indigo-600 rounded-md hover:bg-indigo-400">Submit</button>
+					<button class={ buttons.Style() }>
+						Submit
+					</button>
 				</form>
 				<h2
 					class="text-2xl font-semibold tracking-tighter sm:text-3xl md:text-4xl lg:text-5xl/none"

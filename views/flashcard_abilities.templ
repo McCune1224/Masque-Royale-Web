@@ -3,6 +3,7 @@ package views
 import "github.com/labstack/echo/v4"
 import "github.com/mccune1224/betrayal-widget/data"
 import "strings"
+import "github.com/mccune1224/betrayal-widget/views/components/buttons"
 
 templ FlashcardAbilities(c echo.Context, abilities []*data.AnyAbility) {
 	@Base() {
@@ -11,8 +12,11 @@ templ FlashcardAbilities(c echo.Context, abilities []*data.AnyAbility) {
 				<p>Looking...</p>
 			</span>
 			<div class="flex flex-col">
-				<button class="bg-zinc-500 hover:bg-zinc-700 text-white font-bold py-2 px-4 rounded-full">
-					<a href="/flashcard">Search Roles</a>
+				<button>
+					<a
+						class={ buttons.Style() }
+						href="/flashcard"
+					>Search Roles</a>
 				</button>
 				<h3 class="text-5xl">
 					Search Abilities

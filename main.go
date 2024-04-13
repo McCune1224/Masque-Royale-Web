@@ -33,7 +33,6 @@ func main() {
 		},
 	))
 
-	route.APIRoutes(app, handler)
 	route.ViewRoutes(app, handler)
 
 	sm := appMiddleware.NewSyncMiddleware(db)

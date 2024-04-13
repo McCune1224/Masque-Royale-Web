@@ -23,7 +23,7 @@ func Base() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><link rel=\"stylesheet\" href=\"/static/output.css\"><script src=\"https://cdn.tailwindcss.com\"></script><script src=\"https://kit.fontawesome.com/7c9be725cb.js\" crossorigin=\"anonymous\"></script><script src=\"https://cdn.jsdelivr.net/npm/sweetalert2@11\"></script><script src=\"https://unpkg.com/hyperscript.org@0.9.12\"></script><!-- <script src=\"static/htmx.min.js\"></script> --><script src=\"https://unpkg.com/htmx.org@1.9.10\"></script></head><body class=\"container mx-auto leading-normal tracking-normal px-4 bg-zinc-900 text-white\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><link rel=\"stylesheet\" href=\"/static/output.css\"><script src=\"https://cdn.tailwindcss.com\"></script><script src=\"https://kit.fontawesome.com/7c9be725cb.js\" crossorigin=\"anonymous\"></script><script src=\"https://cdn.jsdelivr.net/npm/sweetalert2@11\"></script><script src=\"https://unpkg.com/hyperscript.org@0.9.12\"></script><!-- <script src=\"static/htmx.min.js\"></script> --><script src=\"https://unpkg.com/htmx.org@1.9.10\"></script></head><body id=\"body\" class=\"container mx-auto leading-normal tracking-normal px-4 bg-zinc-900 text-white\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -22,12 +22,33 @@ templ GameCard(game data.Game) {
 	</div>
 }
 
-templ Index(c echo.Context, currentGames []data.Game) {
+templ Index(c echo.Context, currentGames []data.Game, err ...string) {
 	@template.Base() {
-		<h1
-			class="sm:text-9xl text-4xl"
-		>Masque Royale</h1>
-		@GamesList(c, currentGames)
-		@button.LinkButton("New Game", "/new")
+		<main class="flex flex-col gap-2">
+			<h1
+				class="sm:text-9xl text-4xl py-4 text-center"
+			>Masque Royale</h1>
+			@GamesList(c, currentGames)
+			if len(err) > 0 {
+				<div class="flex flex-col bg-red-300 border-2 border-red-700 px-5 py-4">
+					<p>ERROR:</p>
+					<p>{ err[0] }</p>
+				</div>
+			}
+			<form
+				class="flex flex-col gap-1 text-center"
+				hx-post="/create"
+        hx-target="#body"
+			>
+				<label>Game Name</label>
+				<input
+					required
+					class="text-black"
+					type="text"
+					name="name"
+				/>
+				@button.SubmitButton("Create New Game")
+			</form>
+		</main>
 	}
 }

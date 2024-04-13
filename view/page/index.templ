@@ -5,20 +5,23 @@ import "github.com/mccune1224/betrayal-widget/data"
 import "github.com/mccune1224/betrayal-widget/view/template"
 import "github.com/mccune1224/betrayal-widget/view/components/buttons"
 import "strconv"
+import "github.com/mccune1224/betrayal-widget/view/components/errors"
 
 templ GamesList(c echo.Context, games []data.Game) {
-	<div class="games-list">
+	<div id="games-list">
 		for _, game := range games {
-			@GameCard(game)
+			@GameCard(c, game)
 		}
 	</div>
 }
 
-templ GameCard(game data.Game) {
-	<div class="flex sm:flex-row text-center flex-col bg-zinc-700 border-2 justify-between px-4">
+templ GameCard(c echo.Context, game data.Game) {
+	<div id={ "game-" + strconv.Itoa(game.ID) } class="sm:grid sm:grid-cols-5 text-center bg-zinc-700 border-2 px-4">
 		<h4>{ game.GameID }</h4>
 		<p>{ strconv.Itoa(game.PlayerCount) } Players</p>
 		@button.LinkButton("Join Game", "/join/"+strconv.Itoa(game.ID))
+		@button.LinkButton("Admin", "/games/"+strconv.Itoa(game.ID)+"/admin")
+		@button.HxDeleteButton("Delete", "/delete/"+strconv.Itoa(game.ID), strconv.Itoa(game.ID), "#body")
 	</div>
 }
 
@@ -30,15 +33,12 @@ templ Index(c echo.Context, currentGames []data.Game, err ...string) {
 			>Masque Royale</h1>
 			@GamesList(c, currentGames)
 			if len(err) > 0 {
-				<div class="flex flex-col bg-red-300 border-2 border-red-700 px-5 py-4">
-					<p>ERROR:</p>
-					<p>{ err[0] }</p>
-				</div>
+				@errors.ErrorCard(err[0])
 			}
 			<form
 				class="flex flex-col gap-1 text-center"
 				hx-post="/create"
-        hx-target="#body"
+				hx-target="#body"
 			>
 				<label>Game Name</label>
 				<input

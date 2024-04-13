@@ -78,7 +78,7 @@ func (gm *GameModel) DeleteGame(gID string) error {
 	}
 
 	// delete action-list for the game
-	_, err = gm.Exec("DELETE FROM action_list WHERE game_id = $1", gID)
+	_, err = gm.Exec("DELETE FROM action_lists WHERE game_id = $1", gID)
 	if err != nil {
 		return err
 	}

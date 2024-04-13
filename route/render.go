@@ -10,6 +10,7 @@ func Routes(app *echo.Echo, handler *handler.Handler) {
 
 	app.GET("/join/:game_id", handler.JoinGamePage)
 	app.POST("/create", handler.CreateGame)
+	app.DELETE("/delete/:game_id", handler.DeleteGame)
 
 	games := app.Group("/games/:game_id")
 	games.GET("", handler.GameDashboardPage)

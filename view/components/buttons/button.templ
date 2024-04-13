@@ -88,30 +88,30 @@ templ HxPutButton(text string, endpoint string, target ...string) {
 }
 
 templ HxDeleteButton(text string, endpoint string, value string, target ...string) {
-	<div hx-confirm="Are you sure?">
-		if len(target) > 0 {
-			<button
-				type="button"
-				class={ buttonStyle }
-				hx-delete={ endpoint }
-				hx-target={ target[0] }
-				hx-swap="outerHTML"
-				name={ value }
-				value={ value }
-			>
-				{ text }
-			</button>
-		} else {
-			<button
-				type="button"
-				class={ buttonStyle }
-				hx-delete={ endpoint }
-				hx-swap="outerHTML"
-				name={ value }
-				value={ value }
-			>
-				{ text }
-			</button>
-		}
-	</div>
+	if len(target) > 0 {
+		<button
+			type="button"
+			class={ buttonStyle }
+			hx-delete={ endpoint }
+			hx-target={ target[0] }
+			hx-swap="outerHTML"
+			name={ value }
+			value={ value }
+			hx-confirm="Are you sure?"
+		>
+			{ text }
+		</button>
+	} else {
+		<button
+			type="button"
+			class={ buttonStyle }
+			hx-delete={ endpoint }
+			hx-swap="outerHTML"
+			name={ value }
+			value={ value }
+			hx-confirm="Are you sure?"
+		>
+			{ text }
+		</button>
+	}
 }

@@ -1,0 +1,10 @@
+package page
+
+import "github.com/labstack/echo/v4"
+
+templ Error500(c echo.Context, err error) {
+	<section>
+		<h1>ERROR AT { c.Path() }</h1>
+		<p>{ err.Error() }</p>
+	</section>
+}

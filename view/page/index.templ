@@ -4,12 +4,18 @@ import "github.com/labstack/echo/v4"
 import "github.com/mccune1224/betrayal-widget/data"
 import "github.com/mccune1224/betrayal-widget/view/template"
 import "github.com/mccune1224/betrayal-widget/view/components/game"
+import "github.com/mccune1224/betrayal-widget/view/components/buttons"
 
 templ Index(c echo.Context, currentGames []data.Game) {
 	@template.Base() {
 		<h1
-			class="text-9xl"
+			class="sm:text-9xl text-4xl"
 		>Masque Royale</h1>
 		@game.GamesList(c, currentGames)
+		@button.LinkButton("New Game", "/games/new")
 	}
+}
+
+templ NewGame() {
+	<a href="/">Idk</a>
 }

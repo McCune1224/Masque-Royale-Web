@@ -5,9 +5,11 @@ import "github.com/mccune1224/betrayal-widget/data"
 import "strconv"
 
 templ GamesList(c echo.Context, games []data.Game) {
-	for _, game := range games {
-		@GameCard(game)
-	}
+	<div class="games-list">
+		for _, game := range games {
+			@GameCard(game)
+		}
+	</div>
 }
 
 templ GameCard(game data.Game) {

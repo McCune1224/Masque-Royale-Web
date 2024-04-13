@@ -3,19 +3,31 @@ package page
 import "github.com/labstack/echo/v4"
 import "github.com/mccune1224/betrayal-widget/data"
 import "github.com/mccune1224/betrayal-widget/view/template"
-import "github.com/mccune1224/betrayal-widget/view/components/game"
 import "github.com/mccune1224/betrayal-widget/view/components/buttons"
+import "strconv"
+
+templ GamesList(c echo.Context, games []data.Game) {
+	<div class="games-list">
+		for _, game := range games {
+			@GameCard(game)
+		}
+	</div>
+}
+
+templ GameCard(game data.Game) {
+	<div class="flex sm:flex-row text-center flex-col bg-zinc-700 border-2 justify-between px-4">
+		<h4>{ game.GameID }</h4>
+		<p>{ strconv.Itoa(game.PlayerCount) } Players</p>
+		@button.LinkButton("Join Game", "/join/"+strconv.Itoa(game.ID))
+	</div>
+}
 
 templ Index(c echo.Context, currentGames []data.Game) {
 	@template.Base() {
 		<h1
 			class="sm:text-9xl text-4xl"
 		>Masque Royale</h1>
-		@game.GamesList(c, currentGames)
-		@button.LinkButton("New Game", "/games/new")
+		@GamesList(c, currentGames)
+		@button.LinkButton("New Game", "/new")
 	}
-}
-
-templ NewGame() {
-	<a href="/">Idk</a>
 }

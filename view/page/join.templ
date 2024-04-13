@@ -1,0 +1,15 @@
+package page
+
+import "github.com/labstack/echo/v4"
+import "github.com/mccune1224/betrayal-widget/data"
+import "github.com/mccune1224/betrayal-widget/view/template"
+import "github.com/mccune1224/betrayal-widget/view/components/buttons"
+import "strconv"
+
+templ JoinGame(c echo.Context, game *data.Game, players []*data.Player) {
+	@template.Base() {
+		for _, player := range players {
+			@button.LinkButton(player.Name, "/games/"+strconv.Itoa(game.ID)+"/players/"+player.Name)
+		}
+	}
+}

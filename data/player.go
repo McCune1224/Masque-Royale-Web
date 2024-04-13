@@ -83,18 +83,18 @@ func (m *PlayerModel) GetByName(name string) (*Player, error) {
 	return player, nil
 }
 
-func (m *PlayerModel) GetPlayerNames(gameID string) ([]string, error) {
-	names := []string{}
-	err := m.DB.Select(&names, "SELECT name FROM players WHERE game_id = $1", gameID)
+func (m *PlayerModel) GetAllByGameID(gameID string) ([]*Player, error) {
+	players := []*Player{}
+	err := m.DB.Select(&players, "SELECT * FROM players WHERE game_id = $1", gameID)
 	if err != nil {
 		return nil, err
 	}
-	return names, nil
+	return players, nil
 }
 
-func (m *PlayerModel) GetByGameIDAndName(gameID string, name string) (*Player, error) {
+func (m *PlayerModel) GetByGameNameAndPlayerName(gameID string, name string) (*Player, error) {
 	player := &Player{}
-	err := m.DB.Get(player, "SELECT * FROM players WHERE game_id = $1 AND name ILIKE $2", gameID, name)
+	err := m.DB.Get(player, "SELECT * FROM players WHERE game_id ILIKE $1 AND name ILIKE $2", gameID, name)
 	if err != nil {
 		return nil, err
 	}

@@ -1,0 +1,11 @@
+package page
+
+import "github.com/labstack/echo/v4"
+import "github.com/mccune1224/betrayal-widget/data"
+import "github.com/mccune1224/betrayal-widget/view/template"
+
+templ PlayerDashboard(c echo.Context, player *data.Player, role *data.ComplexRole) {
+	@template.Base() {
+		<p>{ player.Name } ... { role.Name }</p>
+	}
+}

@@ -10,6 +10,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	_ "github.com/lib/pq"
 	"github.com/mccune1224/betrayal-widget/handler"
+
 	appMiddleware "github.com/mccune1224/betrayal-widget/middleware"
 	"github.com/mccune1224/betrayal-widget/route"
 )

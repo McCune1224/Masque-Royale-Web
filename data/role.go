@@ -116,6 +116,50 @@ func (rm *RoleModel) GetComplexByName(name string) (*ComplexRole, error) {
 	return complexRole, nil
 }
 
+func (rm *RoleModel) GetComplexByID(id int) (*ComplexRole, error) {
+	roleQuery := &RoleAbilityPassiveJoin{}
+	complexRole := &ComplexRole{}
+
+	query := `SELECT r.id AS role_id, r.name AS role_name, r.alignment AS role_alignment, r.ability_ids AS role_ability_ids, r.passive_ids AS role_passive_ids, 
+  a.id AS ability_id, a.name AS ability_name, a.description AS ability_description, a.charges AS ability_charges, a.rarity AS ability_rarity, a.any_ability AS ability_any_ability, a.role_specific AS ability_role_specific, a.categories AS ability_categories, 
+  p.id AS passive_id, p.name AS passive_name, p.description AS passive_description FROM roles r LEFT JOIN abilities a ON a.id = ANY(r.ability_ids) LEFT JOIN passives p ON p.id = ANY(r.passive_ids) WHERE r.id = $1`
+	err := rm.DB.Get(roleQuery, query, id)
+	if err != nil {
+		return nil, err
+	}
+
+	complexRole.ID = roleQuery.RoleID
+	complexRole.Name = roleQuery.RoleName
+	complexRole.Alignment = roleQuery.RoleAlignment
+	var abilities []*Ability
+	var passives []*Passive
+	for _, id := range roleQuery.RoleAbilityIDs {
+		ability := &Ability{
+			ID:           int(id),
+			Name:         roleQuery.AbilityName,
+			Description:  roleQuery.AbilityDesc,
+			Charges:      roleQuery.AbilityCharges,
+			Rarity:       roleQuery.AbilityRarity,
+			AnyAbility:   roleQuery.AbilityAny,
+			RoleSpecific: roleQuery.AbilityRole,
+			Categories:   roleQuery.AbilityCats,
+		}
+		abilities = append(abilities, ability)
+	}
+	for _, id := range roleQuery.RolePassiveIDs {
+		passive := &Passive{
+			ID:          int(id),
+			Name:        roleQuery.PassiveName,
+			Description: roleQuery.PassiveDesc,
+		}
+		passives = append(passives, passive)
+	}
+	complexRole.Abilities = abilities
+	complexRole.Passives = passives
+
+	return complexRole, nil
+}
+
 func (rm *RoleModel) GetAllComplex() ([]*ComplexRole, error) {
 	cRoles := []*ComplexRole{}
 	roles := []*Role{}
@@ -148,9 +192,8 @@ func (rm *RoleModel) GetAllComplex() ([]*ComplexRole, error) {
 		cRole.Abilities = append(cRole.Abilities, abilities...)
 		cRole.Passives = append(cRole.Passives, passives...)
 
-    cRoles = append(cRoles, cRole)
+		cRoles = append(cRoles, cRole)
 	}
-
 
 	return cRoles, nil
 }

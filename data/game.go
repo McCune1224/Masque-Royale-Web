@@ -3,11 +3,11 @@ package data
 import "github.com/jmoiron/sqlx"
 
 type Game struct {
-	ID          int    `json:"id" db:"id"`
-	GameID      string `json:"game_id" db:"game_id"`
-	PlayerCount int    `json:"player_count" db:"player_count"`
-	CreatedAt   string `json:"created_at" db:"created_at"`
-	UpdatedAt   string `json:"updated_at" db:"updated_at"`
+	ID          int    `db:"id"`
+	GameID      string `db:"game_id"`
+	PlayerCount int    `db:"player_count"`
+	CreatedAt   string `db:"created_at"`
+	UpdatedAt   string `db:"updated_at"`
 }
 
 type GameModel struct {

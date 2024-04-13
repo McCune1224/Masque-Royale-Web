@@ -14,6 +14,17 @@ func GetGameIDURL(c echo.Context) string {
 	return strings.Join(strings.Split(url, "/")[:4], "/")
 }
 
+func GamePath(c echo.Context) string {
+	url := c.Request().URL.String()
+	return strings.Join(strings.Split(url, "/")[:3], "/")
+}
+
+func PlayerPath(c echo.Context, playerID string) string {
+	gameURL := GamePath(c)
+
+	return gameURL + "/players/" + playerID
+}
+
 func GetPlayerUpdateURL(c echo.Context, target *data.ComplexPlayer) string {
 	return GetGameIDURL(c) + "/menu/update/" + target.P.Name
 }

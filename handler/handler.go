@@ -7,10 +7,6 @@ import (
 	"github.com/mccune1224/betrayal-widget/data"
 )
 
-var CurrentGameRoles = []string{
-	"Agent", "Detective", "Gunman", "Lawyer", "Nurse", "Seraph", "Empress", "Succubus", "Wraith", "Actress", "Assassin", "Highwayman", "Jester", "Sommelier", "Witchdoctor",
-}
-
 type Handler struct {
 	models *data.Models
 }

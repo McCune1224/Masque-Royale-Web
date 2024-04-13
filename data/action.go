@@ -15,6 +15,15 @@ type Action struct {
 	Categories      pq.StringArray `db:"categories"`
 }
 
+// An acction that is associated with a player
+type PlayerAction struct {
+	ID          int    `db:"id"`
+	ActionID    int    `db:"action_id"`
+	PlayerID    int    `db:"player_id"`
+	Target      string `db:"target"`
+	Description string `db:"description"`
+}
+
 type ActionList struct {
 	ID        int           `db:"id"`
 	GameID    string        `db:"game_id"`
@@ -88,4 +97,34 @@ func (a *ActionModel) RemoveActionList(gameID string, action Action) error {
 func (a *ActionModel) ClearActionListIDs(gameId string) error {
 	_, err := a.Exec(`UPDATE action_lists SET action_ids = '{}' WHERE game_id = $1`, gameId)
 	return err
+}
+
+func (a *ActionModel) GetPlayerAction(id int) (*PlayerAction, error) {
+	var playerAction PlayerAction
+	err := a.Get(&playerAction, "SELECT * FROM player_actions WHERE id = $1", id)
+	if err != nil {
+		return nil, err
+	}
+
+	return &playerAction, err
+}
+
+func (a *ActionModel) GetPlayerActionByPlayerID(id int) (*PlayerAction, error) {
+	var playerAction PlayerAction
+	err := a.Get(&playerAction, "SELECT * FROM player_actions WHERE player_id = $1", id)
+	if err != nil {
+		return nil, err
+	}
+
+	return &playerAction, err
+}
+
+func (a *ActionModel) GetPlayerActionByActionID(id int) (*PlayerAction, error) {
+	var playerAction PlayerAction
+	err := a.Get(&playerAction, "SELECT * FROM player_actions WHERE action_id = $1", id)
+	if err != nil {
+		return nil, err
+	}
+
+	return &playerAction, err
 }

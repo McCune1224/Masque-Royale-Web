@@ -53,28 +53,20 @@ func (h *Handler) JoinGamePage(c echo.Context) error {
 }
 
 func (h *Handler) PlayerDashboardPage(c echo.Context) error {
-	playerName := c.Param("player_name")
-	game, err := util.GetGame(c)
-	if err != nil {
-		return TemplRender(c, page.Error500(c, err))
-	}
-	player, err := h.models.Players.GetByGameNameAndPlayerName(game.GameID, playerName)
-	if err != nil {
-		return TemplRender(c, page.Error500(c, err))
-	}
+	playerID := util.ParamInt(c, "player_id", -1)
+	// game, err := util.GetGame(c)
+	// if err != nil {
+	// 	return TemplRender(c, page.Error500(c, err))
+	// }
 
-	log.Println(player.RoleID)
-	foo, err := h.models.Roles.Get(player.RoleID)
+	player, err := h.models.Players.GetByID(playerID)
 	if err != nil {
 		return TemplRender(c, page.Error500(c, err))
 	}
-	log.Println(foo)
-
 	role, err := h.models.Roles.GetComplexByID(player.RoleID)
 	if err != nil {
 		return TemplRender(c, page.Error500(c, err))
 	}
-	log.Println("HIT HERE")
 
 	return TemplRender(c, page.PlayerDashboard(c, player, role))
 }

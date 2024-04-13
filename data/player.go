@@ -163,7 +163,46 @@ func (m *PlayerModel) GetRole(roleID int) (*Role, error) {
 	return role, nil
 }
 
-func (m *PlayerModel) GetComplexByGameID(gameID string, name string) (*ComplexPlayer, error) {
+func (m *PlayerModel) GetComplexByGameIDAndPlayerID(gameID string, playerID int) (*ComplexPlayer, error) {
+	playerQuery := &playerRoleJoin{}
+	query := `SELECT p.id AS player_id, p.name AS player_name, p.game_id AS player_game_id, p.role_id AS player_role_id, 
+    p.alive AS player_alive, p.seat AS player_seat, p.luck AS player_luck, p.luck_modifier AS player_luck_modifier, 
+    p.luck_status AS player_luck_status, p.alignment_override AS player_alignment_override, 
+    p.created_at AS player_created_at, p.updated_at AS player_updated_at, 
+    r.id AS role_id, r.name AS role_name, r.alignment AS role_alignment, r.ability_ids AS role_ability_ids, r.passive_ids AS role_passive_ids 
+  FROM players p JOIN roles r ON p.role_id = r.id WHERE p.game_id = $1 AND p.id = $2`
+	err := m.DB.Get(playerQuery, query, gameID, playerID)
+	if err != nil {
+		return nil, err
+	}
+	player := &Player{
+		ID:                playerQuery.PlayerID,
+		Name:              playerQuery.PlayerName,
+		GameID:            playerQuery.PlayerGameID,
+		RoleID:            playerQuery.PlayerRoleID,
+		Alive:             playerQuery.PlayerAlive,
+		Seat:              playerQuery.PlayerSeat,
+		Luck:              playerQuery.PlayerLuck,
+		LuckModifier:      playerQuery.PlayerLuckMod,
+		LuckStatus:        playerQuery.PlayerLuckStatus,
+		AlignmentOverride: playerQuery.PlayerAlignment,
+		CreatedAt:         playerQuery.PlayerCreated,
+		UpdatedAt:         playerQuery.PlayerUpdated,
+	}
+	role := &Role{
+		ID:         playerQuery.RoleID,
+		Name:       playerQuery.RoleName,
+		Alignment:  playerQuery.RoleAlignment,
+		AbilityIDs: playerQuery.RoleAbilityIDs,
+		PassiveIDs: playerQuery.RolePassiveIDs,
+	}
+	return &ComplexPlayer{
+		P: *player,
+		R: *role,
+	}, nil
+}
+
+func (m *PlayerModel) GetComplexByGameIDAndName(gameID string, name string) (*ComplexPlayer, error) {
 	playerQuery := &playerRoleJoin{}
 	query := `SELECT p.id AS 
   player_id, p.name AS player_name, p.game_id AS player_game_id, p.role_id AS player_role_id, 

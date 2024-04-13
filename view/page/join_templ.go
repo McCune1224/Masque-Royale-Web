@@ -36,7 +36,7 @@ func JoinGame(c echo.Context, game *data.Game, players []*data.Player) templ.Com
 				defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
 			}
 			for _, player := range players {
-				templ_7745c5c3_Err = button.LinkButton(player.Name, "/games/"+strconv.Itoa(game.ID)+"/players/"+player.Name).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = button.LinkButton(player.Name, "/games/"+strconv.Itoa(game.ID)+"/players/"+strconv.Itoa(player.ID)).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

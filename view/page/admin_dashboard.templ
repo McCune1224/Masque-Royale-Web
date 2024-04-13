@@ -1,0 +1,65 @@
+package page
+
+import "github.com/labstack/echo/v4"
+import "github.com/mccune1224/betrayal-widget/view/template"
+import "github.com/mccune1224/betrayal-widget/view/components/buttons"
+import "github.com/mccune1224/betrayal-widget/data"
+import "github.com/mccune1224/betrayal-widget/view/components/errors"
+import "github.com/mccune1224/betrayal-widget/util"
+import "strconv"
+
+templ AdminDashboard(c echo.Context, players []*data.ComplexPlayer, roleList []string, err ...string) {
+	@template.Base() {
+		<h1>
+			Hello Admin from { c.Param("game_id") }
+		</h1>
+		<form
+			hx-post={ util.GamePath(c) + "/players" }
+			hx-target="#player-list"
+			hx-swap="outerHTML"
+		>
+			<label>Add Player</label>
+			<input required class="text-black" type="text" name="player"/>
+			<select required name="role" class="text-black">
+				<option disabled selected value>-- select an option -- </option>
+				for _, roleName := range roleList {
+					<option class="text-black">{ roleName }</option>
+				}
+			</select>
+			@button.SubmitButton("Add Player")
+		</form>
+		@PlayerList(c, players)
+	}
+}
+
+templ PlayerList(c echo.Context, players []*data.ComplexPlayer, err ...string) {
+	if len(err) > 0 {
+		@errors.ErrorCard(err[0])
+	}
+	<div id="player-list" class="flex flex-col sm:grid sm:grid-cols-2">
+		for _, player := range players {
+			@PlayerCard(c, player)
+		}
+	</div>
+}
+
+templ PlayerCard(c echo.Context, player *data.ComplexPlayer) {
+	<div id={ "player-" + player.P.Name } class={ "px-5 py-1 sm:grid sm:grid-cols-4 flex flex-row bg-zinc-800 border-2 border-zinc-700" + CSSAliveTransparency(player) }>
+		<p>{ player.P.Name }</p>
+		<p>{ player.R.Name }</p>
+		if player.P.Alive {
+			@button.HxPostButton("Mark Dead", util.PlayerPath(c, strconv.Itoa(player.P.ID))+"/death")
+		} else {
+			@button.HxPostButton("Mark Alive", util.PlayerPath(c, strconv.Itoa(player.P.ID))+"/death", "player-"+player.P.Name)
+		}
+		//@button.HxDeleteButton("Delete", util.GamePath(c)+"/players/delete", strconv.Itoa(player.P.ID), "player-"+player.P.Name)
+		@button.HxDeleteButton("Delete", util.GamePath(c)+"/players/"+strconv.Itoa(player.P.ID), strconv.Itoa(player.P.ID), "#player-list")
+	</div>
+}
+
+func CSSAliveTransparency(player *data.ComplexPlayer) string {
+	if player.P.Alive {
+		return "opacity-80 "
+	}
+	return " "
+}

@@ -9,7 +9,7 @@ import "strconv"
 templ JoinGame(c echo.Context, game *data.Game, players []*data.Player) {
 	@template.Base() {
 		for _, player := range players {
-			@button.LinkButton(player.Name, "/games/"+strconv.Itoa(game.ID)+"/players/"+player.Name)
+			@button.LinkButton(player.Name, "/games/"+strconv.Itoa(game.ID)+"/players/"+strconv.Itoa(player.ID))
 		}
 	}
 }

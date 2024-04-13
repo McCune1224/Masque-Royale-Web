@@ -33,7 +33,7 @@ func main() {
 		},
 	))
 
-	route.ViewRoutes(app, handler)
+	route.Routes(app, handler)
 
 	sm := appMiddleware.NewSyncMiddleware(db)
 	app.Use(sm.SyncGameInfo)

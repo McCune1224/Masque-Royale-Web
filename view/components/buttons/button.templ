@@ -1,6 +1,6 @@
 package button
 
-var buttonStyle = " group/button bg-purple-600 hover:bg-purple-400 flex items-center justify-center border transform transition-transform duration-50 active:scale-95 focus:outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50 border-zinc-800 hover:border-white-600 disabled:bg-white-500 disabled:border-pink-500 focus-visible:ring-pink-600 py-2 px-3 rounded-md text-base leading-6 space-x-3 !rounded-lg !py-3 !px-11 h-[50px] text-white font-semibold"
+var buttonStyle = " group/button bg-purple-600 hover:bg-purple-400 flex items-center justify-center border transform transition-transform duration-50 active:scale-95 focus:outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50 border-zinc-800 hover:border-white-600 disabled:bg-white-500 disabled:border-pink-500 focus-visible:ring-pink-600 py-2 px-3 rounded-md text-base leading-6 space-x-3 !rounded-lg !py-1 !px-2 h-[50px] text-white font-semibold"
 
 templ SubmitButton(text string) {
 	<button
@@ -87,23 +87,31 @@ templ HxPutButton(text string, endpoint string, target ...string) {
 	}
 }
 
-templ HxDeleteButton(text string, endpoint string, target ...string) {
-	if len(target) > 0 {
-		<button
-			type="button"
-			class={ buttonStyle }
-			hx-delete={ endpoint }
-			hx-target={ target[0] }
-		>
-			{ text }
-		</button>
-	} else {
-		<button
-			type="button"
-			class={ buttonStyle }
-			hx-post={ endpoint }
-		>
-			{ text }
-		</button>
-	}
+templ HxDeleteButton(text string, endpoint string, value string, target ...string) {
+	<div hx-confirm="Are you sure?">
+		if len(target) > 0 {
+			<button
+				type="button"
+				class={ buttonStyle }
+				hx-delete={ endpoint }
+				hx-target={ target[0] }
+				hx-swap="outerHTML"
+				name={ value }
+				value={ value }
+			>
+				{ text }
+			</button>
+		} else {
+			<button
+				type="button"
+				class={ buttonStyle }
+				hx-delete={ endpoint }
+				hx-swap="outerHTML"
+				name={ value }
+				value={ value }
+			>
+				{ text }
+			</button>
+		}
+	</div>
 }

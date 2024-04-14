@@ -1,6 +1,8 @@
 package data
 
 import (
+	"log"
+
 	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"
 )
@@ -127,4 +129,31 @@ func (a *ActionModel) GetPlayerActionByActionID(id int) (*PlayerAction, error) {
 	}
 
 	return &playerAction, err
+}
+
+func (a *ActionModel) GetAllActionsForPlayer(playerID int) ([]*Action, error) {
+	playerActions := []*PlayerAction{}
+	fullActions := []*Action{}
+	err := a.Select(&playerActions, "SELECT * FROM player_actions WHERE player_id = $1", playerID)
+	if err != nil {
+		return nil, err
+	}
+
+	ids := pq.Int64Array{}
+	for _, pa := range playerActions {
+		ids = append(ids, int64(pa.ActionID))
+	}
+	log.Println("ID:", ids)
+	err = a.Select(&fullActions, "SELECT * FROM actions WHERE id = ANY($1) LIMIT 1", ids)
+	if err != nil {
+		return nil, err
+	}
+	log.Println(fullActions)
+	return fullActions, nil
+}
+
+func (a *ActionModel) InsertPlayerAction(pa *PlayerAction) error {
+	query := `INSERT INTO player_actions ` + PSQLGeneratedInsert(pa)
+	_, err := a.NamedExec(query, &pa)
+	return err
 }

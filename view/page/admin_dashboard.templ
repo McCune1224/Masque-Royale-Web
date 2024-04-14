@@ -7,28 +7,30 @@ import "github.com/mccune1224/betrayal-widget/data"
 import "github.com/mccune1224/betrayal-widget/view/components/errors"
 import "github.com/mccune1224/betrayal-widget/util"
 import "strconv"
+import "github.com/mccune1224/betrayal-widget/view/components/text"
 
 templ AdminDashboard(c echo.Context, players []*data.ComplexPlayer, roleList []string, err ...string) {
 	@template.Base() {
-		<h1>
-			Hello Admin from { c.Param("game_id") }
-		</h1>
-		<form
-			hx-post={ util.GamePath(c) + "/players" }
-			hx-target="#player-list"
-			hx-swap="outerHTML"
-		>
-			<label>Add Player</label>
-			<input required class="text-black" type="text" name="player"/>
-			<select required name="role" class="text-black">
-				<option disabled selected value>-- select an option -- </option>
-				for _, roleName := range roleList {
-					<option class="text-black">{ roleName }</option>
-				}
-			</select>
-			@button.SubmitButton("Add Player")
-		</form>
-		@PlayerList(c, players)
+		<main class="flex flex-col gap-2">
+			@text.Title("Admin Dashboard", true)
+			<form
+				hx-post={ util.GamePath(c) + "/players" }
+				hx-target="#player-list"
+				hx-swap="outerHTML"
+				class="flex flex-col text-center justify-center gap-1"
+			>
+				<label>Add Player</label>
+				<input required class="text-black" type="text" name="player"/>
+				<select required name="role" class="text-black">
+					<option disabled selected value>-- select an option -- </option>
+					for _, roleName := range roleList {
+						<option class="text-black">{ roleName }</option>
+					}
+				</select>
+				@button.SubmitButton("Add Player")
+			</form>
+			@PlayerList(c, players)
+		</main>
 	}
 }
 
@@ -48,7 +50,7 @@ templ PlayerCard(c echo.Context, player *data.ComplexPlayer) {
 		<p>{ player.P.Name }</p>
 		<p>{ player.R.Name }</p>
 		if player.P.Alive {
-			@button.HxPostButton("Mark Dead", util.PlayerPath(c, strconv.Itoa(player.P.ID))+"/death")
+			@button.HxPostButton("Mark Dead", util.PlayerPath(c, strconv.Itoa(player.P.ID))+"/death", "player-"+player.P.Name)
 		} else {
 			@button.HxPostButton("Mark Alive", util.PlayerPath(c, strconv.Itoa(player.P.ID))+"/death", "player-"+player.P.Name)
 		}

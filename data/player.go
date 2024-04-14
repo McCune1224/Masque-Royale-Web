@@ -1,6 +1,8 @@
 package data
 
 import (
+	"log"
+
 	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"
 )
@@ -8,16 +10,16 @@ import (
 type Player struct {
 	ID                int    `db:"id"`
 	Name              string `db:"name"`
-	GameID            string `db:"game_id"`
 	RoleID            int    `db:"role_id"`
 	Alive             bool   `db:"alive"`
+	GameID            string `db:"game_id"`
+	CreatedAt         string `db:"created_at"`
+	UpdatedAt         string `db:"updated_at"`
 	Seat              int    `db:"seat"`
 	Luck              int    `db:"luck"`
 	LuckModifier      int    `db:"luck_modifier"`
 	LuckStatus        string `db:"luck_status"`
 	AlignmentOverride string `db:"alignment_override"`
-	CreatedAt         string `db:"created_at"`
-	UpdatedAt         string `db:"updated_at"`
 }
 
 // psql statement to update the players table to be new and improved
@@ -56,13 +58,13 @@ type PlayerModel struct {
 	DB *sqlx.DB
 }
 
-func (m *PlayerModel) GetByGameID(gameID string) ([]*Player, error) {
-	players := []*Player{}
-	err := m.DB.Select(&players, "SELECT * FROM players WHERE game_id = $1", gameID)
+func (m *PlayerModel) GetByGameIDAndPlayerID(gameID string, id int) (*Player, error) {
+	player := &Player{}
+	err := m.DB.Get(player, "SELECT * FROM players WHERE game_id ILIKE $1 AND id = $2", gameID, id)
 	if err != nil {
 		return nil, err
 	}
-	return players, nil
+	return player, nil
 }
 
 func (m *PlayerModel) GetByID(id int) (*Player, error) {
@@ -112,10 +114,9 @@ func (m *PlayerModel) Create(player *Player) error {
 }
 
 func (m *PlayerModel) Update(player *Player) error {
-	// _, err := m.DB.NamedExec("UPDATE players SET name = :name, game_id = :game_id, role_id = :role_id, alive = :alive, seat = :seat, luck = :luck, luck_modifier = :luck_modifier WHERE id = :id", player)
-	_, err := m.DB.Exec(`UPDATE players SET 
-    name = $1, game_id = $2, role_id = $3, alive = $4, seat = $5, luck = $6, luck_modifier = $7, luck_status = $8, alignment_override = $9 WHERE id = $10`,
-		player.Name, player.GameID, player.RoleID, player.Alive, player.Seat, player.Luck, player.LuckModifier, player.LuckStatus, player.AlignmentOverride, player.ID)
+	log.Println(PSQLGeneratedUpdate(player))
+	query := `UPDATE players SET ` + PSQLGeneratedUpdate(player) + ` WHERE id = :id`
+	_, err := m.DB.NamedExec(query, &player)
 	if err != nil {
 		return err
 	}
@@ -140,6 +141,14 @@ func (m *PlayerModel) UpdateSeat(id int, seat int) error {
 
 func (m *PlayerModel) UpdateLuckStatus(id int, status string) error {
 	_, err := m.DB.Exec("UPDATE players SET luck_status = $1 WHERE id = $2", status, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *PlayerModel) UpdateDeathStatus(id int, deathStatus bool) error {
+	_, err := m.DB.Exec("UPDATE players SET alive = $1 WHERE id = $2", deathStatus, id)
 	if err != nil {
 		return err
 	}

@@ -21,6 +21,7 @@ func Routes(app *echo.Echo, handler *handler.Handler) {
 	gamesPlayer := games.Group("/players/:player_id")
 	gamesPlayer.GET("", handler.PlayerDashboardPage)
 	gamesPlayer.POST("/death", handler.MarkPlayerDead)
+	gamesPlayer.POST("/actions", handler.SubmitPlayerAction)
 
 	admin := games.Group("/admin")
 	admin.GET("", handler.AdminDashboardPage)

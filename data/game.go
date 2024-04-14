@@ -46,6 +46,12 @@ func (gm *GameModel) InsertGame(gameID string, playerCount int) (*Game, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	_, err = gm.Exec(`INSERT INTO action_lists (game_id, action_ids) VALUES ($1, '{}')`, gameID)
+	if err != nil {
+		return nil, err
+	}
+
 	return gm.GetByGameID(gameID)
 }
 

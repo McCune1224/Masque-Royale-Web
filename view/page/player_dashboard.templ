@@ -3,9 +3,52 @@ package page
 import "github.com/labstack/echo/v4"
 import "github.com/mccune1224/betrayal-widget/data"
 import "github.com/mccune1224/betrayal-widget/view/template"
+import "github.com/mccune1224/betrayal-widget/view/components/buttons"
+import "strconv"
+import "github.com/mccune1224/betrayal-widget/view/components/text"
+import "github.com/mccune1224/betrayal-widget/util"
 
-templ PlayerDashboard(c echo.Context, player *data.Player, role *data.ComplexRole) {
+templ PlayerDashboard(c echo.Context, player *data.Player, role *data.ComplexRole, actions []data.Action, playerActions []*data.Action) {
 	@template.Base() {
-		<p>{ player.Name } ... { role.Name }</p>
+		<main class="flex flex-col gap-2">
+			@text.Title(player.Name+" - "+role.Name, true)
+			@ActionSubmit(c, player, actions, playerActions)
+		</main>
 	}
+}
+
+templ ActionSubmit(c echo.Context, player *data.Player, actions []data.Action, playerActions []*data.Action) {
+	<form
+		class="flex flex-col gap-2 justify-center"
+		hx-post={ util.PlayerPath(c, strconv.Itoa(player.ID)) + "/actions" }
+	>
+		<label>Select an Action</label>
+		<select required name="ability" class="text-black">
+			<option disabled selected value>-- select an option -- </option>
+			for _, action := range actions {
+				<option class="text-black" value={ strconv.Itoa(action.ID) }>
+					{ action.AbilityName }
+				</option>
+			}
+		</select>
+		<label>Target</label>
+		<input class="text-black" type="text" name="target" required placeholder="who to target"/>
+		<label>Context/Details (optional)</label>
+		<input class="text-black" type="text" name="context" placeholder="Any additonal info for host"/>
+		@button.SubmitButton("Submit Action")
+	</form>
+	<h2>Pending Actions:</h2>
+	@PendingActions(c, playerActions)
+}
+
+templ PendingActions(c echo.Context, actions []*data.Action) {
+	<section id="pending-actions">
+		for _, action := range actions {
+			<p>{ action.AbilityName }</p>
+		}
+	</section>
+}
+
+templ AbilityLookup(c echo.Context) {
+	<div>TODO </div>
 }

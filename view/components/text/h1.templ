@@ -1,0 +1,13 @@
+package text
+
+templ Title(text string, center bool) {
+	if center {
+		<h1
+			class="sm:text-9xl text-4xl py-4 text-center"
+		>{ text }</h1>
+	} else {
+		<h1
+			class="sm:text-9xl text-4xl py-4"
+		>{ text }</h1>
+	}
+}

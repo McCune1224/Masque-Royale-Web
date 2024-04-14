@@ -7,7 +7,10 @@ templ SubmitButton(text string) {
 		type="submit"
 		class={ buttonStyle }
 	>
-		{ text }
+		<div class="flex gap-2 items-center text-center">
+			{ text }
+			<img class="htmx-indicator h-4 w-4" src="/static/grid.svg"/>
+		</div>
 	</button>
 }
 
@@ -30,17 +33,25 @@ templ HxPostButton(text string, endpoint string, target ...string) {
 			type="button"
 			class={ buttonStyle }
 			hx-post={ endpoint }
-			hx-target={ target[0] }
+			hx-target={ "#" + target[0] }
+			hx-swap="outerHTML"
 		>
-			{ text }
+			<div class="flex gap-2 items-center text-center">
+				{ text }
+				<img class="htmx-indicator h-4 w-4" src="/static/grid.svg"/>
+			</div>
 		</button>
 	} else {
 		<button
 			type="button"
 			class={ buttonStyle }
 			hx-post={ endpoint }
+			hx-swap="outerHTML"
 		>
-			{ text }
+			<div class="flex gap-2 items-center text-center">
+				{ text }
+				<img class="htmx-indicator h-4 w-4" src="/static/grid.svg"/>
+			</div>
 		</button>
 	}
 }
@@ -51,17 +62,25 @@ templ HxGetButton(text string, endpoint string, target ...string) {
 			type="button"
 			class={ buttonStyle }
 			hx-get={ endpoint }
+			hx-swap="outerHTML"
 			hx-target={ target[0] }
 		>
-			{ text }
+			<div class="flex gap-2 items-center text-center">
+				{ text }
+				<img class="htmx-indicator h-4 w-4" src="/static/grid.svg"/>
+			</div>
 		</button>
 	} else {
 		<button
 			type="button"
 			class={ buttonStyle }
 			hx-post={ endpoint }
+			hx-swap="outerHTML"
 		>
-			{ text }
+			<div class="flex gap-2 items-center text-center">
+				{ text }
+				<img class="htmx-indicator h-4 w-4" src="/static/grid.svg"/>
+			</div>
 		</button>
 	}
 }
@@ -73,16 +92,24 @@ templ HxPutButton(text string, endpoint string, target ...string) {
 			class={ buttonStyle }
 			hx-put={ endpoint }
 			hx-target={ target[0] }
+			hx-swap="outerHTML"
 		>
-			{ text }
+			<div class="flex gap-2 items-center text-center">
+				{ text }
+				<img class="htmx-indicator h-4 w-4" src="/static/grid.svg"/>
+			</div>
 		</button>
 	} else {
 		<button
 			type="button"
 			class={ buttonStyle }
 			hx-post={ endpoint }
+			hx-swap="outerHTML"
 		>
-			{ text }
+			<div class="flex gap-2 items-center text-center">
+				{ text }
+				<img class="htmx-indicator h-4 w-4" src="/static/grid.svg"/>
+			</div>
 		</button>
 	}
 }
@@ -99,19 +126,24 @@ templ HxDeleteButton(text string, endpoint string, value string, target ...strin
 			value={ value }
 			hx-confirm="Are you sure?"
 		>
-			{ text }
+			<div class="flex gap-2 items-center text-center">
+				{ text }
+				<img class="htmx-indicator h-4 w-4" src="/static/grid.svg"/>
+			</div>
 		</button>
 	} else {
 		<button
 			type="button"
 			class={ buttonStyle }
 			hx-delete={ endpoint }
-			hx-swap="outerHTML"
 			name={ value }
 			value={ value }
 			hx-confirm="Are you sure?"
 		>
-			{ text }
+			<div class="flex gap-2 items-center text-center">
+				{ text }
+				<img class="htmx-indicator h-4 w-4" src="/static/grid.svg"/>
+			</div>
 		</button>
 	}
 }

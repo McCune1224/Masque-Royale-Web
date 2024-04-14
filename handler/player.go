@@ -2,6 +2,7 @@ package handler
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/labstack/echo/v4"
@@ -72,17 +73,64 @@ func (h *Handler) DeletePlayerFromGame(c echo.Context) error {
 }
 
 func (h *Handler) MarkPlayerDead(c echo.Context) error {
-	playerID := util.QueryParamInt(c, "player_id", -1)
+	playerID := util.ParamInt(c, "player_id", -1)
 	game, _ := util.GetGame(c)
-	player, err := h.models.Players.GetComplexByGameIDAndPlayerID(game.GameID, playerID)
+	// TODO: FIX ME
+	player, err := h.models.Players.GetByID(playerID)
 	if err != nil {
 		return TemplRender(c, page.Error500(c, err))
 	}
-	player.P.Alive = !player.P.Alive
-	err = h.models.Players.Update(&player.P)
+	player.Alive = !player.Alive
+	err = h.models.Players.UpdateDeathStatus(player.ID, player.Alive)
 	if err != nil {
 		return TemplRender(c, page.Error500(c, err))
 	}
 
-	return TemplRender(c, page.PlayerCard(c, player))
+	cp, _ := h.models.Players.GetComplexByGameIDAndName(game.GameID, player.Name)
+
+	return TemplRender(c, page.PlayerCard(c, cp))
+}
+
+func (h *Handler) SubmitPlayerAction(c echo.Context) error {
+	playerID := util.ParamInt(c, "player_id", -1)
+	context := strings.TrimSpace(c.FormValue("context"))
+	target := strings.TrimSpace(c.FormValue("target"))
+	abilityID := c.FormValue("ability")
+	iAbilityID, _ := strconv.Atoi(abilityID)
+	game, _ := util.GetGame(c)
+
+	pa := &data.PlayerAction{
+		ActionID:    iAbilityID,
+		PlayerID:    playerID,
+		Target:      target,
+		Description: context,
+	}
+
+	err := h.models.Actions.InsertPlayerAction(pa)
+	if err != nil {
+		return TemplRender(c, page.Error500(c, err))
+	}
+
+	pa, err = h.models.Actions.GetPlayerActionByActionID(iAbilityID)
+	if err != nil {
+		return TemplRender(c, page.Error500(c, err))
+	}
+
+	actionList, err := h.models.Actions.GetActionList(game.GameID)
+	if err != nil {
+		return TemplRender(c, page.Error500(c, err))
+	}
+
+	actionList.ActionIds = append(actionList.ActionIds, int64(pa.ID))
+	err = h.models.Actions.UpdateActionList(actionList)
+	if err != nil {
+		return TemplRender(c, page.Error500(c, err))
+	}
+
+	allPlayerActions, err := h.models.Actions.GetAllActionsForPlayer(pa.PlayerID)
+	if err != nil {
+		return TemplRender(c, page.Error500(c, err))
+	}
+
+	return TemplRender(c, page.PendingActions(c, allPlayerActions))
 }

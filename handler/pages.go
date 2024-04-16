@@ -69,7 +69,7 @@ func (h *Handler) PlayerDashboardPage(c echo.Context) error {
 		return TemplRender(c, page.Error500(c, err))
 	}
 
-	pa, err := h.models.Actions.GetAllActionsForPlayer(player.ID)
+	pa, err := h.models.Actions.GetAllPlayerRequests(player.ID)
 	if err != nil {
 		return TemplRender(c, page.Error500(c, err))
 	}

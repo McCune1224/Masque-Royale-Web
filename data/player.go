@@ -1,8 +1,6 @@
 package data
 
 import (
-	"log"
-
 	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"
 )
@@ -114,7 +112,6 @@ func (m *PlayerModel) Create(player *Player) error {
 }
 
 func (m *PlayerModel) Update(player *Player) error {
-	log.Println(PSQLGeneratedUpdate(player))
 	query := `UPDATE players SET ` + PSQLGeneratedUpdate(player) + ` WHERE id = :id`
 	_, err := m.DB.NamedExec(query, &player)
 	if err != nil {

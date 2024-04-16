@@ -9,7 +9,7 @@ import "github.com/mccune1224/betrayal-widget/util"
 import "strconv"
 import "github.com/mccune1224/betrayal-widget/view/components/text"
 
-templ AdminDashboard(c echo.Context, players []*data.ComplexPlayer, roleList []string, err ...string) {
+templ AdminDashboard(c echo.Context, players []*data.ComplexPlayer, roleList []string, actions []data.ComplexPlayerRequest, err ...string) {
 	@template.Base() {
 		<main class="flex flex-col gap-2">
 			@text.Title("Admin Dashboard", true)
@@ -30,6 +30,7 @@ templ AdminDashboard(c echo.Context, players []*data.ComplexPlayer, roleList []s
 				@button.SubmitButton("Add Player")
 			</form>
 			@PlayerList(c, players)
+			@ActionDashboard(c, actions)
 		</main>
 	}
 }
@@ -64,4 +65,46 @@ func CSSAliveTransparency(player *data.ComplexPlayer) string {
 		return "opacity-80 "
 	}
 	return " "
+}
+
+templ AdminActionCard(c echo.Context, index int, action data.ComplexPlayerRequest) {
+	<div class="bg-zinc-700 border-2 px-4 py-2 rounded-xl flex flex-col">
+		//span flex to equal spacing
+		<div class="flex gap-9 text-xl justify-center">
+			<span class="text-4xl">{ strconv.Itoa(index + 1) }</span>
+			<span>{ action.P.P.Name } - { action.A.AbilityName } { "@" + action.R.Target }</span>
+		</div>
+		<form
+			hx-delete={ util.PlayerPath(c, strconv.Itoa(action.P.P.ID)) + "/actions/" + strconv.Itoa(action.R.ID) }
+			hx-target="#action-cards"
+			hx-swap="outerHTML"
+		>
+			<input
+				name="action"
+				value={ strconv.Itoa(action.R.ID) }
+				hidden
+			/>
+			<button
+				class="bg-red-400 hover:bg-red-600 py-3 px-2"
+			>Remove</button>
+		</form>
+	</div>
+}
+
+templ ActionQueue(c echo.Context, actionQueue []data.ComplexPlayerRequest) {
+	<div id="action-cards">
+		<div class="gap-4 flex flex-col">
+			for i, action := range actionQueue {
+				@AdminActionCard(c, i, action)
+			}
+		</div>
+	</div>
+}
+
+templ ActionDashboard(c echo.Context, actionQueue []data.ComplexPlayerRequest) {
+	<div class="flex flex-row">
+		<div class="container mx-auto leading-normal tracking-normal bg-zinc-900 text-white py-40 px-20">
+			@ActionQueue(c, actionQueue)
+		</div>
+	</div>
 }

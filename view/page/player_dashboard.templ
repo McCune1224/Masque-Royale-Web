@@ -37,16 +37,23 @@ templ ActionSubmit(c echo.Context, player *data.Player, actions []data.Action, p
 		<input class="text-black" type="text" name="context" placeholder="Any additonal info for host"/>
 		@button.SubmitButton("Submit Action")
 	</form>
-	<h2>Pending Actions:</h2>
+	<h2>Host Approval Pending Actions:</h2>
 	@PendingActions(c, playerActions)
 }
 
 templ PendingActions(c echo.Context, actions []*data.Action) {
 	<section id="pending-actions">
 		for _, action := range actions {
-			<p>{ action.AbilityName }</p>
+			@ActionCard(c, action)
 		}
 	</section>
+}
+
+templ ActionCard(c echo.Context, action *data.Action) {
+	<div class="flex flex-col gap-1 bg-zinc-800 border-2">
+		<p class="text-xl bold">{ action.AbilityName }</p>
+		<p>{ action.Description }</p>
+	</div>
 }
 
 templ AbilityLookup(c echo.Context) {

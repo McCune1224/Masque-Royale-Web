@@ -10,7 +10,7 @@ import "context"
 import "io"
 import "bytes"
 
-var buttonStyle = " group/button bg-purple-600 hover:bg-purple-400 flex items-center justify-center border transform transition-transform duration-50 active:scale-95 focus:outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50 border-zinc-800 hover:border-white-600 disabled:bg-white-500 disabled:border-pink-500 focus-visible:ring-pink-600 py-2 px-3 rounded-md text-base leading-6 space-x-3 !rounded-lg !py-1 !px-2 h-[50px] text-white font-semibold"
+var ButtonStyle = " group/button bg-purple-600 hover:bg-purple-400 flex items-center justify-center border transform transition-transform duration-50 active:scale-95 focus:outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50 border-zinc-800 hover:border-white-600 disabled:bg-white-500 disabled:border-pink-500 focus-visible:ring-pink-600 py-2 px-3 rounded-md text-base leading-6 space-x-3 !rounded-lg !py-1 !px-2 h-[50px] text-white font-semibold"
 
 func SubmitButton(text string) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
@@ -25,7 +25,7 @@ func SubmitButton(text string) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		var templ_7745c5c3_Var2 = []any{buttonStyle}
+		var templ_7745c5c3_Var2 = []any{ButtonStyle}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var2...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -81,7 +81,7 @@ func LinkButton(text string, link string) templ.Component {
 			templ_7745c5c3_Var5 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		var templ_7745c5c3_Var6 = []any{buttonStyle}
+		var templ_7745c5c3_Var6 = []any{ButtonStyle}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var6...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -146,7 +146,7 @@ func HxPostButton(text string, endpoint string, target ...string) templ.Componen
 		}
 		ctx = templ.ClearChildren(ctx)
 		if len(target) > 0 {
-			var templ_7745c5c3_Var11 = []any{buttonStyle}
+			var templ_7745c5c3_Var11 = []any{ButtonStyle}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var11...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -208,7 +208,7 @@ func HxPostButton(text string, endpoint string, target ...string) templ.Componen
 				return templ_7745c5c3_Err
 			}
 		} else {
-			var templ_7745c5c3_Var16 = []any{buttonStyle}
+			var templ_7745c5c3_Var16 = []any{ButtonStyle}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var16...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -278,7 +278,7 @@ func HxGetButton(text string, endpoint string, target ...string) templ.Component
 		}
 		ctx = templ.ClearChildren(ctx)
 		if len(target) > 0 {
-			var templ_7745c5c3_Var21 = []any{buttonStyle}
+			var templ_7745c5c3_Var21 = []any{ButtonStyle}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var21...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -340,7 +340,7 @@ func HxGetButton(text string, endpoint string, target ...string) templ.Component
 				return templ_7745c5c3_Err
 			}
 		} else {
-			var templ_7745c5c3_Var26 = []any{buttonStyle}
+			var templ_7745c5c3_Var26 = []any{ButtonStyle}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var26...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -410,7 +410,7 @@ func HxPutButton(text string, endpoint string, target ...string) templ.Component
 		}
 		ctx = templ.ClearChildren(ctx)
 		if len(target) > 0 {
-			var templ_7745c5c3_Var31 = []any{buttonStyle}
+			var templ_7745c5c3_Var31 = []any{ButtonStyle}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var31...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -472,7 +472,7 @@ func HxPutButton(text string, endpoint string, target ...string) templ.Component
 				return templ_7745c5c3_Err
 			}
 		} else {
-			var templ_7745c5c3_Var36 = []any{buttonStyle}
+			var templ_7745c5c3_Var36 = []any{ButtonStyle}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var36...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -542,7 +542,7 @@ func HxDeleteButton(text string, endpoint string, value string, target ...string
 		}
 		ctx = templ.ClearChildren(ctx)
 		if len(target) > 0 {
-			var templ_7745c5c3_Var41 = []any{buttonStyle}
+			var templ_7745c5c3_Var41 = []any{ButtonStyle}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var41...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -630,7 +630,7 @@ func HxDeleteButton(text string, endpoint string, value string, target ...string
 				return templ_7745c5c3_Err
 			}
 		} else {
-			var templ_7745c5c3_Var48 = []any{buttonStyle}
+			var templ_7745c5c3_Var48 = []any{ButtonStyle}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var48...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err

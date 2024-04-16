@@ -1,8 +1,6 @@
 package data
 
 import (
-	"log"
-
 	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"
 )
@@ -17,13 +15,20 @@ type Action struct {
 	Categories      pq.StringArray `db:"categories"`
 }
 
-// An acction that is associated with a player
-type PlayerAction struct {
+// action that is associated with a player within a game
+type PlayerRequest struct {
 	ID          int    `db:"id"`
 	ActionID    int    `db:"action_id"`
 	PlayerID    int    `db:"player_id"`
+	GameID      string `db:"game_id"`
 	Target      string `db:"target"`
 	Description string `db:"description"`
+}
+
+type ComplexPlayerRequest struct {
+	P ComplexPlayer
+	R PlayerRequest
+	A Action
 }
 
 type ActionList struct {
@@ -101,9 +106,18 @@ func (a *ActionModel) ClearActionListIDs(gameId string) error {
 	return err
 }
 
-func (a *ActionModel) GetPlayerAction(id int) (*PlayerAction, error) {
-	var playerAction PlayerAction
-	err := a.Get(&playerAction, "SELECT * FROM player_actions WHERE id = $1", id)
+func (a ActionModel) GetAllPlayerActionsForGame(gameID string) ([]*PlayerRequest, error) {
+	playerActions := []*PlayerRequest{}
+	err := a.Select(&playerActions, "SELECT * from player_requests WHERE game_id = $1", gameID)
+	if err != nil {
+		return nil, err
+	}
+	return playerActions, nil
+}
+
+func (a *ActionModel) GetPlayerAction(id int) (*PlayerRequest, error) {
+	var playerAction PlayerRequest
+	err := a.Get(&playerAction, "SELECT * FROM player_requests WHERE id = $1", id)
 	if err != nil {
 		return nil, err
 	}
@@ -111,9 +125,9 @@ func (a *ActionModel) GetPlayerAction(id int) (*PlayerAction, error) {
 	return &playerAction, err
 }
 
-func (a *ActionModel) GetPlayerActionByPlayerID(id int) (*PlayerAction, error) {
-	var playerAction PlayerAction
-	err := a.Get(&playerAction, "SELECT * FROM player_actions WHERE player_id = $1", id)
+func (a *ActionModel) GetPlayerActionByPlayerID(id int) (*PlayerRequest, error) {
+	var playerAction PlayerRequest
+	err := a.Get(&playerAction, "SELECT * FROM player_requests WHERE player_id = $1", id)
 	if err != nil {
 		return nil, err
 	}
@@ -121,9 +135,9 @@ func (a *ActionModel) GetPlayerActionByPlayerID(id int) (*PlayerAction, error) {
 	return &playerAction, err
 }
 
-func (a *ActionModel) GetPlayerActionByActionID(id int) (*PlayerAction, error) {
-	var playerAction PlayerAction
-	err := a.Get(&playerAction, "SELECT * FROM player_actions WHERE action_id = $1", id)
+func (a *ActionModel) GetPlayerActionByActionID(id int) (*PlayerRequest, error) {
+	var playerAction PlayerRequest
+	err := a.Get(&playerAction, "SELECT * FROM player_requests WHERE action_id = $1", id)
 	if err != nil {
 		return nil, err
 	}
@@ -131,10 +145,31 @@ func (a *ActionModel) GetPlayerActionByActionID(id int) (*PlayerAction, error) {
 	return &playerAction, err
 }
 
-func (a *ActionModel) GetAllActionsForPlayer(playerID int) ([]*Action, error) {
-	playerActions := []*PlayerAction{}
+func (a *ActionModel) GetAllActionsByPlayerActions(actionList *ActionList) ([]Action, error) {
+	playerActions := []PlayerRequest{}
+	fullActions := []Action{}
+	err := a.Select(&playerActions, "SELECT * FROM player_requests WHERE game_id = $1", actionList.GameID)
+	if err != nil {
+		return nil, err
+	}
+
+	actionIDS := pq.Int64Array{}
+	for _, pa := range playerActions {
+		actionIDS = append(actionIDS, int64(pa.ActionID))
+	}
+
+	err = a.Select(&fullActions, "SELECT * FROM actions WHERE id = ANY($1)", actionIDS)
+	if err != nil {
+		return nil, err
+	}
+
+	return fullActions, nil
+}
+
+func (a *ActionModel) GetAllPlayerRequests(playerID int) ([]*Action, error) {
+	playerActions := []*PlayerRequest{}
 	fullActions := []*Action{}
-	err := a.Select(&playerActions, "SELECT * FROM player_actions WHERE player_id = $1", playerID)
+	err := a.Select(&playerActions, "SELECT * FROM player_requests WHERE player_id = $1", playerID)
 	if err != nil {
 		return nil, err
 	}
@@ -143,17 +178,29 @@ func (a *ActionModel) GetAllActionsForPlayer(playerID int) ([]*Action, error) {
 	for _, pa := range playerActions {
 		ids = append(ids, int64(pa.ActionID))
 	}
-	log.Println("ID:", ids)
-	err = a.Select(&fullActions, "SELECT * FROM actions WHERE id = ANY($1) LIMIT 1", ids)
+	err = a.Select(&fullActions, "SELECT * FROM actions WHERE id = ANY($1)", ids)
 	if err != nil {
 		return nil, err
 	}
-	log.Println(fullActions)
 	return fullActions, nil
 }
 
-func (a *ActionModel) InsertPlayerAction(pa *PlayerAction) error {
-	query := `INSERT INTO player_actions ` + PSQLGeneratedInsert(pa)
+func (a *ActionModel) InsertPlayerRequest(pa *PlayerRequest) error {
+	query := `INSERT INTO player_requests ` + PSQLGeneratedInsert(pa)
 	_, err := a.NamedExec(query, &pa)
 	return err
+}
+
+func (a *ActionModel) DeletePlayerRequest(id int64) error {
+	_, err := a.Exec("DELETE FROM player_requests WHERE id = $1", id)
+	return err
+}
+
+func (a *AbilityModel) GetAllPlayerRequestsByGameID(gameID string) ([]*PlayerRequest, error) {
+	playerActions := []*PlayerRequest{}
+	err := a.Select(&playerActions, "SELECT * from player_requests WHERE game_id = $1", gameID)
+	if err != nil {
+		return nil, err
+	}
+	return playerActions, err
 }

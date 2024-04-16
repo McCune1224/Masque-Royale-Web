@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/labstack/echo/v4"
+	"github.com/lib/pq"
 	"github.com/mccune1224/betrayal-widget/data"
 	"github.com/mccune1224/betrayal-widget/util"
 	"github.com/mccune1224/betrayal-widget/view/page"
@@ -99,14 +100,20 @@ func (h *Handler) SubmitPlayerAction(c echo.Context) error {
 	iAbilityID, _ := strconv.Atoi(abilityID)
 	game, _ := util.GetGame(c)
 
-	pa := &data.PlayerAction{
-		ActionID:    iAbilityID,
-		PlayerID:    playerID,
-		Target:      target,
-		Description: context,
+	desc := "[no context provided]"
+	if context != "" {
+		desc = context
 	}
 
-	err := h.models.Actions.InsertPlayerAction(pa)
+	pa := &data.PlayerRequest{
+		ActionID:    iAbilityID,
+		PlayerID:    playerID,
+		GameID:      game.GameID,
+		Target:      target,
+		Description: desc,
+	}
+
+	err := h.models.Actions.InsertPlayerRequest(pa)
 	if err != nil {
 		return TemplRender(c, page.Error500(c, err))
 	}
@@ -127,10 +134,62 @@ func (h *Handler) SubmitPlayerAction(c echo.Context) error {
 		return TemplRender(c, page.Error500(c, err))
 	}
 
-	allPlayerActions, err := h.models.Actions.GetAllActionsForPlayer(pa.PlayerID)
+	allPlayerActions, err := h.models.Actions.GetAllPlayerRequests(pa.PlayerID)
 	if err != nil {
 		return TemplRender(c, page.Error500(c, err))
 	}
 
 	return TemplRender(c, page.PendingActions(c, allPlayerActions))
+}
+
+func (h *Handler) DeletePlayerAction(c echo.Context) error {
+	requestID := util.ParamInt(c, "action_id", -1)
+	err := h.models.Actions.DeletePlayerRequest(int64(requestID))
+	if err != nil {
+		return TemplRender(c, page.Error500(c, err))
+	}
+
+	game, _ := util.GetGame(c)
+	players, err := h.models.Players.GetAllComplexByGameID(game.GameID)
+	if err != nil {
+		return TemplRender(c, page.Error500(c, err))
+	}
+
+	playerRequests, err := h.models.Actions.GetAllPlayerActionsForGame(game.GameID)
+	if err != nil {
+		return TemplRender(c, page.Error500(c, err))
+	}
+
+	targetActionIDS := make(pq.Int64Array, len(playerRequests))
+	for _, a := range playerRequests {
+		targetActionIDS = append(targetActionIDS, int64(a.ActionID))
+	}
+
+	actions := []data.Action{}
+	err = h.models.Actions.Select(&actions, "SELECT * from actions WHERE id = ANY($1)", targetActionIDS)
+	if err != nil {
+		return TemplRender(c, page.Error500(c, err))
+	}
+
+	cprList := []*data.ComplexPlayerRequest{}
+	for _, currRequest := range playerRequests {
+		cpr := &data.ComplexPlayerRequest{}
+		for _, currPlayer := range players {
+			if currRequest.PlayerID == currPlayer.P.ID {
+				cpr.P = *currPlayer
+				break
+			}
+		}
+		cpr.R = *currRequest
+		for _, action := range actions {
+			if action.ID == cpr.R.ActionID {
+				cpr.A = action
+			}
+		}
+		cprList = append(cprList, cpr)
+	}
+
+	sortedCprList := sortComplexPlayerRequest(cprList)
+
+	return TemplRender(c, page.ActionQueue(c, sortedCprList))
 }

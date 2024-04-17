@@ -122,7 +122,7 @@ func (rm *RoleModel) GetComplexByID(id int) (*ComplexRole, error) {
 
 	query := `SELECT r.id AS role_id, r.name AS role_name, r.alignment AS role_alignment, r.ability_ids AS role_ability_ids, r.passive_ids AS role_passive_ids, 
   a.id AS ability_id, a.name AS ability_name, a.description AS ability_description, a.charges AS ability_charges, a.rarity AS ability_rarity, a.any_ability AS ability_any_ability, a.role_specific AS ability_role_specific, a.categories AS ability_categories, 
-  p.id AS passive_id, p.name AS passive_name, p.description AS passive_description FROM roles r LEFT JOIN abilities a ON a.id = ANY(r.ability_ids) LEFT JOIN passives p ON p.id = ANY(r.passive_ids) WHERE r.id = $1`
+  p.id AS passive_id, p.name AS passive_name, p.description AS passive_description FROM roles r LEFT JOIN abilities a ON a.id = ANY(r.ability_ids) LEFT JOIN passives p ON p.id = ANY(r.passive_ids) WHERE r.id = $1 LIMIT 1`
 	err := rm.DB.Get(roleQuery, query, id)
 	if err != nil {
 		return nil, err

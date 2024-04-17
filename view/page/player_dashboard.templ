@@ -7,42 +7,50 @@ import "github.com/mccune1224/betrayal-widget/view/components/buttons"
 import "strconv"
 import "github.com/mccune1224/betrayal-widget/view/components/text"
 import "github.com/mccune1224/betrayal-widget/util"
+import "strings"
 
 templ PlayerDashboard(c echo.Context, player *data.Player, role *data.ComplexRole, actions []data.Action, playerActions []*data.Action) {
 	@template.Base() {
-		<main class="flex flex-col gap-2">
+		<main class="flex flex-col gap-9">
 			@text.Title(player.Name+" - "+role.Name, true)
 			@ActionSubmit(c, player, actions, playerActions)
+			@PendingActions(c, playerActions)
+			@RoleCard(c, role)
 		</main>
 	}
 }
 
 templ ActionSubmit(c echo.Context, player *data.Player, actions []data.Action, playerActions []*data.Action) {
-	<form
-		class="flex flex-col gap-2 justify-center"
-		hx-post={ util.PlayerPath(c, strconv.Itoa(player.ID)) + "/actions" }
-	>
-		<label>Select an Action</label>
-		<select required name="ability" class="text-black">
-			<option disabled selected value>-- select an option -- </option>
-			for _, action := range actions {
-				<option class="text-black" value={ strconv.Itoa(action.ID) }>
-					{ action.AbilityName }
-				</option>
-			}
-		</select>
-		<label>Target</label>
-		<input class="text-black" type="text" name="target" required placeholder="who to target"/>
-		<label>Context/Details (optional)</label>
-		<input class="text-black" type="text" name="context" placeholder="Any additonal info for host"/>
-		@button.SubmitButton("Submit Action")
-	</form>
-	<h2>Host Approval Pending Actions:</h2>
-	@PendingActions(c, playerActions)
+	<section>
+		<h3 class="text-5xl">Action Requests</h3>
+		<form
+			class="flex flex-col gap-2 justify-center bg-zinc-800 border-white border-2 rounded-lg px-5"
+			hx-post={ util.PlayerPath(c, strconv.Itoa(player.ID)) + "/actions" }
+			hx-target="#pending-actions"
+		>
+			<label class="text-4xl">Select an Action</label>
+			<select required name="ability" class="text-black text-2xl">
+				<option disabled selected value>-- select an option -- </option>
+				for _, action := range actions {
+					<option class="text-black" value={ strconv.Itoa(action.ID) }>
+						{ action.AbilityName }
+					</option>
+				}
+			</select>
+			<label class="text-4xl">Target</label>
+			<input class="text-black text-2xl" type="text" name="target" required placeholder="who to target"/>
+			<label class="text-4xl">Context/Details (optional)</label>
+			<input class="text-black text-2xl" type="text" name="context" placeholder="Any additonal info for host"/>
+			@button.SubmitButton("Submit Action")
+		</form>
+	</section>
 }
 
 templ PendingActions(c echo.Context, actions []*data.Action) {
 	<section id="pending-actions">
+		if len(actions) != 0 {
+			<h2 class="text-5xl">Host Approval Pending Actions:</h2>
+		}
 		for _, action := range actions {
 			@ActionCard(c, action)
 		}
@@ -58,4 +66,36 @@ templ ActionCard(c echo.Context, action *data.Action) {
 
 templ AbilityLookup(c echo.Context) {
 	<div>TODO </div>
+}
+
+templ RoleCard(c echo.Context, role *data.ComplexRole) {
+	<section class="flex flex-col justify-center bg-zinc-800 border-2 border-white px-2 rounded-lg">
+		<h3 class="text-4xl text-center">About Your Role</h3>
+		<div>
+			<div class="py-5">
+				<p class="text-3xl italic">{ role.Name }</p>
+				<p>{ role.Alignment }</p>
+				<hr/>
+			</div>
+			<label class="text-2xl italic">Abilities</label>
+			<div class="flex flex-col py-2 gap-2">
+				for _, ability := range role.Abilities {
+					<div>
+						<p class="font-bold">{ ability.Name } [{ strconv.Itoa(ability.Charges) }] ({ strings.Join(ability.Categories, " -- ") })</p>
+						<p>{ ability.Description }</p>
+					</div>
+				}
+				<hr/>
+			</div>
+			<label class="text-2xl italic">Passives</label>
+			<div class="flex flex-col py-2 gap-4">
+				for _, passive := range role.Passives {
+					<div>
+						<p class="font-bold">{ passive.Name }</p>
+						<p>{ passive.Description }</p>
+					</div>
+				}
+			</div>
+		</div>
+	</section>
 }

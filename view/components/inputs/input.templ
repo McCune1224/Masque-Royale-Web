@@ -4,8 +4,8 @@ var InputStyle = "bg-gray-200 appearance-none border-2 border-gray-200 rounded w
 
 templ Input(name string, required bool) {
 	if required {
-		<input class={ InputStyle } type="text" name="target"/>
+		<input class={ InputStyle } type="text" name={ name }/>
 	} else {
-		<input class={ InputStyle } type="text" name="target" required/>
+		<input class={ InputStyle } type="text" name={ name } required/>
 	}
 }

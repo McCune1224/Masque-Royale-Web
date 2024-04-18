@@ -8,6 +8,7 @@ import "strconv"
 import "github.com/mccune1224/betrayal-widget/view/components/text"
 import "github.com/mccune1224/betrayal-widget/util"
 import "strings"
+import "github.com/mccune1224/betrayal-widget/view/components/inputs"
 
 templ PlayerDashboard(c echo.Context, player *data.Player, role *data.ComplexRole, actions []data.Action, playerActions []*data.Action) {
 	@template.Base() {
@@ -24,23 +25,23 @@ templ ActionSubmit(c echo.Context, player *data.Player, actions []data.Action, p
 	<section>
 		<h3 class="text-5xl">Action Requests</h3>
 		<form
-			class="flex flex-col gap-2 justify-center bg-zinc-800 border-white border-2 rounded-lg px-5"
+			class="flex flex-col gap-2 justify-center bg-zinc-800 border-white border-2 rounded-lg py-3 px-10"
 			hx-post={ util.PlayerPath(c, strconv.Itoa(player.ID)) + "/actions" }
 			hx-target="#pending-actions"
 		>
-			<label class="text-4xl">Select an Action</label>
-			<select required name="ability" class="text-black text-2xl">
-				<option disabled selected value>-- select an option -- </option>
+			<label class="text-2xl">Select an Action</label>
+			<select required name="ability" class="bg-gray-200 border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500">
+				<option disabled selected value>-- --</option>
 				for _, action := range actions {
 					<option class="text-black" value={ strconv.Itoa(action.ID) }>
 						{ action.AbilityName }
 					</option>
 				}
 			</select>
-			<label class="text-4xl">Target</label>
-			<input class="text-black text-2xl" type="text" name="target" required placeholder="who to target"/>
-			<label class="text-4xl">Context/Details (optional)</label>
-			<input class="text-black text-2xl" type="text" name="context" placeholder="Any additonal info for host"/>
+			<label class="text-2xl">Target</label>
+			@inputs.Input("target", true)
+			<label class="text-2xl">Context/Details (optional)</label>
+			@inputs.Input("context", true)
 			@button.SubmitButton("Submit Action")
 		</form>
 	</section>

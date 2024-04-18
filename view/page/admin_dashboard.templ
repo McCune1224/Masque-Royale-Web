@@ -8,6 +8,7 @@ import "github.com/mccune1224/betrayal-widget/view/components/errors"
 import "github.com/mccune1224/betrayal-widget/util"
 import "strconv"
 import "github.com/mccune1224/betrayal-widget/view/components/text"
+import "github.com/mccune1224/betrayal-widget/view/components/inputs"
 
 templ AdminDashboard(c echo.Context, players []*data.ComplexPlayer, roleList []string, actions []data.ComplexPlayerRequest, err ...string) {
 	@template.Base() {
@@ -17,20 +18,22 @@ templ AdminDashboard(c echo.Context, players []*data.ComplexPlayer, roleList []s
 				hx-post={ util.GamePath(c) + "/players" }
 				hx-target="#player-list"
 				hx-swap="outerHTML"
-				class="flex flex-col text-center justify-center gap-1"
+				class="flex flex-col gap-2 justify-center bg-zinc-800 border-white border-2 rounded-lg py-3 px-10"
 			>
-				<label>Add Player</label>
-				<input required class="text-black" type="text" name="player"/>
-				<select required name="role" class="text-black">
-					<option disabled selected value>-- select an option -- </option>
+				<h2 class="text-3xl">Player Creation</h2>
+				<label>Player Name</label>
+				@inputs.Input("player", true)
+				<label>Select a Role</label>
+				<select required name="role" class="bg-gray-200 border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500">
+					<option disabled selected value>-- -- </option>
 					for _, roleName := range roleList {
 						<option class="text-black">{ roleName }</option>
 					}
 				</select>
 				@button.SubmitButton("Add Player")
 			</form>
-			@PlayerList(c, players)
 			@ActionDashboard(c, actions)
+			@PlayerList(c, players)
 		</main>
 	}
 }
@@ -39,6 +42,7 @@ templ PlayerList(c echo.Context, players []*data.ComplexPlayer, err ...string) {
 	if len(err) > 0 {
 		@errors.ErrorCard(err[0])
 	}
+	<h2>Player Info</h2>
 	<div id="player-list" class="flex flex-col sm:grid sm:grid-cols-2">
 		for _, player := range players {
 			@PlayerCard(c, player)
@@ -68,11 +72,11 @@ func CSSAliveTransparency(player *data.ComplexPlayer) string {
 }
 
 templ AdminActionCard(c echo.Context, index int, action data.ComplexPlayerRequest) {
-	<div class="bg-zinc-700 border-2 px-4 py-2 rounded-xl flex flex-col">
+	<div class="flex flex-row justify-between">
 		//span flex to equal spacing
-		<div class="flex gap-9 text-xl justify-center">
-			<span class="text-4xl">{ strconv.Itoa(index + 1) }</span>
-			<span>{ action.P.P.Name } - { action.A.AbilityName } { "@" + action.R.Target }</span>
+		<div class="flex text-xl justify-center gap-2">
+			<span class="">#{ strconv.Itoa(index + 1) }</span>
+			<span>{ action.P.P.Name }, { action.A.AbilityName }, { "@" + action.R.Target }</span>
 		</div>
 		<form
 			hx-delete={ util.PlayerPath(c, strconv.Itoa(action.P.P.ID)) + "/actions/" + strconv.Itoa(action.R.ID) }
@@ -84,27 +88,23 @@ templ AdminActionCard(c echo.Context, index int, action data.ComplexPlayerReques
 				value={ strconv.Itoa(action.R.ID) }
 				hidden
 			/>
-			<button
-				class="bg-red-400 hover:bg-red-600 py-3 px-2"
-			>Remove</button>
+			@button.SubmitButton("Delete")
 		</form>
 	</div>
 }
 
 templ ActionQueue(c echo.Context, actionQueue []data.ComplexPlayerRequest) {
-	<div id="action-cards">
-		<div class="gap-4 flex flex-col">
-			for i, action := range actionQueue {
-				@AdminActionCard(c, i, action)
-			}
-		</div>
+	<div>
+		for i, action := range actionQueue {
+			@AdminActionCard(c, i, action)
+			<hr/>
+		}
 	</div>
 }
 
 templ ActionDashboard(c echo.Context, actionQueue []data.ComplexPlayerRequest) {
-	<div class="flex flex-row">
-		<div class="container mx-auto leading-normal tracking-normal bg-zinc-900 text-white py-40 px-20">
-			@ActionQueue(c, actionQueue)
-		</div>
+	<h1>Action Queue (caster, ability, target, context)</h1>
+	<div class="flex flex-col gap-2 justify-center bg-zinc-800 border-white border-2 rounded-lg py-3 px-1">
+		@ActionQueue(c, actionQueue)
 	</div>
 }

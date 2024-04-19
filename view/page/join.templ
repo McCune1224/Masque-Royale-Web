@@ -5,11 +5,20 @@ import "github.com/mccune1224/betrayal-widget/data"
 import "github.com/mccune1224/betrayal-widget/view/template"
 import "github.com/mccune1224/betrayal-widget/view/components/buttons"
 import "strconv"
+import "github.com/mccune1224/betrayal-widget/view/components/navbars"
 
 templ JoinGame(c echo.Context, game *data.Game, players []*data.Player) {
 	@template.Base() {
-		for _, player := range players {
-			@button.LinkButton(player.Name, "/games/"+strconv.Itoa(game.ID)+"/players/"+strconv.Itoa(player.ID))
-		}
+		<main>
+			<h1
+				class="sm:text-9xl text-4xl py-4 text-center"
+			>Select Your Name</h1>
+			<div class="flex flex-col gap-4">
+				for _, player := range players {
+					@button.LinkButton(player.Name, "/games/"+strconv.Itoa(game.ID)+"/players/"+strconv.Itoa(player.ID))
+				}
+			</div>
+		</main>
+		@navbars.HomeNavbar()
 	}
 }

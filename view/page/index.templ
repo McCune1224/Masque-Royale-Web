@@ -6,6 +6,8 @@ import "github.com/mccune1224/betrayal-widget/view/template"
 import "github.com/mccune1224/betrayal-widget/view/components/buttons"
 import "strconv"
 import "github.com/mccune1224/betrayal-widget/view/components/errors"
+import "github.com/mccune1224/betrayal-widget/view/components/inputs"
+import "github.com/mccune1224/betrayal-widget/view/components/text"
 
 templ GamesList(c echo.Context, games []data.Game) {
 	<div id="games-list">
@@ -16,12 +18,12 @@ templ GamesList(c echo.Context, games []data.Game) {
 }
 
 templ GameCard(c echo.Context, game data.Game) {
-	<div id={ "game-" + strconv.Itoa(game.ID) } class="sm:grid sm:grid-cols-5 text-center bg-zinc-700 border-2 px-4">
-		<h4>{ game.GameID }</h4>
+	<div id={ "game-" + strconv.Itoa(game.ID) } class="flex flex-col gap-2 justify-center bg-zinc-800 border-white border-2 rounded-lg py-3 px-10">
+		<h4 class="text-2xl">{ game.GameID }</h4>
 		<p>{ strconv.Itoa(game.PlayerCount) } Players</p>
 		@button.LinkButton("Join Game", "/join/"+strconv.Itoa(game.ID))
 		@button.LinkButton("Admin", "/games/"+strconv.Itoa(game.ID)+"/admin")
-		@button.HxDeleteButton("Delete", "/delete/"+strconv.Itoa(game.ID), strconv.Itoa(game.ID), "#body")
+		@button.HxDeleteButton("Delete Game", "/delete/"+strconv.Itoa(game.ID), strconv.Itoa(game.ID), "#body")
 	</div>
 }
 
@@ -31,22 +33,20 @@ templ Index(c echo.Context, currentGames []data.Game, err ...string) {
 			<h1
 				class="sm:text-9xl text-4xl py-4 text-center"
 			>Masque Royale</h1>
+			@text.Title("Current Games", true)
 			@GamesList(c, currentGames)
 			if len(err) > 0 {
 				@errors.ErrorCard(err[0])
 			}
+			@text.Title("Create New Game", true)
 			<form
-				class="flex flex-col gap-1 text-center"
+				class="flex flex-col gap-2 justify-center bg-zinc-800 border-white border-2 rounded-lg py-3 px-10"
 				hx-post="/create"
 				hx-target="#body"
+				hx-on::after-request="this.reset()"
 			>
-				<label>Game Name</label>
-				<input
-					required
-					class="text-black"
-					type="text"
-					name="name"
-				/>
+				<label class="text-xl">Game Name</label>
+				@inputs.Input("name", true)
 				@button.SubmitButton("Create New Game")
 			</form>
 		</main>

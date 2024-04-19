@@ -1,0 +1,29 @@
+package navbars
+
+type NavbarLink struct {
+	Text string
+	Link string
+}
+
+templ navbarItem(text string, link string) {
+	<div class="grid h-full max-w-lg grid-cols-4 mx-auto font-medium">
+		<a href={ templ.SafeURL(link) } class="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800 group">
+			<button type="button" class="text-sm text-gray-500 dark:text-gray-400 group-hover:text-pink-600 dark:group-hover:text-pink-500">
+				{ text }
+			</button>
+		</a>
+	</div>
+}
+
+templ Navbar(items []string, links []string) {
+	<nav class="fixed top-0 left-0 z-50 w-full h-16 bg-white border-t border-gray-200 dark:bg-gray-700 dark:border-gray-600">
+		for i := range items {
+			@navbarItem(items[i], links[i])
+		}
+	</nav>
+}
+
+templ HomeNavbar() {
+	@Navbar([]string{"HOME"}, []string{"/"}) {
+	}
+}

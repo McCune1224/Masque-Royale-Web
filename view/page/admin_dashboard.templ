@@ -9,18 +9,20 @@ import "github.com/mccune1224/betrayal-widget/util"
 import "strconv"
 import "github.com/mccune1224/betrayal-widget/view/components/text"
 import "github.com/mccune1224/betrayal-widget/view/components/inputs"
+import "github.com/mccune1224/betrayal-widget/view/components/navbars"
 
 templ AdminDashboard(c echo.Context, players []*data.ComplexPlayer, roleList []string, actions []data.ComplexPlayerRequest, err ...string) {
 	@template.Base() {
 		<main class="flex flex-col gap-2">
 			@text.Title("Admin Dashboard", true)
+			@text.Title("Player Creation", true)
 			<form
 				hx-post={ util.GamePath(c) + "/players" }
 				hx-target="#player-list"
 				hx-swap="outerHTML"
-				class="flex flex-col gap-2 justify-center bg-zinc-800 border-white border-2 rounded-lg py-3 px-10"
+				hx-on::after-request="this.reset()"
+				class="flex flex-col gap-2 justify-center bg-zinc-800 border-purple-700 border-2 rounded-lg py-3 px-10"
 			>
-				<h2 class="text-3xl">Player Creation</h2>
 				<label>Player Name</label>
 				@inputs.Input("player", true)
 				<label>Select a Role</label>
@@ -33,8 +35,12 @@ templ AdminDashboard(c echo.Context, players []*data.ComplexPlayer, roleList []s
 				@button.SubmitButton("Add Player")
 			</form>
 			@ActionDashboard(c, actions)
-			@PlayerList(c, players)
+			@text.Title("Current Players", true)
+			<div class="flex flex-col gap-2 justify-center bg-zinc-800 border-purple-700 border-2 rounded-lg py-3 px-1">
+				@PlayerList(c, players)
+			</div>
 		</main>
+		@navbars.HomeNavbar()
 	}
 }
 
@@ -42,8 +48,7 @@ templ PlayerList(c echo.Context, players []*data.ComplexPlayer, err ...string) {
 	if len(err) > 0 {
 		@errors.ErrorCard(err[0])
 	}
-	<h2>Player Info</h2>
-	<div id="player-list" class="flex flex-col sm:grid sm:grid-cols-2">
+	<div id="player-list" class="flex flex-col gap-3 sm:grid sm:grid-cols-2">
 		for _, player := range players {
 			@PlayerCard(c, player)
 		}
@@ -51,60 +56,52 @@ templ PlayerList(c echo.Context, players []*data.ComplexPlayer, err ...string) {
 }
 
 templ PlayerCard(c echo.Context, player *data.ComplexPlayer) {
-	<div id={ "player-" + player.P.Name } class={ "px-5 py-1 sm:grid sm:grid-cols-4 flex flex-row bg-zinc-800 border-2 border-zinc-700" + CSSAliveTransparency(player) }>
-		<p>{ player.P.Name }</p>
-		<p>{ player.R.Name }</p>
-		if player.P.Alive {
-			@button.HxPostButton("Mark Dead", util.PlayerPath(c, strconv.Itoa(player.P.ID))+"/death", "player-"+player.P.Name)
-		} else {
-			@button.HxPostButton("Mark Alive", util.PlayerPath(c, strconv.Itoa(player.P.ID))+"/death", "player-"+player.P.Name)
-		}
-		//@button.HxDeleteButton("Delete", util.GamePath(c)+"/players/delete", strconv.Itoa(player.P.ID), "player-"+player.P.Name)
-		@button.HxDeleteButton("Delete", util.GamePath(c)+"/players/"+strconv.Itoa(player.P.ID), strconv.Itoa(player.P.ID), "#player-list")
+	<div id={ "player-" + player.P.Name } class={ "px-5 py-1 flex flex-col " + CSSAliveTransparency(player) }>
+		<div class="flex gap-1 text-xl">
+			<p>{ player.P.Name }</p>
+			<p>{ player.R.Name }</p>
+		</div>
+		<div class="flex gap-1">
+			if player.P.Alive {
+				@button.HxPostButton("Mark Dead", util.PlayerPath(c, strconv.Itoa(player.P.ID))+"/death", "#player-"+player.P.Name)
+			} else {
+				@button.HxPostButton("Mark Alive", util.PlayerPath(c, strconv.Itoa(player.P.ID))+"/death", "#player-"+player.P.Name)
+			}
+			@button.HxDeleteButton("Delete", util.GamePath(c)+"/players/"+strconv.Itoa(player.P.ID), strconv.Itoa(player.P.ID), "#player-list")
+		</div>
 	</div>
 }
 
 func CSSAliveTransparency(player *data.ComplexPlayer) string {
-	if player.P.Alive {
-		return "opacity-80 "
+	if !player.P.Alive {
+		return "opacity-40 "
 	}
 	return " "
 }
 
 templ AdminActionCard(c echo.Context, index int, action data.ComplexPlayerRequest) {
-	<div class="flex flex-row justify-between">
+	<div class="flex flex-col gap-2">
 		//span flex to equal spacing
 		<div class="flex text-xl justify-center gap-2">
 			<span class="">#{ strconv.Itoa(index + 1) }</span>
 			<span>{ action.P.P.Name }, { action.A.AbilityName }, { "@" + action.R.Target }</span>
 		</div>
-		<form
-			hx-delete={ util.PlayerPath(c, strconv.Itoa(action.P.P.ID)) + "/actions/" + strconv.Itoa(action.R.ID) }
-			hx-target="#action-cards"
-			hx-swap="outerHTML"
-		>
-			<input
-				name="action"
-				value={ strconv.Itoa(action.R.ID) }
-				hidden
-			/>
-			@button.SubmitButton("Delete")
-		</form>
+		@button.HxDeleteButton("Delete/Resolve", util.PlayerPath(c, strconv.Itoa(action.P.P.ID)+"/actions/"+strconv.Itoa(action.R.ID)), strconv.Itoa(action.R.ID), "#action-cards")
 	</div>
 }
 
 templ ActionQueue(c echo.Context, actionQueue []data.ComplexPlayerRequest) {
-	<div>
+	<div id="action-cards" class="flex flex-col gap-2">
 		for i, action := range actionQueue {
 			@AdminActionCard(c, i, action)
-			<hr/>
+			<br/>
 		}
 	</div>
 }
 
 templ ActionDashboard(c echo.Context, actionQueue []data.ComplexPlayerRequest) {
-	<h1>Action Queue (caster, ability, target, context)</h1>
-	<div class="flex flex-col gap-2 justify-center bg-zinc-800 border-white border-2 rounded-lg py-3 px-1">
+	@text.Title("Action Queue", true)
+	<div class="flex flex-col gap-2 justify-center bg-zinc-800 border-purple-700 border-2 rounded-lg py-3 px-1">
 		@ActionQueue(c, actionQueue)
 	</div>
 }

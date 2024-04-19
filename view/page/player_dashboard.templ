@@ -9,6 +9,7 @@ import "github.com/mccune1224/betrayal-widget/view/components/text"
 import "github.com/mccune1224/betrayal-widget/util"
 import "strings"
 import "github.com/mccune1224/betrayal-widget/view/components/inputs"
+import "github.com/mccune1224/betrayal-widget/view/components/navbars"
 
 templ PlayerDashboard(c echo.Context, player *data.Player, role *data.ComplexRole, actions []data.Action, playerActions []*data.Action) {
 	@template.Base() {
@@ -18,16 +19,18 @@ templ PlayerDashboard(c echo.Context, player *data.Player, role *data.ComplexRol
 			@PendingActions(c, playerActions)
 			@RoleCard(c, role)
 		</main>
+		@navbars.HomeNavbar()
 	}
 }
 
 templ ActionSubmit(c echo.Context, player *data.Player, actions []data.Action, playerActions []*data.Action) {
 	<section>
-		<h3 class="text-5xl">Action Requests</h3>
+		@text.Title("Action Requests", true)
 		<form
 			class="flex flex-col gap-2 justify-center bg-zinc-800 border-white border-2 rounded-lg py-3 px-10"
 			hx-post={ util.PlayerPath(c, strconv.Itoa(player.ID)) + "/actions" }
 			hx-target="#pending-actions"
+			hx-on::after-request="this.reset()"
 		>
 			<label class="text-2xl">Select an Action</label>
 			<select required name="ability" class="bg-gray-200 border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500">
@@ -41,7 +44,7 @@ templ ActionSubmit(c echo.Context, player *data.Player, actions []data.Action, p
 			<label class="text-2xl">Target</label>
 			@inputs.Input("target", true)
 			<label class="text-2xl">Context/Details (optional)</label>
-			@inputs.Input("context", true)
+			@inputs.Input("context", false)
 			@button.SubmitButton("Submit Action")
 		</form>
 	</section>
@@ -50,7 +53,7 @@ templ ActionSubmit(c echo.Context, player *data.Player, actions []data.Action, p
 templ PendingActions(c echo.Context, actions []*data.Action) {
 	<section id="pending-actions">
 		if len(actions) != 0 {
-			<h2 class="text-5xl">Host Approval Pending Actions:</h2>
+			@text.Title("Pending Actions", true)
 		}
 		for _, action := range actions {
 			@ActionCard(c, action)
@@ -70,33 +73,31 @@ templ AbilityLookup(c echo.Context) {
 }
 
 templ RoleCard(c echo.Context, role *data.ComplexRole) {
+	@text.Title("About Your Role", true)
 	<section class="flex flex-col justify-center bg-zinc-800 border-2 border-white px-2 rounded-lg">
-		<h3 class="text-4xl text-center">About Your Role</h3>
-		<div>
-			<div class="py-5">
-				<p class="text-3xl italic">{ role.Name }</p>
-				<p>{ role.Alignment }</p>
-				<hr/>
-			</div>
-			<label class="text-2xl italic">Abilities</label>
-			<div class="flex flex-col py-2 gap-2">
-				for _, ability := range role.Abilities {
-					<div>
-						<p class="font-bold">{ ability.Name } [{ strconv.Itoa(ability.Charges) }] ({ strings.Join(ability.Categories, " -- ") })</p>
-						<p>{ ability.Description }</p>
-					</div>
-				}
-				<hr/>
-			</div>
-			<label class="text-2xl italic">Passives</label>
-			<div class="flex flex-col py-2 gap-4">
-				for _, passive := range role.Passives {
-					<div>
-						<p class="font-bold">{ passive.Name }</p>
-						<p>{ passive.Description }</p>
-					</div>
-				}
-			</div>
+		<div class="py-5">
+			<p class="text-3xl italic">{ role.Name }</p>
+			<p>{ role.Alignment }</p>
+			<hr/>
+		</div>
+		<label class="text-2xl italic">Abilities</label>
+		<div class="flex flex-col py-2 gap-2">
+			for _, ability := range role.Abilities {
+				<div>
+					<p class="font-bold">{ ability.Name } [{ strconv.Itoa(ability.Charges) }] ({ strings.Join(ability.Categories, " -- ") })</p>
+					<p>{ ability.Description }</p>
+				</div>
+			}
+			<hr/>
+		</div>
+		<label class="text-2xl italic">Passives</label>
+		<div class="flex flex-col py-2 gap-4">
+			for _, passive := range role.Passives {
+				<div>
+					<p class="font-bold">{ passive.Name }</p>
+					<p>{ passive.Description }</p>
+				</div>
+			}
 		</div>
 	</section>
 }

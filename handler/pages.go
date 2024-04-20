@@ -76,3 +76,23 @@ func (h *Handler) PlayerDashboardPage(c echo.Context) error {
 
 	return TemplRender(c, page.PlayerDashboard(c, player, role, actions, pa))
 }
+
+func (h *Handler) PlayerFlashcard(c echo.Context) error {
+	playerID := util.ParamInt(c, "player_id", -1)
+
+	player, err := h.models.Players.GetByID(playerID)
+	if err != nil {
+		return TemplRender(c, page.Error500(c, err))
+	}
+	playerRole, err := h.models.Roles.GetComplexByID(player.RoleID)
+	if err != nil {
+		return TemplRender(c, page.Error500(c, err))
+	}
+
+	allRoles, err := h.models.Roles.GetAllComplex()
+	if err != nil {
+		return TemplRender(c, page.Error500(c, err))
+	}
+
+	return TemplRender(c, page.PlayerFlashcard(c, player, playerRole, allRoles))
+}

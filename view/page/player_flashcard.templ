@@ -1,0 +1,25 @@
+package page
+
+import "github.com/mccune1224/betrayal-widget/view/template"
+import "github.com/labstack/echo/v4"
+import "github.com/mccune1224/betrayal-widget/data"
+import "github.com/mccune1224/betrayal-widget/view/components/text"
+
+templ PlayerFlashcard(c echo.Context, player *data.Player, role *data.ComplexRole, gameRoles []*data.ComplexRole) {
+	@template.Base(c) {
+		@text.Title("About Your Role", true)
+		@RoleCard(c, role)
+		@text.Title("Role/Ability Lookup", true)
+		@RoleLookup(c)
+		for _, gameRole := range gameRoles {
+			@RoleCard(c, gameRole)
+		}
+		<div id="search-results"></div>
+	}
+}
+
+templ RoleLookup(c echo.Context) {
+	<form
+		class="flex flex-col gap-2 justify-center bg-zinc-800 border-purple-500 border-2 rounded-lg py-3 px-10"
+	></form>
+}

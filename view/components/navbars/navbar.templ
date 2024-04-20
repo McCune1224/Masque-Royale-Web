@@ -1,29 +1,60 @@
 package navbars
 
+import "github.com/labstack/echo/v4"
+import "github.com/mccune1224/betrayal-widget/util"
+import "strings"
+
 type NavbarLink struct {
-	Text string
-	Link string
+	Text             string
+	Link             string
+	FontAwesomeClass string
 }
 
-templ navbarItem(text string, link string) {
-	<div class="grid h-full max-w-lg grid-cols-4 mx-auto font-medium">
-		<a href={ templ.SafeURL(link) } class="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800 group">
-			<button type="button" class="text-sm text-gray-500 dark:text-gray-400 group-hover:text-pink-600 dark:group-hover:text-pink-500">
-				{ text }
-			</button>
-		</a>
-	</div>
-}
+func playerItems(c echo.Context) []NavbarLink {
+	return []NavbarLink{
+		{
+			Text:             "ACTIONS",
+			Link:             util.PlayerPath(c, c.Param("player_id")),
+			FontAwesomeClass: "fa-solid fa-bolt",
+		},
+		{
 
-templ Navbar(items []string, links []string) {
-	<nav class="sticky z-30 bottom-0 w-full h-16 bg-white border-t border-gray-200 dark:bg-gray-700 dark:border-gray-600">
-		for i := range items {
-			@navbarItem(items[i], links[i])
-		}
-	</nav>
-}
-
-templ HomeNavbar() {
-	@Navbar([]string{"HOME"}, []string{"/"}) {
+			Text:             "FLASHCARD",
+			Link:             util.PlayerPath(c, c.Param("player_id")+"/flashcard"),
+			FontAwesomeClass: "fa-solid fa-question",
+		},
 	}
+}
+
+templ navbarItem(text string, link string, fa_icon ...string) {
+	<a href={ templ.SafeURL(link) } class="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800 group">
+		<button type="button" class="text-sm text-gray-500 dark:text-gray-400 group-hover:text-pink-600 dark:group-hover:text-pink-500">
+			{ text }
+		</button>
+		if len(fa_icon) > 0 {
+			<i class={ strings.Join(fa_icon, " ") + " text-white" }></i>
+		}
+	</a>
+}
+
+templ Navbar(c echo.Context) {
+	switch util.ResourcePathType(c) {
+		case "admin":
+			@BaseNavbar()
+		case "players":
+			@BaseNavbar(playerItems(c)...)
+		default:
+			@BaseNavbar()
+	}
+}
+
+templ BaseNavbar(items ...NavbarLink) {
+	<nav class="sticky z-30 bottom-0 w-full h-16 border-t border-gray-200 dark:bg-gray-700 dark:border-gray-600">
+		<div class="grid h-full max-w-lg grid-cols-4 mx-auto font-medium">
+			@navbarItem("HOME", "/", "fa-solid fa-home")
+			for _, item := range items {
+				@navbarItem(item.Text, item.Link, item.FontAwesomeClass)
+			}
+		</div>
+	</nav>
 }

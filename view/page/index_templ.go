@@ -79,7 +79,7 @@ func GameCard(c echo.Context, game data.Game) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"flex flex-col gap-2 justify-center bg-zinc-800 border-white border-2 rounded-lg py-3 px-10\"><h4 class=\"text-2xl\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"flex flex-col gap-2 justify-center bg-zinc-800 border-purple-500 border-2 rounded-lg py-3 px-10\"><h4 class=\"text-2xl\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -173,7 +173,7 @@ func Index(c echo.Context, currentGames []data.Game, err ...string) templ.Compon
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<form class=\"flex flex-col gap-2 justify-center bg-zinc-800 border-white border-2 rounded-lg py-3 px-10\" hx-post=\"/create\" hx-target=\"#body\" hx-on::after-request=\"this.reset()\"><label class=\"text-xl\">Game Name</label>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<form class=\"flex flex-col gap-2 justify-center bg-zinc-800 border-purple-500 border-2 rounded-lg py-3 px-10\" hx-post=\"/create\" hx-target=\"#body\" hx-on::after-request=\"this.reset()\"><label class=\"text-xl\">Game Name</label>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

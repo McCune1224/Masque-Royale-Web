@@ -1,6 +1,7 @@
 package util
 
 import (
+	"slices"
 	"strings"
 
 	"github.com/labstack/echo/v4"
@@ -27,4 +28,24 @@ func PlayerPath(c echo.Context, playerID string) string {
 
 func GetPlayerUpdateURL(c echo.Context, target *data.ComplexPlayer) string {
 	return GetGameIDURL(c) + "/menu/update/" + target.P.Name
+}
+
+// Split basepath url and confirm if within path
+func IsResourcePath(c echo.Context, target string) bool {
+	resources := strings.Split(c.Path(), "/")
+	targetResourceIndex := slices.Index(resources, target)
+	return targetResourceIndex != -1
+}
+
+// Will return path type based on if admin, players, or base
+func ResourcePathType(c echo.Context) string {
+	if IsResourcePath(c, "admin") {
+		return "admin"
+	}
+
+	if IsResourcePath(c, "players") {
+		return "players"
+	}
+
+	return "base"
 }

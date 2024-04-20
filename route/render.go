@@ -20,6 +20,7 @@ func Routes(app *echo.Echo, handler *handler.Handler) {
 
 	gamesPlayer := games.Group("/players/:player_id")
 	gamesPlayer.GET("", handler.PlayerDashboardPage)
+	gamesPlayer.GET("/flashcard", handler.PlayerFlashcard)
 	gamesPlayer.POST("/death", handler.MarkPlayerDead)
 	gamesPlayer.POST("/actions", handler.SubmitPlayerAction)
 	gamesPlayer.DELETE("/actions/:action_id", handler.DeletePlayerAction)
@@ -27,7 +28,4 @@ func Routes(app *echo.Echo, handler *handler.Handler) {
 	admin := games.Group("/admin")
 	admin.GET("", handler.AdminDashboardPage)
 	admin.DELETE("", handler.AdminDashboardPage)
-}
-
-func AdminRoutes(app *echo.Echo, handler *handler.Handler) {
 }

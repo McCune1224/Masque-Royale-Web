@@ -5,10 +5,9 @@ import "github.com/mccune1224/betrayal-widget/data"
 import "github.com/mccune1224/betrayal-widget/view/template"
 import "github.com/mccune1224/betrayal-widget/view/components/buttons"
 import "strconv"
-import "github.com/mccune1224/betrayal-widget/view/components/navbars"
 
 templ JoinGame(c echo.Context, game *data.Game, players []*data.Player) {
-	@template.Base() {
+	@template.Base(c) {
 		<main>
 			<h1
 				class="sm:text-9xl text-4xl py-4 text-center"
@@ -19,6 +18,5 @@ templ JoinGame(c echo.Context, game *data.Game, players []*data.Player) {
 				}
 			</div>
 		</main>
-		@navbars.HomeNavbar()
 	}
 }

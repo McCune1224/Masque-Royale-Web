@@ -16,7 +16,7 @@ templ navbarItem(text string, link string) {
 }
 
 templ Navbar(items []string, links []string) {
-	<nav class="fixed top-0 left-0 z-50 w-full h-16 bg-white border-t border-gray-200 dark:bg-gray-700 dark:border-gray-600">
+	<nav class="sticky z-30 bottom-0 w-full h-16 bg-white border-t border-gray-200 dark:bg-gray-700 dark:border-gray-600">
 		for i := range items {
 			@navbarItem(items[i], links[i])
 		}

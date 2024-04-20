@@ -9,10 +9,9 @@ import "github.com/mccune1224/betrayal-widget/util"
 import "strconv"
 import "github.com/mccune1224/betrayal-widget/view/components/text"
 import "github.com/mccune1224/betrayal-widget/view/components/inputs"
-import "github.com/mccune1224/betrayal-widget/view/components/navbars"
 
 templ AdminDashboard(c echo.Context, players []*data.ComplexPlayer, roleList []string, actions []data.ComplexPlayerRequest, err ...string) {
-	@template.Base() {
+	@template.Base(c) {
 		<main class="flex flex-col gap-2">
 			@text.Title("Admin Dashboard", true)
 			@text.Title("Player Creation", true)
@@ -40,7 +39,6 @@ templ AdminDashboard(c echo.Context, players []*data.ComplexPlayer, roleList []s
 				@PlayerList(c, players)
 			</div>
 		</main>
-		@navbars.HomeNavbar()
 	}
 }
 

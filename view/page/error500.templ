@@ -4,7 +4,7 @@ import "github.com/labstack/echo/v4"
 import "github.com/mccune1224/betrayal-widget/view/template"
 
 templ Error500(c echo.Context, err error) {
-	@template.Base() {
+	@template.Base(c) {
 		<section>
 			<h1>ERROR AT { c.Path() }</h1>
 			<p>{ err.Error() }</p>

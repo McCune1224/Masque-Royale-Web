@@ -1,6 +1,9 @@
 package template
 
-templ Base() {
+import "github.com/mccune1224/betrayal-widget/view/components/navbars"
+import "github.com/labstack/echo/v4"
+
+templ Base(c echo.Context) {
 	<!DOCTYPE html>
 	<html>
 		<head>
@@ -16,8 +19,11 @@ templ Base() {
 			<!-- <script src="static/htmx.min.js"></script> -->
 			<script src="https://unpkg.com/htmx.org@1.9.10"></script>
 		</head>
-		<body id="body" class="container mx-auto leading-normal tracking-normal px-4 bg-zinc-900 text-white">
-			{ children... }
+		<body id="body" class="bg-zinc-900">
+			<section class="flex flex-col gap-5 container mx-auto leading-normal tracking-normal px-4 bg-zinc-900 text-white">
+				{ children... }
+			</section>
+			@navbars.HomeNavbar()
 		</body>
 	</html>
 }

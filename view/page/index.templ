@@ -28,7 +28,7 @@ templ GameCard(c echo.Context, game data.Game) {
 }
 
 templ Index(c echo.Context, currentGames []data.Game, err ...string) {
-	@template.Base() {
+	@template.Base(c) {
 		<main class="flex flex-col gap-2">
 			<h1
 				class="sm:text-9xl text-4xl py-4 text-center"

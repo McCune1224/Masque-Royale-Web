@@ -63,6 +63,24 @@ func (rm *RoleModel) GetByName(name string) (*Role, error) {
 	return &role, nil
 }
 
+func (rm *RoleModel) GetByAbilityID(id int) (*Role, error) {
+	var role *Role
+	err := rm.DB.Select(&role, "SELECT * FROM roles WHERE $1 = ANY(ability_ids)", id)
+	if err != nil {
+		return nil, err
+	}
+	return role, err
+}
+
+func (rm *RoleModel) GetByPassiveID(id int) (*Role, error) {
+	var role *Role
+	err := rm.DB.Select(&role, "SELECT * FROM roles WHERE $1 = ANY(passive_ids)", id)
+	if err != nil {
+		return nil, err
+	}
+	return role, err
+}
+
 func (rm *RoleModel) GetAll() ([]*Role, error) {
 	var roles []*Role
 	err := rm.DB.Select(&roles, "SELECT * FROM roles")

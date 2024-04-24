@@ -89,10 +89,5 @@ func (h *Handler) PlayerFlashcard(c echo.Context) error {
 		return TemplRender(c, page.Error500(c, err))
 	}
 
-	allRoles, err := h.models.Roles.GetAllComplex()
-	if err != nil {
-		return TemplRender(c, page.Error500(c, err))
-	}
-
-	return TemplRender(c, page.PlayerFlashcard(c, player, playerRole, allRoles))
+	return TemplRender(c, page.PlayerFlashcard(c, player, playerRole, nil))
 }

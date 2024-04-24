@@ -21,6 +21,7 @@ func Routes(app *echo.Echo, handler *handler.Handler) {
 	gamesPlayer := games.Group("/players/:player_id")
 	gamesPlayer.GET("", handler.PlayerDashboardPage)
 	gamesPlayer.GET("/flashcard", handler.PlayerFlashcard)
+	gamesPlayer.POST("/flashcard", handler.SearchRole)
 	gamesPlayer.POST("/death", handler.MarkPlayerDead)
 	gamesPlayer.POST("/actions", handler.SubmitPlayerAction)
 	gamesPlayer.DELETE("/actions/:action_id", handler.DeletePlayerAction)

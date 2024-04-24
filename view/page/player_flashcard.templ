@@ -4,22 +4,33 @@ import "github.com/mccune1224/betrayal-widget/view/template"
 import "github.com/labstack/echo/v4"
 import "github.com/mccune1224/betrayal-widget/data"
 import "github.com/mccune1224/betrayal-widget/view/components/text"
+import "github.com/mccune1224/betrayal-widget/view/components/buttons"
 
 templ PlayerFlashcard(c echo.Context, player *data.Player, role *data.ComplexRole, gameRoles []*data.ComplexRole) {
 	@template.Base(c) {
 		@text.Title("About Your Role", true)
 		@RoleCard(c, role)
-		@text.Title("Role/Ability Lookup", true)
+		@text.Title("Role/Ability Description Lookup", true)
 		@RoleLookup(c)
-		for _, gameRole := range gameRoles {
-			@RoleCard(c, gameRole)
-		}
-		<div id="search-results"></div>
+		@PlayerRoleResults(c, gameRoles)
 	}
+}
+
+templ PlayerRoleResults(c echo.Context, roles []*data.ComplexRole) {
+	<section id="search-results">
+		for _, role := range roles {
+			@RoleCard(c, role)
+		}
+	</section>
 }
 
 templ RoleLookup(c echo.Context) {
 	<form
 		class="flex flex-col gap-2 justify-center bg-zinc-800 border-purple-500 border-2 rounded-lg py-3 px-10"
-	></form>
+		hx-post={ c.Request().URL.String() }
+		hx-target="#search-results"
+	>
+		<input name="search" required class="text-black" type="text"/>
+		@button.SubmitButton("Search")
+	</form>
 }

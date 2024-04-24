@@ -83,6 +83,7 @@ templ AdminActionCard(c echo.Context, index int, action data.ComplexPlayerReques
 		<div class="flex text-xl justify-center gap-2">
 			<span class="">#{ strconv.Itoa(index + 1) }</span>
 			<span>{ action.P.P.Name }, { action.A.AbilityName }, { "@" + action.R.Target }</span>
+			<span>Context: { action.R.Description }</span>
 		</div>
 		@button.HxDeleteButton("Delete/Resolve", util.PlayerPath(c, strconv.Itoa(action.P.P.ID)+"/actions/"+strconv.Itoa(action.R.ID)), strconv.Itoa(action.R.ID), "#action-cards")
 	</div>

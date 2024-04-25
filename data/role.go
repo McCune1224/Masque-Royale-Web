@@ -21,6 +21,12 @@ type ComplexRole struct {
 	Passives  []*Passive `db:"passives"`
 }
 
+// Used for when searching for roles on flashcard
+type SearchComplexRoleResult struct {
+	CR          *ComplexRole
+	MatchedName string
+}
+
 type RoleAbilityPassiveJoin struct {
 	RoleID         int            `db:"role_id"`
 	RoleName       string         `db:"role_name"`

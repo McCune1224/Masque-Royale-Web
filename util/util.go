@@ -47,3 +47,11 @@ func UniqueInsert[T comparable](items []T, value T) []T {
 
 	return append(items, value)
 }
+
+func MaptoSlice[T, S comparable](target map[S]T) []T {
+	dump := []T{}
+	for _, v := range target {
+		dump = append(dump, v)
+	}
+	return dump
+}

@@ -96,13 +96,30 @@ func (rm *RoleModel) GetAll() ([]*Role, error) {
 	return roles, nil
 }
 
+func (rm *RoleModel) UnionComplex(name string) (*ComplexRole, error) {
+	query := `SELECT r.id AS role_id, r.name AS role_name, r.alignment AS role_alignment, r.ability_ids AS role_ability_ids, r.passive_ids AS role_passive_ids, 
+  a.id AS ability_id, a.name AS ability_name, a.description AS ability_description, a.charges AS ability_charges, a.rarity AS ability_rarity, a.any_ability AS ability_any_ability, a.role_specific AS ability_role_specific, a.categories AS ability_categories, 
+  p.id AS passive_id, p.name AS passive_name, p.description AS passive_description 
+  FROM roles r CROSS JOIN LATERAL UNNEST(r.ability_ids) AS ability_ids JOIN abilities ON a.id = ability_id;
+`
+
+	complexRole := &ComplexRole{}
+	err := rm.Select(&complexRole, query, name)
+	if err != nil {
+		return nil, err
+	}
+	return complexRole, nil
+}
+
 func (rm *RoleModel) GetComplexByName(name string) (*ComplexRole, error) {
 	roleQuery := &RoleAbilityPassiveJoin{}
 	complexRole := &ComplexRole{}
 
 	query := `SELECT r.id AS role_id, r.name AS role_name, r.alignment AS role_alignment, r.ability_ids AS role_ability_ids, r.passive_ids AS role_passive_ids, 
   a.id AS ability_id, a.name AS ability_name, a.description AS ability_description, a.charges AS ability_charges, a.rarity AS ability_rarity, a.any_ability AS ability_any_ability, a.role_specific AS ability_role_specific, a.categories AS ability_categories, 
-  p.id AS passive_id, p.name AS passive_name, p.description AS passive_description FROM roles r LEFT JOIN abilities a ON a.id = ANY(r.ability_ids) LEFT JOIN passives p ON p.id = ANY(r.passive_ids) WHERE r.name ILIKE $1`
+  p.id AS passive_id, p.name AS passive_name, p.description AS passive_description 
+
+  FROM roles r LEFT JOIN abilities a ON a.id = ANY(r.ability_ids) LEFT JOIN passives p ON p.id = ANY(r.passive_ids) WHERE r.name ILIKE $1 LIMIT 1`
 	err := rm.DB.Get(roleQuery, query, name)
 	if err != nil {
 		return nil, err

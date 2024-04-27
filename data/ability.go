@@ -24,6 +24,11 @@ type AnyAbility struct {
 	Categories  pq.StringArray `db:"categories"`
 }
 
+type AbilityFlashcardSearch struct {
+	Ability
+	AssociatedRoles []string
+}
+
 // create table psql statement for any_ability table
 type AbilityModel struct {
 	*sqlx.DB

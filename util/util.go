@@ -37,3 +37,13 @@ func RemoveValues[T comparable](items []T, values []T) []T {
 	}
 	return result
 }
+
+func UniqueInsert[T comparable](items []T, value T) []T {
+	for _, v := range items {
+		if value == v {
+			return items
+		}
+	}
+
+	return append(items, value)
+}

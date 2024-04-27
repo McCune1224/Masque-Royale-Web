@@ -5,8 +5,10 @@ import "github.com/labstack/echo/v4"
 import "github.com/mccune1224/betrayal-widget/data"
 import "github.com/mccune1224/betrayal-widget/view/components/text"
 import "github.com/mccune1224/betrayal-widget/view/components/buttons"
+import "strconv"
+import "strings"
 
-templ PlayerFlashcard(c echo.Context, player *data.Player, role *data.ComplexRole, gameRoles []*data.ComplexRole) {
+templ PlayerFlashcard(c echo.Context, player *data.Player, role *data.ComplexRole, gameRoles []*data.SearchComplexRoleResult) {
 	@template.Base(c) {
 		@text.Title("About Your Role", true)
 		@RoleCard(c, role)
@@ -16,11 +18,62 @@ templ PlayerFlashcard(c echo.Context, player *data.Player, role *data.ComplexRol
 	}
 }
 
-templ PlayerRoleResults(c echo.Context, roles []*data.ComplexRole) {
+func splitArray(target string, arr []string) (before string, middle string, after string) {
+	var index int
+	for i, val := range arr {
+		if val == target {
+			index = i
+			break
+		}
+	}
+
+	before = strings.Join(arr[:index], " ")
+	after = strings.Join(arr[index+1:], " ")
+	return before, target, after
+}
+
+templ Highlight(left string, middle string, right string) {
+	<p>{ left }<b class="text-xl text-red-400">{ middle }</b>{ right }</p>
+}
+
+templ PlayerRoleResults(c echo.Context, roles []*data.SearchComplexRoleResult, search ...string) {
 	<section id="search-results">
 		for _, role := range roles {
-			@RoleCard(c, role)
+			if len(search) > 0 {
+				@RoleSearchResult(c, role, search[0])
+			} else {
+				@RoleSearchResult(c, role, search[0])
+			}
 		}
+	</section>
+}
+
+templ RoleSearchResult(c echo.Context, role *data.SearchComplexRoleResult, search ...string) {
+	<section class="flex flex-col justify-center bg-zinc-800 border-2 border-white px-2 rounded-lg">
+		<div class="py-5">
+			<p class="text-3xl italic">{ role.CR.Name }</p>
+			<p>{ role.CR.Alignment }</p>
+			<hr/>
+		</div>
+		<label class="text-2xl italic">Abilities</label>
+		<div class="flex flex-col py-2 gap-2">
+			for _, ability := range role.CR.Abilities {
+				<div>
+					<p class="font-bold">{ ability.Name } [{ strconv.Itoa(ability.Charges) }] ({ strings.Join(ability.Categories, " -- ") })</p>
+					<p>{ ability.Description }</p>
+				</div>
+			}
+			<hr/>
+		</div>
+		<label class="text-2xl italic">Passives</label>
+		<div class="flex flex-col py-2 gap-4">
+			for _, passive := range role.CR.Passives {
+				<div>
+					<p class="font-bold">{ passive.Name }</p>
+					<p>{ passive.Description }</p>
+				</div>
+			}
+		</div>
 	</section>
 }
 

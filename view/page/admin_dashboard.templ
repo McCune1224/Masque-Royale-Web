@@ -88,6 +88,7 @@ templ AdminActionCard(c echo.Context, index int, action data.ComplexPlayerReques
 			<span class="">#{ strconv.Itoa(index + 1) }</span>
 			<span>{ strings.Join([]string{action.P.P.Name, action.A.AbilityName }, " | ") + " -> " + action.R.Target }</span>
 			<span>Context: { action.R.Description } </span>
+			<span>Requested: { action.R.RoundPhase } </span>
 		</div>
 		@button.HxPostButton("Approve", util.PlayerPath(c, strconv.Itoa(action.P.P.ID)+"/actions/"+strconv.Itoa(action.R.ID)+"/approve"), "#action-"+strconv.Itoa(action.P.P.ID))
 		@button.HxDeleteButton("Decline", util.PlayerPath(c, strconv.Itoa(action.P.P.ID)+"/actions/"+strconv.Itoa(action.R.ID)), strconv.Itoa(action.R.ID), "#action-cards")

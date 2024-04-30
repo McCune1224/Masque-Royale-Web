@@ -111,6 +111,8 @@ func (h *Handler) SubmitPlayerAction(c echo.Context) error {
 		GameID:      game.GameID,
 		Target:      target,
 		Description: desc,
+		RoundPhase:  fmt.Sprintf("%d %s", game.Round, game.Phase),
+		Approved:    false,
 	}
 
 	err := h.models.Actions.InsertPlayerRequest(pa)
@@ -134,7 +136,7 @@ func (h *Handler) SubmitPlayerAction(c echo.Context) error {
 		return TemplRender(c, page.Error500(c, err))
 	}
 
-	allPlayerActions, err := h.models.Actions.GetAllPlayerRequests(pa.PlayerID)
+	allPlayerActions, err := h.models.Actions.GetAllPlayerUnapprovedRequestsByPlayerID(pa.PlayerID)
 	if err != nil {
 		return TemplRender(c, page.Error500(c, err))
 	}

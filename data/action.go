@@ -23,6 +23,8 @@ type PlayerRequest struct {
 	GameID      string `db:"game_id"`
 	Target      string `db:"target"`
 	Description string `db:"description"`
+	RoundPhase  string `db:"round_phase"`
+	Approved    bool   `db:"approved"`
 }
 
 type ComplexPlayerRequest struct {
@@ -166,10 +168,19 @@ func (a *ActionModel) GetAllActionsByPlayerActions(actionList *ActionList) ([]Ac
 	return fullActions, nil
 }
 
-func (a *ActionModel) GetAllPlayerRequests(playerID int) ([]*Action, error) {
+func (a *ActionModel) GetPlayerRequest(id int) (*PlayerRequest, error) {
+	action := &PlayerRequest{}
+	err := a.Get(action, "SELECT * FROM player_requests WHERE id = $1", id)
+	if err != nil {
+		return nil, err
+	}
+	return action, nil
+}
+
+func (a *ActionModel) GetAllPlayerUnapprovedRequestsByPlayerID(playerID int) ([]*Action, error) {
 	playerActions := []*PlayerRequest{}
 	fullActions := []*Action{}
-	err := a.Select(&playerActions, "SELECT * FROM player_requests WHERE player_id = $1", playerID)
+	err := a.Select(&playerActions, "SELECT * FROM player_requests WHERE player_id = $1 and approved = false", playerID)
 	if err != nil {
 		return nil, err
 	}
@@ -185,17 +196,6 @@ func (a *ActionModel) GetAllPlayerRequests(playerID int) ([]*Action, error) {
 	return fullActions, nil
 }
 
-func (a *ActionModel) InsertPlayerRequest(pa *PlayerRequest) error {
-	query := `INSERT INTO player_requests ` + PSQLGeneratedInsert(pa)
-	_, err := a.NamedExec(query, &pa)
-	return err
-}
-
-func (a *ActionModel) DeletePlayerRequest(id int64) error {
-	_, err := a.Exec("DELETE FROM player_requests WHERE id = $1", id)
-	return err
-}
-
 func (a *AbilityModel) GetAllPlayerRequestsByGameID(gameID string) ([]*PlayerRequest, error) {
 	playerActions := []*PlayerRequest{}
 	err := a.Select(&playerActions, "SELECT * from player_requests WHERE game_id = $1", gameID)
@@ -203,4 +203,38 @@ func (a *AbilityModel) GetAllPlayerRequestsByGameID(gameID string) ([]*PlayerReq
 		return nil, err
 	}
 	return playerActions, err
+}
+
+func (a *AbilityModel) GetAllUnapprovedPlayerRequestsByGameID(gameID string) ([]*PlayerRequest, error) {
+	playerActions := []*PlayerRequest{}
+	err := a.Select(&playerActions, "SELECT * from player_requests WHERE game_id = $1 and approved = false", gameID)
+	if err != nil {
+		return nil, err
+	}
+	return playerActions, err
+}
+
+func (a *AbilityModel) GetAllApprovedPlayerRequestsByGameID(gameID string) ([]*PlayerRequest, error) {
+	playerActions := []*PlayerRequest{}
+	err := a.Select(&playerActions, "SELECT * from player_requests WHERE game_id = $1 and approved = true", gameID)
+	if err != nil {
+		return nil, err
+	}
+	return playerActions, err
+}
+
+func (a *ActionModel) InsertPlayerRequest(pa *PlayerRequest) error {
+	query := `INSERT INTO player_requests ` + PSQLGeneratedInsert(pa)
+	_, err := a.NamedExec(query, &pa)
+	return err
+}
+
+func (a *ActionModel) ApprovePlayerRequest(id int) error {
+	_, err := a.Exec("UPDATE player_requests SET approved = true WHERE id = $1", id)
+	return err
+}
+
+func (a *ActionModel) DeletePlayerRequest(id int64) error {
+	_, err := a.Exec("DELETE FROM player_requests WHERE id = $1", id)
+	return err
 }

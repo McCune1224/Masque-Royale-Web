@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"log"
+
 	"github.com/labstack/echo/v4"
 	"github.com/lib/pq"
 	"github.com/mccune1224/betrayal-widget/data"
@@ -42,6 +44,9 @@ func (h *Handler) AdminDashboardPage(c echo.Context) error {
 
 	cprList := []*data.ComplexPlayerRequest{}
 	for _, currRequest := range playerRequests {
+		if currRequest.Approved {
+			continue
+		}
 		cpr := &data.ComplexPlayerRequest{}
 		for _, currPlayer := range players {
 			if currRequest.PlayerID == currPlayer.P.ID {
@@ -60,4 +65,21 @@ func (h *Handler) AdminDashboardPage(c echo.Context) error {
 
 	sortedCprList := sortComplexPlayerRequest(cprList)
 	return TemplRender(c, page.AdminDashboard(c, game, players, CurrentGameRoles, sortedCprList))
+}
+
+func (h *Handler) ApprovePlayerAction(c echo.Context) error {
+	actionID := util.ParamInt(c, "action_id", -1)
+	request, err := h.models.Actions.GetPlayerRequest(actionID)
+	if err != nil {
+		return TemplRender(c, page.Error500(c, err))
+	}
+
+	log.Println("HIT")
+	request.Approved = true
+	err = h.models.Actions.ApprovePlayerRequest(request.ID)
+	if err != nil {
+		return TemplRender(c, page.Error500(c, err))
+	}
+	log.Println("HIT2")
+	return nil
 }

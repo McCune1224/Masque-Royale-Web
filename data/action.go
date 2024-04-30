@@ -25,6 +25,7 @@ type PlayerRequest struct {
 	Description string `db:"description"`
 	RoundPhase  string `db:"round_phase"`
 	Approved    bool   `db:"approved"`
+	Note        string `db:"note"`
 }
 
 type ComplexPlayerRequest struct {
@@ -231,6 +232,11 @@ func (a *ActionModel) InsertPlayerRequest(pa *PlayerRequest) error {
 
 func (a *ActionModel) ApprovePlayerRequest(id int) error {
 	_, err := a.Exec("UPDATE player_requests SET approved = true WHERE id = $1", id)
+	return err
+}
+
+func (a *ActionModel) UpdatePlayerRequestNote(id int, note string) error {
+	_, err := a.Exec("UPDATE player_requests SET note = $1 WHERE id = $2", note, id)
 	return err
 }
 

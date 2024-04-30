@@ -86,10 +86,22 @@ templ AdminActionCard(c echo.Context, index int, action data.ComplexPlayerReques
 		//span flex to equal spacing
 		<div class="flex flex-col text-xl justify-center gap-2">
 			<span class="">#{ strconv.Itoa(index + 1) }</span>
-			<span>{ strings.Join([]string{action.P.P.Name, action.A.AbilityName }, " | ") + " -> " + action.R.Target }</span>
-			<span>Context: { action.R.Description } </span>
+			<span class="font-semibold text-2xl">{ strings.Join([]string{action.P.P.Name, action.A.AbilityName }, " | ") + " -> " + action.R.Target }</span>
+			<span>Player Provided Context: { action.R.Description } </span>
 			<span>Requested: { action.R.RoundPhase } </span>
 		</div>
+		<form
+			class="w-full flex flex-col py-4 gap-1"
+			hx-post={ util.PlayerPath(c, strconv.Itoa(action.P.P.ID)+"/actions/"+strconv.Itoa(action.R.ID)) + "/note", }
+			hx-target={ "#action-" + strconv.Itoa(action.P.P.ID) }
+		>
+			<p>Update Notes on action</p>
+			<textarea
+				name="note"
+				class=" bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
+			>{ action.R.Note }</textarea>
+			@button.SubmitButton("Update Action Note")
+		</form>
 		@button.HxPostButton("Approve", util.PlayerPath(c, strconv.Itoa(action.P.P.ID)+"/actions/"+strconv.Itoa(action.R.ID)+"/approve"), "#action-"+strconv.Itoa(action.P.P.ID))
 		@button.HxDeleteButton("Decline", util.PlayerPath(c, strconv.Itoa(action.P.P.ID)+"/actions/"+strconv.Itoa(action.R.ID)), strconv.Itoa(action.R.ID), "#action-cards")
 	</div>

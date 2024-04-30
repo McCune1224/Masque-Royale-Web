@@ -113,6 +113,7 @@ func (h *Handler) SubmitPlayerAction(c echo.Context) error {
 		Description: desc,
 		RoundPhase:  fmt.Sprintf("%d %s", game.Round, game.Phase),
 		Approved:    false,
+		Note:        " ",
 	}
 
 	err := h.models.Actions.InsertPlayerRequest(pa)

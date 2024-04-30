@@ -27,9 +27,11 @@ func Routes(app *echo.Echo, handler *handler.Handler) {
 	gamesPlayer.POST("/actions", handler.SubmitPlayerAction)
 	gamesPlayer.DELETE("/actions/:action_id", handler.DeletePlayerAction)
 	gamesPlayer.POST("/actions/:action_id/approve", handler.ApprovePlayerAction)
+	gamesPlayer.POST("/actions/:action_id/note", handler.UpdatePlayerActionNote)
 
 	admin := games.Group("/admin")
 	admin.GET("", handler.AdminDashboardPage)
+	admin.GET("/history", handler.AdminActionHistoryPage)
 	admin.DELETE("", handler.AdminDashboardPage)
 	admin.POST("/cycle/increment", handler.GamePhaseIncrement)
 	admin.POST("/cycle/decrement", handler.GamePhaseDecrement)

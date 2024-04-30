@@ -1,8 +1,6 @@
 package handler
 
 import (
-	"log"
-
 	"github.com/labstack/echo/v4"
 	"github.com/lib/pq"
 	"github.com/mccune1224/betrayal-widget/data"
@@ -67,6 +65,10 @@ func (h *Handler) AdminDashboardPage(c echo.Context) error {
 	return TemplRender(c, page.AdminDashboard(c, game, players, CurrentGameRoles, sortedCprList))
 }
 
+func (h *Handler) AdminActionHistoryPage(c echo.Context) error {
+	return TemplRender(c, page.ActionHistoryDashboard(c))
+}
+
 func (h *Handler) ApprovePlayerAction(c echo.Context) error {
 	actionID := util.ParamInt(c, "action_id", -1)
 	request, err := h.models.Actions.GetPlayerRequest(actionID)
@@ -74,12 +76,25 @@ func (h *Handler) ApprovePlayerAction(c echo.Context) error {
 		return TemplRender(c, page.Error500(c, err))
 	}
 
-	log.Println("HIT")
 	request.Approved = true
 	err = h.models.Actions.ApprovePlayerRequest(request.ID)
 	if err != nil {
 		return TemplRender(c, page.Error500(c, err))
 	}
-	log.Println("HIT2")
+	return nil
+}
+
+func (h *Handler) UpdatePlayerActionNote(c echo.Context) error {
+	note := c.FormValue("note")
+	actionID := util.ParamInt(c, "action_id", -1)
+	request, err := h.models.Actions.GetPlayerRequest(actionID)
+	if err != nil {
+		return TemplRender(c, page.Error500(c, err))
+	}
+	request.Note = note
+	err = h.models.Actions.UpdatePlayerRequestNote(request.ID, request.Note)
+	if err != nil {
+		return TemplRender(c, page.Error500(c, err))
+	}
 	return nil
 }

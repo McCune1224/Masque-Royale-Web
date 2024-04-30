@@ -37,6 +37,21 @@ func playerItems(c echo.Context) []NavbarLink {
 	}
 }
 
+func adminItems(c echo.Context) []NavbarLink {
+	return []NavbarLink{
+		{
+			Text:             "ACTION QUEUE",
+			Link:             util.AdminPath(c) + "/",
+			FontAwesomeClass: "fa-solid fa-list",
+		},
+		{
+			Text:             "ACTION HISTORY",
+			Link:             util.AdminPath(c) + "/history",
+			FontAwesomeClass: "fa-solid fa-book",
+		},
+	}
+}
+
 func navbarItem(text string, link string, fa_icon ...string) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
@@ -66,7 +81,7 @@ func navbarItem(text string, link string, fa_icon ...string) templ.Component {
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(text)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/components/navbars/navbar.templ`, Line: 33, Col: 9}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/components/navbars/navbar.templ`, Line: 48, Col: 9}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
@@ -126,7 +141,7 @@ func Navbar(c echo.Context) templ.Component {
 		ctx = templ.ClearChildren(ctx)
 		switch util.ResourcePathType(c) {
 		case "admin":
-			templ_7745c5c3_Err = BaseNavbar().Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = BaseNavbar(adminItems(c)...).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

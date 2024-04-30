@@ -27,6 +27,21 @@ func playerItems(c echo.Context) []NavbarLink {
 	}
 }
 
+func adminItems(c echo.Context) []NavbarLink {
+	return []NavbarLink{
+		{
+			Text:             "ACTION QUEUE",
+			Link:             util.AdminPath(c) + "/",
+			FontAwesomeClass: "fa-solid fa-list",
+		},
+		{
+			Text:             "ACTION HISTORY",
+			Link:             util.AdminPath(c) + "/history",
+			FontAwesomeClass: "fa-solid fa-book",
+		},
+	}
+}
+
 templ navbarItem(text string, link string, fa_icon ...string) {
 	<a href={ templ.SafeURL(link) } class="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800 group">
 		<button type="button" class="text-sm text-gray-500 dark:text-gray-400 group-hover:text-pink-600 dark:group-hover:text-pink-500">
@@ -41,7 +56,7 @@ templ navbarItem(text string, link string, fa_icon ...string) {
 templ Navbar(c echo.Context) {
 	switch util.ResourcePathType(c) {
 		case "admin":
-			@BaseNavbar()
+			@BaseNavbar(adminItems(c)...)
 		case "players":
 			@BaseNavbar(playerItems(c)...)
 		default:

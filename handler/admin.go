@@ -59,5 +59,5 @@ func (h *Handler) AdminDashboardPage(c echo.Context) error {
 	}
 
 	sortedCprList := sortComplexPlayerRequest(cprList)
-	return TemplRender(c, page.AdminDashboard(c, players, CurrentGameRoles, sortedCprList))
+	return TemplRender(c, page.AdminDashboard(c, game, players, CurrentGameRoles, sortedCprList))
 }

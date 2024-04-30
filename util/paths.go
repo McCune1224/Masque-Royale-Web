@@ -26,6 +26,12 @@ func PlayerPath(c echo.Context, playerID string) string {
 	return gameURL + "/players/" + playerID
 }
 
+func AdminPath(c echo.Context) string {
+	gameURL := GamePath(c)
+
+	return gameURL + "/admin"
+}
+
 func GetPlayerUpdateURL(c echo.Context, target *data.ComplexPlayer) string {
 	return GetGameIDURL(c) + "/menu/update/" + target.P.Name
 }

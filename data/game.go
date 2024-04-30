@@ -6,6 +6,8 @@ type Game struct {
 	ID          int    `db:"id"`
 	GameID      string `db:"game_id"`
 	PlayerCount int    `db:"player_count"`
+	Phase       string `db:"phase"`
+	Round       int    `db:"round"`
 	CreatedAt   string `db:"created_at"`
 	UpdatedAt   string `db:"updated_at"`
 }
@@ -42,7 +44,7 @@ func (gm *GameModel) GetByGameID(gID string) (*Game, error) {
 }
 
 func (gm *GameModel) InsertGame(gameID string, playerCount int) (*Game, error) {
-	_, err := gm.Exec("INSERT INTO games (game_id, player_count) VALUES ($1, $2)", gameID, playerCount)
+	_, err := gm.Exec("INSERT INTO games (game_id, player_count, phase, round) VALUES ($1, $2, 'Day', 0)", gameID, playerCount)
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +62,13 @@ func (gm *GameModel) Update(game *Game) error {
 	if err != nil {
 		return err
 	}
+
 	return nil
+}
+
+func (gm *GameModel) UpdateProperty(id int, name string, value any) error {
+	_, err := gm.Exec("UPDATE games SET "+name+" = $1 WHERE id = $2", value, id)
+	return err
 }
 
 func (gm *GameModel) UpdatePlayerCount(gID string, playerCount int) error {

@@ -40,3 +40,47 @@ func (h *Handler) DeleteGame(c echo.Context) error {
 	games, _ := h.models.Games.GetAll()
 	return TemplRender(c, page.Index(c, games))
 }
+
+func (h *Handler) GamePhaseIncrement(c echo.Context) error {
+	game, _ := util.GetGame(c)
+	if game.Phase == "Night" {
+		game.Phase = "Day"
+		game.Round += 1
+	} else {
+		game.Phase = "Night"
+	}
+	err := h.models.Games.UpdateProperty(game.ID, "phase", game.Phase)
+	if err != nil {
+		return TemplRender(c, page.Error500(c, err))
+	}
+	err = h.models.Games.UpdateProperty(game.ID, "round", game.Round)
+	if err != nil {
+		return TemplRender(c, page.Error500(c, err))
+	}
+
+	return TemplRender(c, page.CycleDashboard(c, game))
+}
+
+func (h *Handler) GamePhaseDecrement(c echo.Context) error {
+	game, _ := util.GetGame(c)
+	if game.Phase == "Day" && game.Round == 0 {
+		return TemplRender(c, page.CycleDashboard(c, game))
+	}
+
+	if game.Phase == "Day" {
+		game.Phase = "Night"
+		game.Round -= 1
+	} else {
+		game.Phase = "Day"
+	}
+	err := h.models.Games.UpdateProperty(game.ID, "phase", game.Phase)
+	if err != nil {
+		return TemplRender(c, page.Error500(c, err))
+	}
+	err = h.models.Games.UpdateProperty(game.ID, "round", game.Round)
+	if err != nil {
+		return TemplRender(c, page.Error500(c, err))
+	}
+
+	return TemplRender(c, page.CycleDashboard(c, game))
+}

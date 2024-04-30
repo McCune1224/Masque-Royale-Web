@@ -10,10 +10,12 @@ import "strconv"
 import "github.com/mccune1224/betrayal-widget/view/components/text"
 import "github.com/mccune1224/betrayal-widget/view/components/inputs"
 
-templ AdminDashboard(c echo.Context, players []*data.ComplexPlayer, roleList []string, actions []data.ComplexPlayerRequest, err ...string) {
+templ AdminDashboard(c echo.Context, game *data.Game, players []*data.ComplexPlayer, roleList []string, actions []data.ComplexPlayerRequest, err ...string) {
 	@template.Base(c) {
 		<main class="flex flex-col gap-2">
 			@text.Title("Admin Dashboard", true)
+			@text.Title("Game Cycle", true)
+			@CycleDashboard(c, game)
 			@text.Title("Player Creation", true)
 			<form
 				hx-post={ util.GamePath(c) + "/players" }
@@ -102,5 +104,32 @@ templ ActionDashboard(c echo.Context, actionQueue []data.ComplexPlayerRequest) {
 	@text.Title("Action Queue", true)
 	<div class="flex flex-col gap-2 justify-center bg-zinc-800 border-purple-700 border-2 rounded-lg py-3 px-1">
 		@ActionQueue(c, actionQueue)
+	</div>
+}
+
+templ CycleDashboard(c echo.Context, game *data.Game) {
+	<div
+		class="flex flex-col gap-2 justify-center bg-zinc-800 border-purple-700 border-2 rounded-lg py-3 px-10"
+		id="game-cycle"
+	>
+		<div class="flex flex-row gap-3 justify-between">
+			<button
+				class="text-3xl group/button bg-pink-600 hover:bg-pink-400 flex items-center justify-center border transform transition-transform duration-50 active:scale-95 focus:outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50 border-zinc-800 hover:border-purple-500-600 disabled:bg-white-500 disabled:border-pink-500 focus-visible:ring-pink-600 py-1 px-3 rounded-md leading-6  text-white font-semibold"
+				hx-post={ util.AdminPath(c) + "/cycle/decrement" }
+				hx-target="#game-cycle"
+				hx-swap="outerHTML"
+			>
+				-
+			</button>
+			<h3>{ game.Phase } { strconv.Itoa(game.Round) }</h3>
+			<button
+				class="text-3xl group/button bg-pink-600 hover:bg-pink-400 flex items-center justify-center border transform transition-transform duration-50 active:scale-95 focus:outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50 border-zinc-800 hover:border-purple-500-600 disabled:bg-white-500 disabled:border-pink-500 focus-visible:ring-pink-600 py-1 px-3 rounded-md leading-6  text-white font-semibold"
+				hx-post={ util.AdminPath(c) + "/cycle/increment" }
+				hx-target="#game-cycle"
+				hx-swap="outerHTML"
+			>
+				+ 
+			</button>
+		</div>
 	</div>
 }

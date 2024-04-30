@@ -30,4 +30,6 @@ func Routes(app *echo.Echo, handler *handler.Handler) {
 	admin := games.Group("/admin")
 	admin.GET("", handler.AdminDashboardPage)
 	admin.DELETE("", handler.AdminDashboardPage)
+	admin.POST("/cycle/increment", handler.GamePhaseIncrement)
+	admin.POST("/cycle/decrement", handler.GamePhaseDecrement)
 }

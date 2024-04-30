@@ -44,7 +44,7 @@ func (gm *GameModel) GetByGameID(gID string) (*Game, error) {
 }
 
 func (gm *GameModel) InsertGame(gameID string, playerCount int) (*Game, error) {
-	_, err := gm.Exec("INSERT INTO games (game_id, player_count, phase, round) VALUES ($1, $2, 'Day', 0)", gameID, playerCount)
+	_, err := gm.Exec("INSERT INTO games (game_id, player_count, phase, round) VALUES ($1, $2, 'Day', 1)", gameID, playerCount)
 	if err != nil {
 		return nil, err
 	}

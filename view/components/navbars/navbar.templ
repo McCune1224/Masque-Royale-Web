@@ -3,6 +3,7 @@ package navbars
 import "github.com/labstack/echo/v4"
 import "github.com/mccune1224/betrayal-widget/util"
 import "strings"
+import "strconv"
 
 type NavbarLink struct {
 	Text             string
@@ -50,7 +51,7 @@ templ Navbar(c echo.Context) {
 
 templ BaseNavbar(items ...NavbarLink) {
 	<nav class="sticky z-30 bottom-0 w-full h-16 border-t border-gray-200 dark:bg-gray-700 dark:border-gray-600">
-		<div class="grid h-full max-w-lg grid-cols-4 mx-auto font-medium">
+		<div class={ "grid h-full max-w-lg grid-cols-" + strconv.Itoa(len(items)+1) + " mx-auto font-semibold" }>
 			@navbarItem("HOME", "/", "fa-solid fa-home")
 			for _, item := range items {
 				@navbarItem(item.Text, item.Link, item.FontAwesomeClass)

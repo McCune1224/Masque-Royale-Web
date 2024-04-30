@@ -21,9 +21,8 @@ templ GameCard(c echo.Context, game data.Game) {
 	<div id={ "game-" + strconv.Itoa(game.ID) } class="flex flex-col gap-2 justify-center bg-zinc-800 border-purple-500 border-2 rounded-lg py-3 px-10">
 		<h4 class="text-2xl">{ game.GameID }</h4>
 		<p>{ strconv.Itoa(game.PlayerCount) } Players</p>
-		@button.LinkButton("Join Game", "/join/"+strconv.Itoa(game.ID))
-		@button.LinkButton("Admin", "/games/"+strconv.Itoa(game.ID)+"/admin")
-		@button.HxDeleteButton("Delete Game", "/delete/"+strconv.Itoa(game.ID), strconv.Itoa(game.ID), "#body")
+		@button.LinkButton("Player Join", "/join/"+strconv.Itoa(game.ID))
+		@button.LinkButton("Admin Join", "/games/"+strconv.Itoa(game.ID)+"/admin")
 	</div>
 }
 

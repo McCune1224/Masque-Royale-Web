@@ -109,15 +109,11 @@ func GameCard(c echo.Context, game data.Game) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = button.LinkButton("Join Game", "/join/"+strconv.Itoa(game.ID)).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = button.LinkButton("Player Join", "/join/"+strconv.Itoa(game.ID)).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = button.LinkButton("Admin", "/games/"+strconv.Itoa(game.ID)+"/admin").Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = button.HxDeleteButton("Delete Game", "/delete/"+strconv.Itoa(game.ID), strconv.Itoa(game.ID), "#body").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = button.LinkButton("Admin Join", "/games/"+strconv.Itoa(game.ID)+"/admin").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

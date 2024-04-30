@@ -63,7 +63,8 @@ func (h *Handler) GamePhaseIncrement(c echo.Context) error {
 
 func (h *Handler) GamePhaseDecrement(c echo.Context) error {
 	game, _ := util.GetGame(c)
-	if game.Phase == "Day" && game.Round == 0 {
+
+	if game.Phase == "Day" && game.Round == 1 {
 		return TemplRender(c, page.CycleDashboard(c, game))
 	}
 

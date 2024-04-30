@@ -10,10 +10,11 @@ import "github.com/mccune1224/betrayal-widget/util"
 import "strings"
 import "github.com/mccune1224/betrayal-widget/view/components/inputs"
 
-templ PlayerDashboard(c echo.Context, player *data.Player, role *data.ComplexRole, actions []data.Action, playerActions []*data.Action) {
+templ PlayerDashboard(c echo.Context, game *data.Game, player *data.Player, role *data.ComplexRole, actions []data.Action, playerActions []*data.Action) {
 	@template.Base(c) {
+		@text.Title(game.GameID+" "+game.Phase+" "+strconv.Itoa(game.Round), true)
+		@text.Title(player.Name+" - "+role.Name, true)
 		<main class="flex flex-col gap-9">
-			@text.Title(player.Name+" - "+role.Name, true)
 			@ActionSubmit(c, player, actions, playerActions)
 			@PendingActions(c, playerActions)
 			@text.Title("About Your Role", true)

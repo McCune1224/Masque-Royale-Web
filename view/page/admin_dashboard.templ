@@ -9,6 +9,7 @@ import "github.com/mccune1224/betrayal-widget/util"
 import "strconv"
 import "github.com/mccune1224/betrayal-widget/view/components/text"
 import "github.com/mccune1224/betrayal-widget/view/components/inputs"
+import "strings"
 
 templ AdminDashboard(c echo.Context, game *data.Game, players []*data.ComplexPlayer, roleList []string, actions []data.ComplexPlayerRequest, err ...string) {
 	@template.Base(c) {
@@ -40,6 +41,7 @@ templ AdminDashboard(c echo.Context, game *data.Game, players []*data.ComplexPla
 			<div class="flex flex-col gap-2 justify-center bg-zinc-800 border-purple-700 border-2 rounded-lg py-3 px-1">
 				@PlayerList(c, players)
 			</div>
+			@button.HxDeleteButton("Delete Game", "/delete/"+strconv.Itoa(game.ID), strconv.Itoa(game.ID), "#body")
 		</main>
 	}
 }
@@ -59,7 +61,7 @@ templ PlayerCard(c echo.Context, player *data.ComplexPlayer) {
 	<div id={ "player-" + player.P.Name } class={ "px-5 py-1 flex flex-col " + CSSAliveTransparency(player) }>
 		<div class="flex gap-1 text-xl">
 			<p>{ player.P.Name }</p>
-			<p>{ player.R.Name }</p>
+			<p>( { player.R.Name } )</p>
 		</div>
 		<div class="flex gap-1">
 			if player.P.Alive {
@@ -82,10 +84,10 @@ func CSSAliveTransparency(player *data.ComplexPlayer) string {
 templ AdminActionCard(c echo.Context, index int, action data.ComplexPlayerRequest) {
 	<div class="flex flex-col gap-2">
 		//span flex to equal spacing
-		<div class="flex text-xl justify-center gap-2">
+		<div class="flex flex-col text-xl justify-center gap-2">
 			<span class="">#{ strconv.Itoa(index + 1) }</span>
-			<span>{ action.P.P.Name }, { action.A.AbilityName }, { "@" + action.R.Target }</span>
-			<span>Context: { action.R.Description }</span>
+			<span>{ strings.Join([]string{action.P.P.Name, action.A.AbilityName }, " | ") + " -> " + action.R.Target }</span>
+			<span>Context: { action.R.Description } </span>
 		</div>
 		@button.HxDeleteButton("Delete/Resolve", util.PlayerPath(c, strconv.Itoa(action.P.P.ID)+"/actions/"+strconv.Itoa(action.R.ID)), strconv.Itoa(action.R.ID), "#action-cards")
 	</div>
@@ -94,8 +96,8 @@ templ AdminActionCard(c echo.Context, index int, action data.ComplexPlayerReques
 templ ActionQueue(c echo.Context, actionQueue []data.ComplexPlayerRequest) {
 	<div id="action-cards" class="flex flex-col gap-2">
 		for i, action := range actionQueue {
-			@AdminActionCard(c, i, action)
 			<br/>
+			@AdminActionCard(c, i, action)
 		}
 	</div>
 }

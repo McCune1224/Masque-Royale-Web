@@ -53,6 +53,7 @@ func (h *Handler) JoinGamePage(c echo.Context) error {
 }
 
 func (h *Handler) PlayerDashboardPage(c echo.Context) error {
+	game, _ := util.GetGame(c)
 	playerID := util.ParamInt(c, "player_id", -1)
 
 	player, err := h.models.Players.GetByID(playerID)
@@ -74,7 +75,7 @@ func (h *Handler) PlayerDashboardPage(c echo.Context) error {
 		return TemplRender(c, page.Error500(c, err))
 	}
 
-	return TemplRender(c, page.PlayerDashboard(c, player, role, actions, pa))
+	return TemplRender(c, page.PlayerDashboard(c, game, player, role, actions, pa))
 }
 
 func (h *Handler) PlayerFlashcard(c echo.Context) error {

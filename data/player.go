@@ -18,6 +18,7 @@ type Player struct {
 	LuckModifier      int    `db:"luck_modifier"`
 	LuckStatus        string `db:"luck_status"`
 	AlignmentOverride string `db:"alignment_override"`
+	Notes             string `db:"notes"`
 }
 
 // psql statement to update the players table to be new and improved
@@ -43,6 +44,7 @@ type playerRoleJoin struct {
 	PlayerLuckMod    int           `db:"player_luck_modifier"`
 	PlayerLuckStatus string        `db:"player_luck_status"`
 	PlayerAlignment  string        `db:"player_alignment_override"`
+	PlayerNotes      string        `db:"player_notes"`
 	PlayerCreated    string        `db:"player_created_at"`
 	PlayerUpdated    string        `db:"player_updated_at"`
 	RoleID           int           `db:"role_id"`
@@ -103,8 +105,8 @@ func (m *PlayerModel) GetByGameNameAndPlayerName(gameID string, name string) (*P
 
 func (m *PlayerModel) Create(player *Player) error {
 	_, err := m.DB.NamedExec(`INSERT INTO players 
-    (name, game_id, role_id, alive, seat, luck, luck_modifier, luck_status, alignment_override) 
-    VALUES (:name, :game_id, :role_id, :alive, :seat, :luck, :luck_modifier, :luck_status, :alignment_override)`, player)
+    (name, game_id, role_id, alive, seat, luck, luck_modifier, luck_status, alignment_override, notes) 
+    VALUES (:name, :game_id, :role_id, :alive, :seat, :luck, :luck_modifier, :luck_status, :alignment_override, :notes)`, player)
 	if err != nil {
 		return err
 	}
@@ -152,6 +154,14 @@ func (m *PlayerModel) UpdateDeathStatus(id int, deathStatus bool) error {
 	return nil
 }
 
+func (m *PlayerModel) UpdateNotes(id int, notes string) error {
+	_, err := m.DB.Exec("UPDATE players SET notes = $1 WHERE id = $2", notes, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (m *PlayerModel) Delete(id int) error {
 	_, err := m.DB.Exec("DELETE FROM players WHERE id = $1", id)
 	if err != nil {
@@ -173,7 +183,7 @@ func (m *PlayerModel) GetComplexByGameIDAndPlayerID(gameID string, playerID int)
 	playerQuery := &playerRoleJoin{}
 	query := `SELECT p.id AS player_id, p.name AS player_name, p.game_id AS player_game_id, p.role_id AS player_role_id, 
     p.alive AS player_alive, p.seat AS player_seat, p.luck AS player_luck, p.luck_modifier AS player_luck_modifier, 
-    p.luck_status AS player_luck_status, p.alignment_override AS player_alignment_override, 
+    p.luck_status AS player_luck_status, p.alignment_override AS player_alignment_override, p.notes AS player_notes,
     p.created_at AS player_created_at, p.updated_at AS player_updated_at, 
     r.id AS role_id, r.name AS role_name, r.alignment AS role_alignment, r.ability_ids AS role_ability_ids, r.passive_ids AS role_passive_ids 
   FROM players p JOIN roles r ON p.role_id = r.id WHERE p.game_id = $1 AND p.id = $2`
@@ -214,7 +224,7 @@ func (m *PlayerModel) GetComplexByGameIDAndName(gameID string, name string) (*Co
   player_id, p.name AS player_name, p.game_id AS player_game_id, p.role_id AS player_role_id, 
   p.alive AS player_alive, p.seat AS player_seat, p.luck AS player_luck, p.luck_modifier AS player_luck_modifier, 
   p.luck_status AS player_luck_status, p.alignment_override AS player_alignment_override, 
-  p.created_at AS player_created_at, p.updated_at AS player_updated_at, 
+  p.created_at AS player_created_at, p.updated_at AS player_updated_at, p.notes AS player_notes,
   r.id AS role_id, r.name AS role_name, r.alignment AS role_alignment, r.ability_ids AS role_ability_ids, r.passive_ids AS role_passive_ids FROM players p JOIN roles r ON p.role_id = r.id WHERE p.game_id = $1 AND p.name ILIKE $2`
 	err := m.DB.Get(playerQuery, query, gameID, name)
 	if err != nil {
@@ -230,6 +240,7 @@ func (m *PlayerModel) GetComplexByGameIDAndName(gameID string, name string) (*Co
 		Luck:              playerQuery.PlayerLuck,
 		LuckModifier:      playerQuery.PlayerLuckMod,
 		LuckStatus:        playerQuery.PlayerLuckStatus,
+		Notes:             playerQuery.PlayerNotes,
 		AlignmentOverride: playerQuery.PlayerAlignment,
 		CreatedAt:         playerQuery.PlayerCreated,
 		UpdatedAt:         playerQuery.PlayerUpdated,
@@ -252,8 +263,8 @@ func (m *PlayerModel) GetAllComplexByGameID(gameID string) ([]*ComplexPlayer, er
 	players := []*ComplexPlayer{}
 	query := `SELECT p.id AS player_id, p.name AS player_name, p.game_id AS player_game_id, p.role_id AS player_role_id, 
   p.alive AS player_alive, p.seat AS player_seat, p.luck AS player_luck, 
-  p.luck_modifier AS player_luck_modifier, 
-  p.luck_status AS player_luck_status, p.alignment_override AS player_alignment_override,
+  p.luck_modifier AS player_luck_modifier,
+  p.luck_status AS player_luck_status, p.alignment_override AS player_alignment_override, p.notes AS player_notes,
   p.created_at AS player_created_at, p.updated_at AS player_updated_at, r.id AS role_id, r.name AS role_name, r.alignment AS role_alignment, r.ability_ids AS role_ability_ids, r.passive_ids AS role_passive_ids FROM players p JOIN roles r ON p.role_id = r.id WHERE p.game_id = $1`
 	err := m.DB.Select(&playerQuery, query, gameID)
 	if err != nil {
@@ -272,6 +283,7 @@ func (m *PlayerModel) GetAllComplexByGameID(gameID string) ([]*ComplexPlayer, er
 			LuckModifier:      p.PlayerLuckMod,
 			LuckStatus:        p.PlayerLuckStatus,
 			AlignmentOverride: p.PlayerAlignment,
+			Notes:             p.PlayerNotes,
 			CreatedAt:         p.PlayerCreated,
 			UpdatedAt:         p.PlayerUpdated,
 		}

@@ -44,6 +44,7 @@ func (h *Handler) AddPlayerToGame(c echo.Context) error {
 		LuckModifier:      0,
 		LuckStatus:        "",
 		AlignmentOverride: "",
+		Notes:             ".",
 	}
 
 	err = h.models.Players.Create(newPlayer)
@@ -90,6 +91,25 @@ func (h *Handler) MarkPlayerDead(c echo.Context) error {
 	cp, _ := h.models.Players.GetComplexByGameIDAndName(game.GameID, player.Name)
 
 	return TemplRender(c, page.PlayerCard(c, cp))
+}
+
+func (h *Handler) UpdatePlayerNotes(c echo.Context) error {
+	pID := util.ParamInt(c, "player_id", -1)
+	notes := c.FormValue("notes")
+	game, _ := util.GetGame(c)
+
+	targetPlayer, err := h.models.Players.GetComplexByGameIDAndPlayerID(game.GameID, pID)
+	if err != nil {
+		return TemplRender(c, page.Error500(c, err))
+	}
+
+	targetPlayer.P.Notes = notes
+	err = h.models.Players.UpdateNotes(pID, notes)
+	if err != nil {
+		return TemplRender(c, page.Error500(c, err))
+	}
+
+	return TemplRender(c, page.PlayerCard(c, targetPlayer))
 }
 
 func (h *Handler) SubmitPlayerAction(c echo.Context) error {

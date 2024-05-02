@@ -2,9 +2,16 @@ package page
 
 import "github.com/mccune1224/betrayal-widget/view/template"
 import "github.com/labstack/echo/v4"
+import "github.com/mccune1224/betrayal-widget/data"
+import "strconv"
 
-templ ActionHistoryDashboard(c echo.Context) {
+templ ActionHistoryDashboard(c echo.Context, requests []*data.ComplexPlayerRequest) {
 	@template.Base(c) {
 		<h1>TODO ACTION HISTORY FOR ADMIN....</h1>
+		for _, req := range requests {
+			<div>
+				<p>{ req.P.P.Name } - { strconv.FormatBool(req.R.Approved) }</p>
+			</div>
+		}
 	}
 }

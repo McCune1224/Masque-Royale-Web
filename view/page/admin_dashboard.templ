@@ -64,6 +64,18 @@ templ PlayerCard(c echo.Context, player *data.ComplexPlayer) {
 			<p>( { player.R.Name } )</p>
 		</div>
 		<div class="flex gap-1">
+			<form
+				class="w-full flex flex-row py-4 gap-1"
+				hx-post={ util.PlayerPath(c, strconv.Itoa(player.P.ID)+"/notes") }
+				hx-target={ "#player-" + player.P.Name }
+				hx-swap="outerHTML"
+			>
+				<textarea
+					name="notes"
+					class=" bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
+				>{ player.P.Notes }</textarea>
+				@button.SubmitButton("Update Action Note")
+			</form>
 			if player.P.Alive {
 				@button.HxPostButton("Mark Dead", util.PlayerPath(c, strconv.Itoa(player.P.ID))+"/death", "#player-"+player.P.Name)
 			} else {
@@ -94,6 +106,7 @@ templ AdminActionCard(c echo.Context, index int, action data.ComplexPlayerReques
 			class="w-full flex flex-col py-4 gap-1"
 			hx-post={ util.PlayerPath(c, strconv.Itoa(action.P.P.ID)+"/actions/"+strconv.Itoa(action.R.ID)) + "/note", }
 			hx-target={ "#action-" + strconv.Itoa(action.P.P.ID) }
+			hx-swap="outerHTML"
 		>
 			<p>Update Notes on action</p>
 			<textarea

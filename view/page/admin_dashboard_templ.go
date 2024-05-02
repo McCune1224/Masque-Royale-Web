@@ -313,7 +313,7 @@ func PlayerCard(c echo.Context, player *data.ComplexPlayer) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = button.SubmitButton("Update Action Note").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = button.SubmitButton("Update Player Notes").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

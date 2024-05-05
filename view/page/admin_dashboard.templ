@@ -14,7 +14,12 @@ import "strings"
 templ AdminDashboard(c echo.Context, game *data.Game, players []*data.ComplexPlayer, roleList []string, actions []data.ComplexPlayerRequest, err ...string) {
 	@template.Base(c) {
 		<main class="flex flex-col gap-2">
-			@text.Title("Admin Dashboard", true)
+			<h1
+				class="font-extrabold py-5 whitespace-nowrap sm:text-6xl text-4xl leading-none tracking-tight text-center"
+			>{ game.GameID }</h1>
+			<h1
+				class="font-extrabold py-1 whitespace-nowrap sm:text-6xl text-4xl leading-none tracking-tight text-center"
+			>Admin Dashboard</h1>
 			@CycleDashboard(c, game)
 			<form
 				hx-post={ util.GamePath(c) + "/players" }
@@ -47,7 +52,7 @@ templ AdminDashboard(c echo.Context, game *data.Game, players []*data.ComplexPla
 }
 
 templ PlayerList(c echo.Context, players []*data.ComplexPlayer, err ...string) {
-	<section >
+	<section>
 		<div class="underline underline-offset-4">
 			@text.Title("Players", true)
 		</div>
@@ -64,7 +69,7 @@ templ PlayerList(c echo.Context, players []*data.ComplexPlayer, err ...string) {
 
 templ PlayerCard(c echo.Context, player *data.ComplexPlayer) {
 	<section id={ "player-" + player.P.Name } class={ "px-5 py-1 flex flex-col " + CSSAliveTransparency(player) }>
-		<div class="font-extrabold flex gap-1 text-xl justify-center content-center">
+		<div class="font-extrabold flex gap-1 justify-center content-center">
 			<p>{ player.P.Name }</p>
 			<p>( { player.R.Name } )</p>
 		</div>
@@ -86,7 +91,7 @@ templ PlayerCard(c echo.Context, player *data.ComplexPlayer) {
 			} else {
 				@button.HxPostButton("Mark Alive", util.PlayerPath(c, strconv.Itoa(player.P.ID))+"/death", "#player-"+player.P.Name)
 			}
-			@button.HxDeleteButton("Delete", util.GamePath(c)+"/players/"+strconv.Itoa(player.P.ID), strconv.Itoa(player.P.ID), "#player-list")
+			@button.HxDeleteButton("Delete Player", util.GamePath(c)+"/players/"+strconv.Itoa(player.P.ID), strconv.Itoa(player.P.ID), "#player-list")
 		</div>
 	</section>
 }
@@ -102,7 +107,7 @@ templ AdminActionCard(c echo.Context, index int, action data.ComplexPlayerReques
 	<div id={ "action-" + strconv.Itoa(action.P.P.ID) } class="border-2 flex flex-col gap-2 py-4 px-4">
 		//span flex to equal spacing
 		<div class="flex flex-col justify-center gap-2">
-			<span class="font-semibold "> { strconv.Itoa(index + 1) } - { strings.Join([]string{action.P.P.Name, action.A.AbilityName }, " | ") + " -> " + action.R.Target }</span>
+			<span class="font-semibold ">{ strconv.Itoa(index + 1) } - { strings.Join([]string{action.P.P.Name, action.A.AbilityName }, " | ") + " -> " + action.R.Target }</span>
 			<span>Context: { action.R.Description } </span>
 			<span>Requested: { strings.Split(action.R.RoundPhase, " ")[1] + " " + strings.Split(action.R.RoundPhase, " ")[0] } </span>
 		</div>
@@ -112,15 +117,15 @@ templ AdminActionCard(c echo.Context, index int, action data.ComplexPlayerReques
 			hx-target={ "#action-" + strconv.Itoa(action.P.P.ID) }
 			hx-swap="outerHTML"
 		>
-			<p>Update Notes on action</p>
+			<p>Action Notes</p>
 			<textarea
 				name="note"
 				class=" bg-gray-400 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
 			>{ action.R.Note }</textarea>
-			@button.SubmitButton("Update Action Note")
+			@button.SubmitButton("Sync Action Note")
 		</form>
-		@button.HxPostButton("Approve", util.PlayerPath(c, strconv.Itoa(action.P.P.ID)+"/actions/"+strconv.Itoa(action.R.ID)+"/approve"), "#action-"+strconv.Itoa(action.P.P.ID))
-		@button.HxDeleteButton("Decline", util.PlayerPath(c, strconv.Itoa(action.P.P.ID)+"/actions/"+strconv.Itoa(action.R.ID)), strconv.Itoa(action.R.ID), "#action-cards")
+		@button.HxPostButton("Approve Action", util.PlayerPath(c, strconv.Itoa(action.P.P.ID)+"/actions/"+strconv.Itoa(action.R.ID)+"/approve"), "#action-"+strconv.Itoa(action.P.P.ID))
+		@button.HxDeleteButton("Decline Action", util.PlayerPath(c, strconv.Itoa(action.P.P.ID)+"/actions/"+strconv.Itoa(action.R.ID)), strconv.Itoa(action.R.ID), "#action-cards")
 	</div>
 }
 
@@ -152,7 +157,7 @@ templ CycleDashboard(c echo.Context, game *data.Game) {
 		</div>
 		<div class="flex flex-row gap-3 justify-between">
 			<button
-				class="text-3xl group/button bg-finn hover:opacity-65 flex items-center justify-center border transform transition-transform duration-50 active:scale-95 focus:outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50 border-zinc-800 hover:border-purple-500-600 disabled:bg-white-500 disabled:border-pink-500 focus-visible:ring-pink-600 py-1 px-3 rounded-md leading-6  text-white font-semibold"
+				class="group/button bg-finn hover:opacity-65 flex items-center justify-center border transform transition-transform duration-50 active:scale-95 focus:outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50 border-zinc-800 hover:border-purple-500-600 disabled:bg-white-500 disabled:border-pink-500 focus-visible:ring-pink-600 py-1 px-3 rounded-md leading-6  text-white font-semibold"
 				hx-post={ util.AdminPath(c) + "/cycle/decrement" }
 				hx-target="#game-cycle"
 				hx-swap="outerHTML"
@@ -161,7 +166,7 @@ templ CycleDashboard(c echo.Context, game *data.Game) {
 			</button>
 			<h3>{ game.Phase } { strconv.Itoa(game.Round) }</h3>
 			<button
-				class="text-3xl group/button bg-finn hover:opacity-65 flex items-center justify-center border transform transition-transform duration-50 active:scale-95 focus:outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50 border-zinc-800 hover:border-purple-500-600 disabled:bg-white-500 disabled:border-pink-500 focus-visible:ring-pink-600 py-1 px-3 rounded-md leading-6  text-white font-semibold"
+				class="group/button bg-finn hover:opacity-65 flex items-center justify-center border transform transition-transform duration-50 active:scale-95 focus:outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50 border-zinc-800 hover:border-purple-500-600 disabled:bg-white-500 disabled:border-pink-500 focus-visible:ring-pink-600 py-1 px-3 rounded-md leading-6  text-white font-semibold"
 				hx-post={ util.AdminPath(c) + "/cycle/increment" }
 				hx-target="#game-cycle"
 				hx-swap="outerHTML"

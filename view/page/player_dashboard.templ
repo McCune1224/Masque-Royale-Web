@@ -33,7 +33,7 @@ templ ActionSubmit(c echo.Context, player *data.Player, actions []data.Action, p
 			<div class="underline underline-offset-4">
 				@text.Title("Action Requests", true)
 			</div>
-			<label class="text-2xl">Select an Action</label>
+			<label class="">Select an Action</label>
 			<select required name="ability" class="bg-gray-200 border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500">
 				<option disabled selected value>-- --</option>
 				for _, action := range actions {
@@ -42,9 +42,9 @@ templ ActionSubmit(c echo.Context, player *data.Player, actions []data.Action, p
 					</option>
 				}
 			</select>
-			<label class="text-2xl">Target</label>
+			<label class="">Target</label>
 			@inputs.Input("target", true)
-			<label class="text-2xl">Context/Details (optional)</label>
+			<label class="">Context/Details (optional)</label>
 			@inputs.Input("context", false)
 			@button.SubmitButton("Submit Action")
 		</form>
@@ -66,7 +66,7 @@ templ PendingActions(c echo.Context, actions []*data.Action) {
 
 templ ActionCard(c echo.Context, action *data.Action) {
 	<div class="flex flex-col gap-1 rounded-md border-2 px-4 py-2">
-		<p class="text-xl bold">{ action.AbilityName }</p>
+		<p class="bold">{ action.AbilityName }</p>
 		<p>{ action.Description }</p>
 		<p class="font-thin text-sm text-gray-600">{ strings.Join(action.Categories, " - ") }</p>
 	</div>
@@ -75,11 +75,11 @@ templ ActionCard(c echo.Context, action *data.Action) {
 templ RoleCard(c echo.Context, role *data.ComplexRole) {
 	<section class="flex flex-col justify-center rounded-md border-2 bg-zinc-100 drop-shadow-2xl shadow-md shadow-zinc-400">
 		<div class="py-5">
-			<p class="text-3xl italic">{ role.Name }</p>
+			<p class="italic">{ role.Name }</p>
 			<p>{ role.Alignment }</p>
 			<hr class="w-full h-1 mx-auto my-4 bg-gray-100 border-1 border-dotted rounded md:my-10 dark:bg-gray-700"/>
 		</div>
-		<label class="text-2xl italic">Abilities</label>
+		<label class="italic">Abilities</label>
 		<div class="flex flex-col py-2 gap-4">
 			for _, ability := range role.Abilities {
 				<div>

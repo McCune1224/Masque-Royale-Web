@@ -121,7 +121,7 @@ func ActionSubmit(c echo.Context, player *data.Player, actions []data.Action, pl
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><label class=\"text-2xl\">Select an Action</label> <select required name=\"ability\" class=\"bg-gray-200 border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500\"><option disabled selected value>-- --</option> ")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><label class=\"\">Select an Action</label> <select required name=\"ability\" class=\"bg-gray-200 border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500\"><option disabled selected value>-- --</option> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -157,7 +157,7 @@ func ActionSubmit(c echo.Context, player *data.Player, actions []data.Action, pl
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</select> <label class=\"text-2xl\">Target</label>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</select> <label class=\"\">Target</label>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -165,7 +165,7 @@ func ActionSubmit(c echo.Context, player *data.Player, actions []data.Action, pl
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<label class=\"text-2xl\">Context/Details (optional)</label>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<label class=\"\">Context/Details (optional)</label>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -249,14 +249,14 @@ func ActionCard(c echo.Context, action *data.Action) templ.Component {
 			templ_7745c5c3_Var8 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex flex-col gap-1 rounded-md border-2 px-4 py-2\"><p class=\"text-xl bold\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex flex-col gap-1 rounded-md border-2 px-4 py-2\"><p class=\"bold\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var9 string
 		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(action.AbilityName)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/page/player_dashboard.templ`, Line: 69, Col: 46}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/page/player_dashboard.templ`, Line: 69, Col: 38}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 		if templ_7745c5c3_Err != nil {
@@ -312,14 +312,14 @@ func RoleCard(c echo.Context, role *data.ComplexRole) templ.Component {
 			templ_7745c5c3_Var12 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<section class=\"flex flex-col justify-center rounded-md border-2 bg-zinc-100 drop-shadow-2xl shadow-md shadow-zinc-400\"><div class=\"py-5\"><p class=\"text-3xl italic\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<section class=\"flex flex-col justify-center rounded-md border-2 bg-zinc-100 drop-shadow-2xl shadow-md shadow-zinc-400\"><div class=\"py-5\"><p class=\"italic\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var13 string
 		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(role.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/page/player_dashboard.templ`, Line: 78, Col: 41}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/page/player_dashboard.templ`, Line: 78, Col: 32}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 		if templ_7745c5c3_Err != nil {
@@ -338,7 +338,7 @@ func RoleCard(c echo.Context, role *data.ComplexRole) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</p><hr class=\"w-full h-1 mx-auto my-4 bg-gray-100 border-1 border-dotted rounded md:my-10 dark:bg-gray-700\"></div><label class=\"text-2xl italic\">Abilities</label><div class=\"flex flex-col py-2 gap-4\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</p><hr class=\"w-full h-1 mx-auto my-4 bg-gray-100 border-1 border-dotted rounded md:my-10 dark:bg-gray-700\"></div><label class=\"italic\">Abilities</label><div class=\"flex flex-col py-2 gap-4\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

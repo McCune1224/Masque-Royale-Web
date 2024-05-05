@@ -12,8 +12,10 @@ import "github.com/mccune1224/betrayal-widget/view/components/inputs"
 
 templ PlayerDashboard(c echo.Context, game *data.Game, player *data.Player, role *data.ComplexRole, actions []data.Action, playerActions []*data.Action) {
 	@template.Base(c) {
-		@text.Title(game.GameID+" "+game.Phase+" "+strconv.Itoa(game.Round), true)
-		@text.Title(player.Name+" - "+role.Name, true)
+		<div class="py-4">
+			@text.Title(game.GameID+" "+game.Phase+" "+strconv.Itoa(game.Round), true)
+			@text.Title(player.Name+" - "+role.Name, true)
+		</div>
 		<main class="flex flex-col gap-9">
 			@ActionSubmit(c, player, actions, playerActions)
 			@PendingActions(c, playerActions)
@@ -54,8 +56,8 @@ templ ActionSubmit(c echo.Context, player *data.Player, actions []data.Action, p
 templ PendingActions(c echo.Context, actions []*data.Action) {
 	<section id="pending-actions" class="rounded-md border-2 bg-zinc-100 drop-shadow-2xl shadow-md shadow-zinc-400">
 		if len(actions) != 0 {
-			<div class="underline underline-offset-4 py-4"> 
-			@text.Title("Pending Actions", true)
+			<div class="underline underline-offset-4 py-4">
+				@text.Title("Pending Actions", true)
 			</div>
 		}
 		for _, action := range actions {
@@ -74,12 +76,11 @@ templ ActionCard(c echo.Context, action *data.Action) {
 
 templ RoleCard(c echo.Context, role *data.ComplexRole) {
 	<section class="flex flex-col justify-center rounded-md border-2 bg-zinc-100 drop-shadow-2xl shadow-md shadow-zinc-400">
-		<div class="py-5">
+		<div class="py-2 text-6xl">
 			<p class="italic">{ role.Name }</p>
-			<p>{ role.Alignment }</p>
-			<hr class="w-full h-1 mx-auto my-4 bg-gray-100 border-1 border-dotted rounded md:my-10 dark:bg-gray-700"/>
 		</div>
-		<label class="italic">Abilities</label>
+		<label class="italic text-2xl py-4">{ role.Alignment }</label>
+		<label class="italic text-2xl">Abilities</label>
 		<div class="flex flex-col py-2 gap-4">
 			for _, ability := range role.Abilities {
 				<div>

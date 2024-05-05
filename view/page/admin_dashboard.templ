@@ -13,7 +13,7 @@ import "strings"
 
 templ AdminDashboard(c echo.Context, game *data.Game, players []*data.ComplexPlayer, roleList []string, actions []data.ComplexPlayerRequest, err ...string) {
 	@template.Base(c) {
-		<main class="flex flex-col gap-2">
+		<main class="flex flex-col gap-4">
 			<h1
 				class="font-extrabold py-5 whitespace-nowrap sm:text-6xl text-4xl leading-none tracking-tight text-center"
 			>{ game.GameID }</h1>
@@ -104,12 +104,13 @@ func CSSAliveTransparency(player *data.ComplexPlayer) string {
 }
 
 templ AdminActionCard(c echo.Context, index int, action data.ComplexPlayerRequest) {
-	<div id={ "action-" + strconv.Itoa(action.P.P.ID) } class="border-2 flex flex-col gap-2 py-4 px-4">
+	<div id={ "action-" + strconv.Itoa(action.P.P.ID) } class="flex flex-col gap-2 py-4 px-4 bg-zinc-200 border border-zinc-400">
 		//span flex to equal spacing
-		<div class="flex flex-col justify-center gap-2">
-			<span class="font-semibold ">{ strconv.Itoa(index + 1) } - { strings.Join([]string{action.P.P.Name, action.A.AbilityName }, " | ") + " -> " + action.R.Target }</span>
-			<span>Context: { action.R.Description } </span>
-			<span>Requested: { strings.Split(action.R.RoundPhase, " ")[1] + " " + strings.Split(action.R.RoundPhase, " ")[0] } </span>
+		<div class="flex flex-col justify-center gap-2 bg-zinc-200 rounded-md px-2 py-1 border border-dashed border-zinc-700">
+			<span class="font-extrabold text-4xl">{ strconv.Itoa(index + 1) }</span>
+			<span class="font-extrabold ">{ strings.Join([]string{action.P.P.Name, action.A.AbilityName }, " | ") + " -> " + action.R.Target }</span>
+			<span class="font-extralight">Context: { action.R.Description } </span>
+			<span class="font-extralight">Requested: { strings.Split(action.R.RoundPhase, " ")[1] + " " + strings.Split(action.R.RoundPhase, " ")[0] } </span>
 		</div>
 		<form
 			class="w-full flex flex-col py-4 gap-1"
@@ -135,7 +136,6 @@ templ ActionQueue(c echo.Context, actionQueue []data.ComplexPlayerRequest) {
 			@text.Title("Action Queue", true)
 		</div>
 		for i, action := range actionQueue {
-			<br/>
 			@AdminActionCard(c, i, action)
 		}
 	</div>

@@ -15,16 +15,17 @@ templ AdminDashboard(c echo.Context, game *data.Game, players []*data.ComplexPla
 	@template.Base(c) {
 		<main class="flex flex-col gap-2">
 			@text.Title("Admin Dashboard", true)
-			@text.Title("Game Cycle", true)
 			@CycleDashboard(c, game)
-			@text.Title("Player Creation", true)
 			<form
 				hx-post={ util.GamePath(c) + "/players" }
 				hx-target="#player-list"
 				hx-swap="outerHTML"
 				hx-on::after-request="this.reset()"
-				class="flex flex-col gap-2 justify-center bg-zinc-800 border-purple-700 border-2 rounded-lg py-3 px-10"
+				class="flex flex-col gap-2 justify-center rounded-md border-2 bg-zinc-100 drop-shadow-2xl shadow-md shadow-zinc-400 py-3 px-10"
 			>
+				<div class="underline underline-offset-4">
+					@text.Title("Player Creation", true)
+				</div>
 				<label>Player Name</label>
 				@inputs.Input("player", true)
 				<label>Select a Role</label>
@@ -37,8 +38,7 @@ templ AdminDashboard(c echo.Context, game *data.Game, players []*data.ComplexPla
 				@button.SubmitButton("Add Player")
 			</form>
 			@ActionDashboard(c, actions)
-			@text.Title("Current Players", true)
-			<div class="flex flex-col gap-2 justify-center bg-zinc-800 border-purple-700 border-2 rounded-lg py-3 px-1">
+			<div class="flex flex-col gap-2 justify-center rounded-md border-2 bg-zinc-100 drop-shadow-2xl shadow-md shadow-zinc-400 py-3 px-1">
 				@PlayerList(c, players)
 			</div>
 			@button.HxDeleteButton("Delete Game", "/delete/"+strconv.Itoa(game.ID), strconv.Itoa(game.ID), "#body")
@@ -47,32 +47,37 @@ templ AdminDashboard(c echo.Context, game *data.Game, players []*data.ComplexPla
 }
 
 templ PlayerList(c echo.Context, players []*data.ComplexPlayer, err ...string) {
-	if len(err) > 0 {
-		@errors.ErrorCard(err[0])
-	}
-	<div id="player-list" class="flex flex-col gap-3 sm:grid sm:grid-cols-2">
-		for _, player := range players {
-			@PlayerCard(c, player)
-		}
-	</div>
+	<section >
+		<div class="underline underline-offset-4">
+			@text.Title("Players", true)
+		</div>
+		<div id="player-list" class="flex flex-col gap-3 sm:grid sm:grid-cols-2">
+			if len(err) > 0 {
+				@errors.ErrorCard(err[0])
+			}
+			for _, player := range players {
+				@PlayerCard(c, player)
+			}
+		</div>
+	</section>
 }
 
 templ PlayerCard(c echo.Context, player *data.ComplexPlayer) {
-	<div id={ "player-" + player.P.Name } class={ "px-5 py-1 flex flex-col " + CSSAliveTransparency(player) }>
-		<div class="flex gap-1 text-xl">
+	<section id={ "player-" + player.P.Name } class={ "px-5 py-1 flex flex-col " + CSSAliveTransparency(player) }>
+		<div class="font-extrabold flex gap-1 text-xl justify-center content-center">
 			<p>{ player.P.Name }</p>
 			<p>( { player.R.Name } )</p>
 		</div>
-		<div class="flex gap-1">
+		<div class="flex flex-col gap-1">
 			<form
-				class="w-full flex flex-row py-4 gap-1"
+				class="w-full flex flex-col py-4 gap-1"
 				hx-post={ util.PlayerPath(c, strconv.Itoa(player.P.ID)+"/notes") }
 				hx-target={ "#player-" + player.P.Name }
 				hx-swap="outerHTML"
 			>
 				<textarea
 					name="notes"
-					class=" bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
+					class=" bg-gray-400 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
 				>{ player.P.Notes }</textarea>
 				@button.SubmitButton("Update Player Notes")
 			</form>
@@ -83,7 +88,7 @@ templ PlayerCard(c echo.Context, player *data.ComplexPlayer) {
 			}
 			@button.HxDeleteButton("Delete", util.GamePath(c)+"/players/"+strconv.Itoa(player.P.ID), strconv.Itoa(player.P.ID), "#player-list")
 		</div>
-	</div>
+	</section>
 }
 
 func CSSAliveTransparency(player *data.ComplexPlayer) string {
@@ -94,13 +99,12 @@ func CSSAliveTransparency(player *data.ComplexPlayer) string {
 }
 
 templ AdminActionCard(c echo.Context, index int, action data.ComplexPlayerRequest) {
-	<div id={ "action-" + strconv.Itoa(action.P.P.ID) } class="flex flex-col gap-2">
+	<div id={ "action-" + strconv.Itoa(action.P.P.ID) } class="border-2 flex flex-col gap-2 py-4 px-4">
 		//span flex to equal spacing
-		<div class="flex flex-col text-xl justify-center gap-2">
-			<span class="">#{ strconv.Itoa(index + 1) }</span>
-			<span class="font-semibold text-2xl">{ strings.Join([]string{action.P.P.Name, action.A.AbilityName }, " | ") + " -> " + action.R.Target }</span>
-			<span>Player Provided Context: { action.R.Description } </span>
-			<span>Requested: { action.R.RoundPhase } </span>
+		<div class="flex flex-col justify-center gap-2">
+			<span class="font-semibold "> { strconv.Itoa(index + 1) } - { strings.Join([]string{action.P.P.Name, action.A.AbilityName }, " | ") + " -> " + action.R.Target }</span>
+			<span>Context: { action.R.Description } </span>
+			<span>Requested: { strings.Split(action.R.RoundPhase, " ")[1] + " " + strings.Split(action.R.RoundPhase, " ")[0] } </span>
 		</div>
 		<form
 			class="w-full flex flex-col py-4 gap-1"
@@ -111,7 +115,7 @@ templ AdminActionCard(c echo.Context, index int, action data.ComplexPlayerReques
 			<p>Update Notes on action</p>
 			<textarea
 				name="note"
-				class=" bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
+				class=" bg-gray-400 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
 			>{ action.R.Note }</textarea>
 			@button.SubmitButton("Update Action Note")
 		</form>
@@ -122,6 +126,9 @@ templ AdminActionCard(c echo.Context, index int, action data.ComplexPlayerReques
 
 templ ActionQueue(c echo.Context, actionQueue []data.ComplexPlayerRequest) {
 	<div id="action-cards" class="flex flex-col gap-2">
+		<div class="underline underline-offset-4">
+			@text.Title("Action Queue", true)
+		</div>
 		for i, action := range actionQueue {
 			<br/>
 			@AdminActionCard(c, i, action)
@@ -130,20 +137,22 @@ templ ActionQueue(c echo.Context, actionQueue []data.ComplexPlayerRequest) {
 }
 
 templ ActionDashboard(c echo.Context, actionQueue []data.ComplexPlayerRequest) {
-	@text.Title("Action Queue", true)
-	<div class="flex flex-col gap-2 justify-center bg-zinc-800 border-purple-700 border-2 rounded-lg py-3 px-1">
+	<div class="flex flex-col gap-2 rounded-md border-2 bg-zinc-100 drop-shadow-2xl shadow-md shadow-zinc-400 py-3 px-1">
 		@ActionQueue(c, actionQueue)
 	</div>
 }
 
 templ CycleDashboard(c echo.Context, game *data.Game) {
 	<div
-		class="flex flex-col gap-2 justify-center bg-zinc-800 border-purple-700 border-2 rounded-lg py-3 px-10"
+		class="flex flex-col gap-2 justify-center rounded-md border-2 bg-zinc-100 drop-shadow-2xl shadow-md shadow-zinc-400 py-3 px-10"
 		id="game-cycle"
 	>
+		<div class="underline underline-offset-4">
+			@text.Title("Game Cycle", true)
+		</div>
 		<div class="flex flex-row gap-3 justify-between">
 			<button
-				class="text-3xl group/button bg-pink-600 hover:bg-pink-400 flex items-center justify-center border transform transition-transform duration-50 active:scale-95 focus:outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50 border-zinc-800 hover:border-purple-500-600 disabled:bg-white-500 disabled:border-pink-500 focus-visible:ring-pink-600 py-1 px-3 rounded-md leading-6  text-white font-semibold"
+				class="text-3xl group/button bg-finn hover:opacity-65 flex items-center justify-center border transform transition-transform duration-50 active:scale-95 focus:outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50 border-zinc-800 hover:border-purple-500-600 disabled:bg-white-500 disabled:border-pink-500 focus-visible:ring-pink-600 py-1 px-3 rounded-md leading-6  text-white font-semibold"
 				hx-post={ util.AdminPath(c) + "/cycle/decrement" }
 				hx-target="#game-cycle"
 				hx-swap="outerHTML"
@@ -152,7 +161,7 @@ templ CycleDashboard(c echo.Context, game *data.Game) {
 			</button>
 			<h3>{ game.Phase } { strconv.Itoa(game.Round) }</h3>
 			<button
-				class="text-3xl group/button bg-pink-600 hover:bg-pink-400 flex items-center justify-center border transform transition-transform duration-50 active:scale-95 focus:outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50 border-zinc-800 hover:border-purple-500-600 disabled:bg-white-500 disabled:border-pink-500 focus-visible:ring-pink-600 py-1 px-3 rounded-md leading-6  text-white font-semibold"
+				class="text-3xl group/button bg-finn hover:opacity-65 flex items-center justify-center border transform transition-transform duration-50 active:scale-95 focus:outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50 border-zinc-800 hover:border-purple-500-600 disabled:bg-white-500 disabled:border-pink-500 focus-visible:ring-pink-600 py-1 px-3 rounded-md leading-6  text-white font-semibold"
 				hx-post={ util.AdminPath(c) + "/cycle/increment" }
 				hx-target="#game-cycle"
 				hx-swap="outerHTML"

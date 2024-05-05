@@ -17,7 +17,6 @@ templ PlayerDashboard(c echo.Context, game *data.Game, player *data.Player, role
 		<main class="flex flex-col gap-9">
 			@ActionSubmit(c, player, actions, playerActions)
 			@PendingActions(c, playerActions)
-			@text.Title("About Your Role", true)
 			@RoleCard(c, role)
 		</main>
 	}
@@ -25,13 +24,15 @@ templ PlayerDashboard(c echo.Context, game *data.Game, player *data.Player, role
 
 templ ActionSubmit(c echo.Context, player *data.Player, actions []data.Action, playerActions []*data.Action) {
 	<section>
-		@text.Title("Action Requests", true)
 		<form
-			class="flex flex-col gap-2 justify-center bg-zinc-800 border-white border-2 rounded-lg py-3 px-10"
+			class="flex flex-col gap-2 justify-center rounded-md border-2 bg-zinc-100 drop-shadow-2xl shadow-md shadow-zinc-400  py-3 px-10"
 			hx-post={ util.PlayerPath(c, strconv.Itoa(player.ID)) + "/actions" }
 			hx-target="#pending-actions"
 			hx-on::after-request="this.reset()"
 		>
+			<div class="underline underline-offset-4">
+				@text.Title("Action Requests", true)
+			</div>
 			<label class="text-2xl">Select an Action</label>
 			<select required name="ability" class="bg-gray-200 border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500">
 				<option disabled selected value>-- --</option>
@@ -51,9 +52,11 @@ templ ActionSubmit(c echo.Context, player *data.Player, actions []data.Action, p
 }
 
 templ PendingActions(c echo.Context, actions []*data.Action) {
-	<section id="pending-actions">
+	<section id="pending-actions" class="rounded-md border-2 bg-zinc-100 drop-shadow-2xl shadow-md shadow-zinc-400">
 		if len(actions) != 0 {
+			<div class="underline underline-offset-4 py-4"> 
 			@text.Title("Pending Actions", true)
+			</div>
 		}
 		for _, action := range actions {
 			@ActionCard(c, action)
@@ -62,28 +65,30 @@ templ PendingActions(c echo.Context, actions []*data.Action) {
 }
 
 templ ActionCard(c echo.Context, action *data.Action) {
-	<div class="flex flex-col gap-1 bg-zinc-800 border-2">
+	<div class="flex flex-col gap-1 rounded-md border-2 px-4 py-2">
 		<p class="text-xl bold">{ action.AbilityName }</p>
 		<p>{ action.Description }</p>
+		<p class="font-thin text-sm text-gray-600">{ strings.Join(action.Categories, " - ") }</p>
 	</div>
 }
 
 templ RoleCard(c echo.Context, role *data.ComplexRole) {
-	<section class="flex flex-col justify-center bg-zinc-800 border-2 border-white px-2 rounded-lg">
+	<section class="flex flex-col justify-center rounded-md border-2 bg-zinc-100 drop-shadow-2xl shadow-md shadow-zinc-400">
 		<div class="py-5">
 			<p class="text-3xl italic">{ role.Name }</p>
 			<p>{ role.Alignment }</p>
-			<hr/>
+			<hr class="w-full h-1 mx-auto my-4 bg-gray-100 border-1 border-dotted rounded md:my-10 dark:bg-gray-700"/>
 		</div>
 		<label class="text-2xl italic">Abilities</label>
-		<div class="flex flex-col py-2 gap-2">
+		<div class="flex flex-col py-2 gap-4">
 			for _, ability := range role.Abilities {
 				<div>
-					<p class="font-bold">{ ability.Name } [{ strconv.Itoa(ability.Charges) }] ({ strings.Join(ability.Categories, " -- ") })</p>
+					<p class="font-bold">{ ability.Name } [{ strconv.Itoa(ability.Charges) }] </p>
 					<p>{ ability.Description }</p>
+					<p class="font-thin text-sm text-gray-600">{ strings.Join(ability.Categories, " - ") }</p>
 				</div>
 			}
-			<hr/>
+			<hr class="w-full h-1 mx-auto my-4 bg-gray-100 border-1 border-dotted rounded md:my-10 dark:bg-gray-700"/>
 		</div>
 		<label class="text-2xl italic">Passives</label>
 		<div class="flex flex-col py-2 gap-4">

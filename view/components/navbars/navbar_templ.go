@@ -13,7 +13,6 @@ import "bytes"
 import "github.com/labstack/echo/v4"
 import "github.com/mccune1224/betrayal-widget/util"
 import "strings"
-import "strconv"
 
 type NavbarLink struct {
 	Text             string
@@ -27,12 +26,6 @@ func playerItems(c echo.Context) []NavbarLink {
 			Text:             "ACTIONS",
 			Link:             util.PlayerPath(c, c.Param("player_id")),
 			FontAwesomeClass: "fa-solid fa-bolt",
-		},
-		{
-
-			Text:             "FLASHCARD",
-			Link:             util.PlayerPath(c, c.Param("player_id")+"/flashcard"),
-			FontAwesomeClass: "fa-solid fa-question",
 		},
 	}
 }
@@ -74,14 +67,14 @@ func navbarItem(text string, link string, fa_icon ...string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800 group\"><button type=\"button\" class=\"text-sm text-gray-500 dark:text-gray-400 group-hover:text-pink-600 dark:group-hover:text-pink-500\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"inline-flex flex-col items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-800 group px-5\"><button type=\"button\" class=\"text-sm text-gray-500 dark:text-gray-400 group-hover:text-pink-600 dark:group-hover:text-pink-500\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(text)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/components/navbars/navbar.templ`, Line: 48, Col: 9}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/components/navbars/navbar.templ`, Line: 41, Col: 9}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
@@ -180,7 +173,7 @@ func BaseNavbar(items ...NavbarLink) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var8 = []any{"grid h-full max-w-lg grid-cols-" + strconv.Itoa(len(items)+1) + " mx-auto font-semibold"}
+		var templ_7745c5c3_Var8 = []any{"flex flex-row h-full max-w-lg mx-auto justify-around font-semibold"}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var8...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

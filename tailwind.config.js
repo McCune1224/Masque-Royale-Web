@@ -8,16 +8,21 @@ module.exports = {
     // "./views/components/**/*.go",
     // "./views/components/**/*.html",
     // "./views/**/*",
-    "./**/*.html",
-    "./**/*.templ",
-    "./**/*.go",
+    // "./**/*.html",
+    "./view/**/*.templ",
+    "./view/**/*.go",
   ],
   theme: {
     extend: {
-      primary: "#FF6363",
-      secondary: {
-        100: "#E2E2D5",
-        200: "#888883",
+      fontFamily: {
+        oxygen: ["Oxygen", 'sans-serif'],
+      },
+      colors: {
+        space: '#1B1B3A',
+        finn: '#693668',
+        haze: '#A74482',
+        rose: '#F84AA7',
+        folly: '#F84AA7',
       },
     },
   },

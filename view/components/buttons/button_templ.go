@@ -10,7 +10,7 @@ import "context"
 import "io"
 import "bytes"
 
-var ButtonStyle = " group/button bg-pink-600 hover:bg-pink-400 flex items-center justify-center border transform transition-transform duration-50 active:scale-95 focus:outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50 border-zinc-800 hover:border-white-600 disabled:bg-white-500 disabled:border-pink-500 focus-visible:ring-pink-600 py-2 px-3 rounded-md text-base leading-6 space-x-3 !rounded-lg !py-1 !px-2 h-[50px] text-white font-semibold"
+var ButtonStyle = "group/button bg-finn hover:opacity-60 flex items-center justify-center border border-space transform transition-transform duration-50 active:scale-95 focus:outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50 border-zinc-800 hover:border-white-600 disabled:bg-white-500 disabled:border-zinc-500 focus-visible:ring-zinc-600 py-2 px-3 rounded-md text-base leading-6 space-x-3 !rounded-lg !py-1 !px-2 h-[50px] text-white font-semibold"
 
 func SubmitButton(text string) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {

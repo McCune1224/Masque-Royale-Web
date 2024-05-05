@@ -3,11 +3,11 @@ package text
 templ Title(text string, center bool) {
 	if center {
 		<h1
-			class="sm:text-6xl text-4xl py-4 text-center"
+			class="whitespace-nowrap sm:text-4xl text-2xl font-semibold leading-none tracking-tight text-center"
 		>{ text }</h1>
 	} else {
 		<h1
-			class="sm:text-6xl text-4xl py-4"
+			class="whitespace-nowrap sm:text-4xl text-2xl font-semibold leading-none tracking-tight"
 		>{ text }</h1>
 	}
 }

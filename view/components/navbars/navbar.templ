@@ -3,7 +3,6 @@ package navbars
 import "github.com/labstack/echo/v4"
 import "github.com/mccune1224/betrayal-widget/util"
 import "strings"
-import "strconv"
 
 type NavbarLink struct {
 	Text             string
@@ -17,12 +16,6 @@ func playerItems(c echo.Context) []NavbarLink {
 			Text:             "ACTIONS",
 			Link:             util.PlayerPath(c, c.Param("player_id")),
 			FontAwesomeClass: "fa-solid fa-bolt",
-		},
-		{
-
-			Text:             "FLASHCARD",
-			Link:             util.PlayerPath(c, c.Param("player_id")+"/flashcard"),
-			FontAwesomeClass: "fa-solid fa-question",
 		},
 	}
 }
@@ -43,7 +36,7 @@ func adminItems(c echo.Context) []NavbarLink {
 }
 
 templ navbarItem(text string, link string, fa_icon ...string) {
-	<a href={ templ.SafeURL(link) } class="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800 group">
+	<a href={ templ.SafeURL(link) } class="inline-flex flex-col items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-800 group px-5">
 		<button type="button" class="text-sm text-gray-500 dark:text-gray-400 group-hover:text-pink-600 dark:group-hover:text-pink-500">
 			{ text }
 		</button>
@@ -66,7 +59,7 @@ templ Navbar(c echo.Context) {
 
 templ BaseNavbar(items ...NavbarLink) {
 	<nav class="sticky z-30 bottom-0 w-full h-16 border-t border-gray-200 dark:bg-gray-700 dark:border-gray-600">
-		<div class={ "grid h-full max-w-lg grid-cols-" + strconv.Itoa(len(items)+1) + " mx-auto font-semibold" }>
+		<div class={ "flex flex-row h-full max-w-lg mx-auto justify-around font-semibold" }>
 			@navbarItem("HOME", "/", "fa-solid fa-home")
 			for _, item := range items {
 				@navbarItem(item.Text, item.Link, item.FontAwesomeClass)

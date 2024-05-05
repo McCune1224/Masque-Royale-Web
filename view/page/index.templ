@@ -10,7 +10,8 @@ import "github.com/mccune1224/betrayal-widget/view/components/inputs"
 import "github.com/mccune1224/betrayal-widget/view/components/text"
 
 templ GamesList(c echo.Context, games []data.Game) {
-	<div id="games-list">
+	@text.Title("Current Games", true)
+	<div id="games-list" class="flex flex-col gap-4">
 		for _, game := range games {
 			@GameCard(c, game)
 		}
@@ -18,9 +19,11 @@ templ GamesList(c echo.Context, games []data.Game) {
 }
 
 templ GameCard(c echo.Context, game data.Game) {
-	<div id={ "game-" + strconv.Itoa(game.ID) } class="flex flex-col gap-2 justify-center bg-zinc-800 border-purple-500 border-2 rounded-lg py-3 px-10">
-		<h4 class="text-2xl">{ game.GameID }</h4>
-		<p>{ strconv.Itoa(game.PlayerCount) } Players</p>
+	<div id={ "game-" + strconv.Itoa(game.ID) } class="flex flex-col gap-2 justify-center rounded-md border-2 bg-zinc-100 drop-shadow-2xl shadow-md shadow-zinc-400 py-3 px-10">
+		<div class="flex flex-col space-y-1.5 p-6">
+			<h4 class="text-2xl">{ game.GameID }</h4>
+			<p class="text-sm text-muted-foreground">{ strconv.Itoa(game.PlayerCount) } Players</p>
+		</div>
 		@button.LinkButton("Player Join", "/join/"+strconv.Itoa(game.ID))
 		@button.LinkButton("Admin Join", "/games/"+strconv.Itoa(game.ID)+"/admin")
 	</div>
@@ -30,20 +33,21 @@ templ Index(c echo.Context, currentGames []data.Game, err ...string) {
 	@template.Base(c) {
 		<main class="flex flex-col gap-2">
 			<h1
-				class="sm:text-9xl text-4xl py-4 text-center"
+				class="sm:text-6xl text-4xl py-4 font-mono text-center"
 			>Masque Royale</h1>
-			@text.Title("Current Games", true)
 			@GamesList(c, currentGames)
 			if len(err) > 0 {
 				@errors.ErrorCard(err[0])
 			}
-			@text.Title("Create New Game", true)
 			<form
-				class="flex flex-col gap-2 justify-center bg-zinc-800 border-purple-500 border-2 rounded-lg py-3 px-10"
+				class="flex flex-col gap-2 justify-center rounded-md border-2 bg-zinc-100 drop-shadow-2xl shadow-md shadow-zinc-400 py-3 px-10"
 				hx-post="/create"
 				hx-target="#body"
 				hx-on::after-request="this.reset()"
 			>
+				<div class="flex flex-col">
+					@text.Title("Create New Game", true)
+				</div>
 				<label class="text-xl">Game Name</label>
 				@inputs.Input("name", true)
 				@button.SubmitButton("Create New Game")

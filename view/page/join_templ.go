@@ -35,7 +35,7 @@ func JoinGame(c echo.Context, game *data.Game, players []*data.Player) templ.Com
 				templ_7745c5c3_Buffer = templ.GetBuffer()
 				defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<main><h1 class=\"sm:text-9xl text-4xl py-4 text-center\">Select Your Name</h1><div class=\"flex flex-col gap-4\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<main><h1 class=\"sm:text-6xl text-4xl py-4 text-center\">Select Your Name</h1><div class=\"flex flex-col gap-4\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

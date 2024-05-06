@@ -15,6 +15,7 @@ import (
 func (h *Handler) AddPlayerToGame(c echo.Context) error {
 	playerName := c.FormValue("player")
 	roleName := c.FormValue("role")
+	room := c.FormValue("room")
 	game, _ := util.GetGame(c)
 
 	players, err := h.models.Players.GetAllComplexByGameID(game.GameID)
@@ -44,6 +45,7 @@ func (h *Handler) AddPlayerToGame(c echo.Context) error {
 		LuckModifier:      0,
 		LuckStatus:        "",
 		AlignmentOverride: "",
+		StartingRoom:      room,
 		Notes:             ".",
 	}
 

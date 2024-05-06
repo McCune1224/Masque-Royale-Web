@@ -33,8 +33,24 @@ templ AdminDashboard(c echo.Context, game *data.Game, players []*data.ComplexPla
 				</div>
 				<label>Player Name</label>
 				@inputs.Input("player", true)
+				<label>Select a Starting Room</label>
+				<select required name="room" class="bg-gray-200 border-space border-2 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500">
+					<option disabled selected value>-- -- </option>
+					<option class="text-black">Grand Hall</option>
+					<option class="text-black">Tea Room</option>
+					<option class="text-black">Library</option>
+					<option class="text-black">Conservatory</option>
+					<option class="text-black">Dining Hall</option>
+					<option class="text-black">Wine Cellar</option>
+					<option class="text-black">Scullery</option>
+					<option class="text-black">Butler's Pantry</option>
+					<option class="text-black">Gallery</option>
+					<option class="text-black">Gift Wrapping</option>
+					<option class="text-black">Servant's Quarters</option>
+					<option class="text-black">Panic Room</option>
+				</select>
 				<label>Select a Role</label>
-				<select required name="role" class="bg-gray-200 border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500">
+				<select required name="role" class="bg-gray-200 border-2 border-space rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500">
 					<option disabled selected value>-- -- </option>
 					for _, roleName := range roleList {
 						<option class="text-black">{ roleName }</option>
@@ -52,11 +68,11 @@ templ AdminDashboard(c echo.Context, game *data.Game, players []*data.ComplexPla
 }
 
 templ PlayerList(c echo.Context, players []*data.ComplexPlayer, err ...string) {
-	<section>
+	<section id="player-list">
 		<div class="underline underline-offset-4">
 			@text.Title("Players", true)
 		</div>
-		<div id="player-list" class="flex flex-col gap-3 sm:grid sm:grid-cols-2">
+		<div class="flex flex-col gap-3 sm:grid sm:grid-cols-2">
 			if len(err) > 0 {
 				@errors.ErrorCard(err[0])
 			}
@@ -69,7 +85,7 @@ templ PlayerList(c echo.Context, players []*data.ComplexPlayer, err ...string) {
 
 templ PlayerCard(c echo.Context, player *data.ComplexPlayer) {
 	<section id={ "player-" + player.P.Name } class={ "px-5 py-1 flex flex-col " + CSSAliveTransparency(player) }>
-		<div class="font-extrabold flex gap-1 justify-center content-center">
+		<div class="font-extrabold text-xl flex gap-1 justify-center content-center">
 			<p>{ player.P.Name }</p>
 			<p>( { player.R.Name } )</p>
 		</div>
@@ -82,7 +98,7 @@ templ PlayerCard(c echo.Context, player *data.ComplexPlayer) {
 			>
 				<textarea
 					name="notes"
-					class=" bg-gray-400 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
+					class=" bg-gray-400 appearance-none border-2 border-space rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
 				>{ player.P.Notes }</textarea>
 				@button.SubmitButton("Update Player Notes")
 			</form>
@@ -104,8 +120,7 @@ func CSSAliveTransparency(player *data.ComplexPlayer) string {
 }
 
 templ AdminActionCard(c echo.Context, index int, action data.ComplexPlayerRequest) {
-	<div id={ "action-" + strconv.Itoa(action.P.P.ID) } class="flex flex-col gap-2 py-4 px-4 bg-zinc-200 border border-zinc-400">
-		//span flex to equal spacing
+	<div id={ "action-" + strconv.Itoa(action.R.ID) } class="flex flex-col gap-2 py-4 px-4 bg-zinc-200 border border-zinc-400">
 		<div class="flex flex-col justify-center gap-2 bg-zinc-200 rounded-md px-2 py-1 border border-dashed border-zinc-700">
 			<span class="font-extrabold text-4xl">{ strconv.Itoa(index + 1) }</span>
 			<span class="font-extrabold ">{ strings.Join([]string{action.P.P.Name, action.A.AbilityName }, " | ") + " -> " + action.R.Target }</span>
@@ -115,13 +130,13 @@ templ AdminActionCard(c echo.Context, index int, action data.ComplexPlayerReques
 		<form
 			class="w-full flex flex-col py-4 gap-1"
 			hx-post={ util.PlayerPath(c, strconv.Itoa(action.P.P.ID)+"/actions/"+strconv.Itoa(action.R.ID)) + "/note", }
-			hx-target={ "#action-" + strconv.Itoa(action.P.P.ID) }
+			hx-target={ "#action-" + strconv.Itoa(action.R.ID) }
 			hx-swap="outerHTML"
 		>
 			<p>Action Notes</p>
 			<textarea
 				name="note"
-				class=" bg-gray-400 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
+				class=" bg-gray-400 appearance-none border-2 border-space rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
 			>{ action.R.Note }</textarea>
 			@button.SubmitButton("Sync Action Note")
 		</form>

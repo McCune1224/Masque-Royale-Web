@@ -10,7 +10,7 @@ templ JoinGame(c echo.Context, game *data.Game, players []*data.Player) {
 	@template.Base(c) {
 		<main>
 			<h1
-				class="sm:text-9xl text-4xl py-4 text-center"
+				class="sm:text-6xl text-4xl py-4 text-center"
 			>Select Your Name</h1>
 			<div class="flex flex-col gap-4">
 				for _, player := range players {

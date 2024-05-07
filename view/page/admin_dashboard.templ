@@ -140,7 +140,7 @@ templ AdminActionCard(c echo.Context, index int, action data.ComplexPlayerReques
 			>{ action.R.Note }</textarea>
 			@button.SubmitButton("Sync Action Note")
 		</form>
-		@button.HxPostButton("Approve Action", util.PlayerPath(c, strconv.Itoa(action.P.P.ID)+"/actions/"+strconv.Itoa(action.R.ID)+"/approve"), "#action-"+strconv.Itoa(action.P.P.ID))
+		@button.HxPostButton("Approve Action", util.PlayerPath(c, strconv.Itoa(action.P.P.ID)+"/actions/"+strconv.Itoa(action.R.ID)+"/approve"), "#action-cards")
 		@button.HxDeleteButton("Decline Action", util.PlayerPath(c, strconv.Itoa(action.P.P.ID)+"/actions/"+strconv.Itoa(action.R.ID)), strconv.Itoa(action.R.ID), "#action-cards")
 	</div>
 }

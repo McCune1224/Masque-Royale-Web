@@ -198,6 +198,9 @@ func (h *Handler) DeletePlayerAction(c echo.Context) error {
 
 	cprList := []*data.ComplexPlayerRequest{}
 	for _, currRequest := range playerRequests {
+		if currRequest.Approved {
+			continue
+		}
 		cpr := &data.ComplexPlayerRequest{}
 		for _, currPlayer := range players {
 			if currRequest.PlayerID == currPlayer.P.ID {

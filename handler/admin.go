@@ -74,7 +74,53 @@ func (h *Handler) ApprovePlayerAction(c echo.Context) error {
 	if err != nil {
 		return TemplRender(c, page.Error500(c, err))
 	}
-	return nil
+
+	game, _ := util.GetGame(c)
+	players, err := h.models.Players.GetAllComplexByGameID(game.GameID)
+	if err != nil {
+		return TemplRender(c, page.Error500(c, err))
+	}
+
+	playerRequests, err := h.models.Actions.GetAllPlayerActionsForGame(game.GameID)
+	if err != nil {
+		return TemplRender(c, page.Error500(c, err))
+	}
+
+	targetActionIDS := make(pq.Int64Array, len(playerRequests))
+	for _, a := range playerRequests {
+		targetActionIDS = append(targetActionIDS, int64(a.ActionID))
+	}
+
+	actions := []data.Action{}
+	err = h.models.Actions.Select(&actions, "SELECT * from actions WHERE id = ANY($1)", targetActionIDS)
+	if err != nil {
+		return TemplRender(c, page.Error500(c, err))
+	}
+
+	cprList := []*data.ComplexPlayerRequest{}
+	for _, currRequest := range playerRequests {
+		if currRequest.Approved {
+			continue
+		}
+		cpr := &data.ComplexPlayerRequest{}
+		for _, currPlayer := range players {
+			if currRequest.PlayerID == currPlayer.P.ID {
+				cpr.P = *currPlayer
+				break
+			}
+		}
+		cpr.R = *currRequest
+		for _, action := range actions {
+			if action.ID == cpr.R.ActionID {
+				cpr.A = action
+			}
+		}
+		cprList = append(cprList, cpr)
+	}
+
+	sortedCprList := sortComplexPlayerRequest(cprList)
+
+	return TemplRender(c, page.ActionQueue(c, sortedCprList))
 }
 
 func (h *Handler) UpdatePlayerActionNote(c echo.Context) error {

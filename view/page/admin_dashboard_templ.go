@@ -496,7 +496,7 @@ func AdminActionCard(c echo.Context, index int, action data.ComplexPlayerRequest
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = button.HxPostButton("Approve Action", util.PlayerPath(c, strconv.Itoa(action.P.P.ID)+"/actions/"+strconv.Itoa(action.R.ID)+"/approve"), "#action-"+strconv.Itoa(action.P.P.ID)).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = button.HxPostButton("Approve Action", util.PlayerPath(c, strconv.Itoa(action.P.P.ID)+"/actions/"+strconv.Itoa(action.R.ID)+"/approve"), "#action-cards").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

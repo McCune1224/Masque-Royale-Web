@@ -27,7 +27,7 @@ func ComplexPlayerRequestRoundBucketSort(reqs []*data.ComplexPlayerRequest) [][]
 }
 
 templ ActionHistoryCard(c echo.Context, req *data.ComplexPlayerRequest) {
-	<div class="flex flex-col bg-zinc-700 rounded-xl m-4 p-4">
+	<div class="text-sm flex flex-col border-2 border-dashed border-space rounded-xl m-2 p-2">
 		<div class="">
 			<p>{ req.P.P.Name } | { req.A.AbilityName }-> { req.R.Target }</p>
 			<p>{ req.R.Description }</p>
@@ -42,10 +42,12 @@ templ ActionHistoryCard(c echo.Context, req *data.ComplexPlayerRequest) {
 
 templ ActionHistoryDashboard(c echo.Context, requests []*data.ComplexPlayerRequest) {
 	@template.Base(c) {
-		<h1>TODO ACTION HISTORY FOR ADMIN....</h1>
+		<h1
+			class="sm:text-6xl text-4xl py-4 font-mono text-center"
+		>Action History</h1>
 		for i, roundRequests := range ComplexPlayerRequestRoundBucketSort(requests) {
 			if len(roundRequests) != 0 {
-				<div class="flex flex-col bg-zinc-400 gap-3">
+				<div class="flex flex-col gap-3 justify-center rounded-md border-2 bg-zinc-100 drop-shadow-2xl shadow-md shadow-zinc-400 py-3 px-2">
 					@text.Title(fmt.Sprintf("DAY %d Actions", i+1), true)
 					for _, req := range roundRequests {
 						@ActionHistoryCard(c, req)

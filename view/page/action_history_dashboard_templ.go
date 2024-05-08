@@ -66,7 +66,7 @@ func ActionHistoryCard(c echo.Context, req *data.ComplexPlayerRequest) templ.Com
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex flex-col bg-zinc-700 rounded-xl m-4 p-4\"><div class=\"\"><p>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"text-sm flex flex-col border-2 border-dashed border-space rounded-xl m-2 p-2\"><div class=\"\"><p>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -187,13 +187,13 @@ func ActionHistoryDashboard(c echo.Context, requests []*data.ComplexPlayerReques
 				templ_7745c5c3_Buffer = templ.GetBuffer()
 				defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<h1>TODO ACTION HISTORY FOR ADMIN....</h1>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<h1 class=\"sm:text-6xl text-4xl py-4 font-mono text-center\">Action History</h1>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			for i, roundRequests := range ComplexPlayerRequestRoundBucketSort(requests) {
 				if len(roundRequests) != 0 {
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex flex-col bg-zinc-400 gap-3\">")
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex flex-col gap-3 justify-center rounded-md border-2 bg-zinc-100 drop-shadow-2xl shadow-md shadow-zinc-400 py-3 px-2\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}

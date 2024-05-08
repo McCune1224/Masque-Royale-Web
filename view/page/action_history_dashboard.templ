@@ -4,14 +4,54 @@ import "github.com/mccune1224/betrayal-widget/view/template"
 import "github.com/labstack/echo/v4"
 import "github.com/mccune1224/betrayal-widget/data"
 import "strconv"
+import "strings"
+import "github.com/mccune1224/betrayal-widget/view/components/text"
+import "fmt"
+
+templ RoundActions(c echo.Context, requests []*data.ComplexPlayerRequest) {
+}
+
+func ComplexPlayerRequestRoundBucketSort(reqs []*data.ComplexPlayerRequest) [][]*data.ComplexPlayerRequest {
+	// WARNING: this code awaits those within the ninth circle of 𝐻̥̊⃝𝑒̥̊⃝𝑙̥̊⃝𝑙̥̊⃝ . I am sorry for my crimes against humanity.
+	// Should I just be making this int instead of just wrapping round and phase into two fields? Yes
+	// Will I do that? No.
+	latestRound, _ := strconv.Atoi(strings.Split(reqs[len(reqs)-1].R.RoundPhase, " ")[0])
+	buckets := make([][]*data.ComplexPlayerRequest, latestRound)
+	for _, req := range reqs {
+		requestRound, _ := strconv.Atoi(strings.Split(req.R.RoundPhase, " ")[0])
+		requestRound -= 1
+		buckets[requestRound] = append(buckets[requestRound], req)
+	}
+
+	return buckets
+}
+
+templ ActionHistoryCard(c echo.Context, req *data.ComplexPlayerRequest) {
+	<div class="flex flex-col bg-zinc-700 rounded-xl m-4 p-4">
+		<div class="">
+			<p>{ req.P.P.Name } | { req.A.AbilityName }-> { req.R.Target }</p>
+			<p>{ req.R.Description }</p>
+		</div>
+		<div>
+			<p>{ req.R.RoundPhase }</p>
+			<p>{ req.A.AbilityName }</p>
+			<p>{ req.R.Note }</p>
+		</div>
+	</div>
+}
 
 templ ActionHistoryDashboard(c echo.Context, requests []*data.ComplexPlayerRequest) {
 	@template.Base(c) {
 		<h1>TODO ACTION HISTORY FOR ADMIN....</h1>
-		for _, req := range requests {
-			<div>
-				<p>{ req.P.P.Name } - { strconv.FormatBool(req.R.Approved) }</p>
-			</div>
+		for i, roundRequests := range ComplexPlayerRequestRoundBucketSort(requests) {
+			if len(roundRequests) != 0 {
+				<div class="flex flex-col bg-zinc-400 gap-3">
+					@text.Title(fmt.Sprintf("DAY %d Actions", i+1), true)
+					for _, req := range roundRequests {
+						@ActionHistoryCard(c, req)
+					}
+				</div>
+			}
 		}
 	}
 }

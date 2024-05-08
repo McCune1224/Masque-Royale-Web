@@ -2,6 +2,8 @@ package handler
 
 import (
 	"sort"
+	"strconv"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 	"github.com/lib/pq"
@@ -184,7 +186,14 @@ func (h *Handler) AdminActionHistoryPage(c echo.Context) error {
 	}
 
 	sort.Slice(cprList, func(i, j int) bool {
-		return cprList[i].R.RoundPhase > cprList[j].R.RoundPhase
+		lSplit := strings.Split(cprList[i].R.RoundPhase, " ")
+		lRound, _ := strconv.Atoi(lSplit[0])
+
+		rSplit := strings.Split(cprList[j].R.RoundPhase, " ")
+		rRound, _ := strconv.Atoi(rSplit[0])
+
+		return lRound <= rRound
+
 	})
 
 	return TemplRender(c, page.ActionHistoryDashboard(c, cprList))

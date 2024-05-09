@@ -13,8 +13,12 @@ import "github.com/mccune1224/betrayal-widget/view/components/inputs"
 templ PlayerDashboard(c echo.Context, game *data.Game, player *data.Player, role *data.ComplexRole, actions []data.Action, playerActions []*data.Action) {
 	@template.Base(c) {
 		<div class="py-4">
-			@text.Title(game.GameID+" "+game.Phase+" "+strconv.Itoa(game.Round), true)
-			@text.Title(player.Name+" - "+role.Name, true)
+			<h1
+				class="font-extrabold py-5 whitespace-nowrap sm:text-6xl text-4xl leading-none tracking-tight text-center"
+			>{ game.GameID }</h1>
+			<h1
+				class="font-extrabold py-1 whitespace-nowrap sm:text-6xl text-4xl leading-none tracking-tight text-center"
+			>{ player.Name } - { role.Name }</h1>
 		</div>
 		<main class="flex flex-col gap-9">
 			@ActionSubmit(c, player, actions, playerActions)
@@ -75,11 +79,11 @@ templ ActionCard(c echo.Context, action *data.Action) {
 }
 
 templ RoleCard(c echo.Context, role *data.ComplexRole) {
-	<section class="flex flex-col justify-center rounded-md border-2 bg-zinc-100 drop-shadow-2xl shadow-md shadow-zinc-400">
-		<div class="py-2 text-6xl">
-			<p class="italic">{ role.Name }</p>
+	<section class="flex flex-col justify-center rounded-md border-2 bg-zinc-100 drop-shadow-2xl shadow-md shadow-zinc-400 p-3">
+		<div class="py-2 ">
+			<p class="italic text-4xl">{ role.Name }</p>
+			<label class="italic text-2xl py-4 text-gray-600">{ role.Alignment }</label>
 		</div>
-		<label class="italic text-2xl py-4">{ role.Alignment }</label>
 		<label class="italic text-2xl">Abilities</label>
 		<div class="flex flex-col py-2 gap-4">
 			for _, ability := range role.Abilities {

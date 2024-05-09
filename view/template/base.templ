@@ -14,7 +14,11 @@ templ Base(c echo.Context) {
 			<script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
 			<script src="/static/htmx.min.js"></script>
 		</head>
-		<body id="body" class="min-h-screen font-oxygen text-base bg-zinc-200">
+		<body
+			id="body"
+			class="min-h-screen font-oxygen text-base bg-zinc-200"
+			style="background-image: url('/static/beams.jpg');"
+		>
 			<section class="antialiased font-sans text-foreground flex flex-col gap-5 container mx-auto leading-normal tracking-normal px-4">
 				{ children... }
 			</section>

@@ -26,7 +26,7 @@ func Base(c echo.Context) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><link rel=\"stylesheet\" href=\"/static/output.css\"><script src=\"https://kit.fontawesome.com/7c9be725cb.js\" crossorigin=\"anonymous\"></script><script src=\"https://unpkg.com/hyperscript.org@0.9.12\"></script><script src=\"/static/htmx.min.js\"></script></head><body id=\"body\" class=\"min-h-screen font-oxygen text-base bg-zinc-200\"><section class=\"antialiased font-sans text-foreground flex flex-col gap-5 container mx-auto leading-normal tracking-normal px-4\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><link rel=\"stylesheet\" href=\"/static/output.css\"><script src=\"https://kit.fontawesome.com/7c9be725cb.js\" crossorigin=\"anonymous\"></script><script src=\"https://unpkg.com/hyperscript.org@0.9.12\"></script><script src=\"/static/htmx.min.js\"></script></head><body id=\"body\" class=\"min-h-screen font-oxygen text-base bg-zinc-200\" style=\"background-image: url(&#39;/static/beams.jpg&#39;);\"><section class=\"antialiased font-sans text-foreground flex flex-col gap-5 container mx-auto leading-normal tracking-normal px-4\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

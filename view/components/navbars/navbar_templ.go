@@ -67,7 +67,7 @@ func navbarItem(text string, link string, fa_icon ...string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"inline-flex flex-col items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-800 group px-5\"><button type=\"button\" class=\"text-sm text-gray-500 dark:text-gray-400 group-hover:text-pink-600 dark:group-hover:text-pink-500\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"inline-flex flex-col items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-800 group px-5\"><button type=\"button\" class=\"text-sm text-gray-500 dark:text-gray-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-500\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

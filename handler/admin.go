@@ -12,9 +12,7 @@ import (
 	"github.com/mccune1224/betrayal-widget/view/page"
 )
 
-var CurrentGameRoles = []string{
-	"Agent", "Detective", "Gunman", "Lawyer", "Nurse", "Seraph", "Empress", "Succubus", "Wraith", "Actress", "Assassin", "Highwayman", "Jester", "Sommelier", "Witchdoctor",
-}
+var CurrentGameRoles = []string{"Agent", "Detective", "Gunman", "Lawyer", "Nurse", "Seraph", "Architect", "Amalgamation", "Empress", "Mercenary", "Succubus", "Actress", "Assassin", "Highwayman", "Jester", "Sommelier", "Witchdoctor", "Wraith"}
 
 func (h *Handler) AdminDashboardPage(c echo.Context) error {
 	game, _ := util.GetGame(c)

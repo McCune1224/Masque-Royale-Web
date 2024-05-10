@@ -1,4 +1,4 @@
-# Masque Royale Discord Bot 🤖
+# Masque Royale Web App 🤖
 
 [![Go](https://img.shields.io/badge/Go-1.21-blue.svg)](https://golang.org/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)

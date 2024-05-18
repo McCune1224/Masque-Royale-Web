@@ -17,4 +17,10 @@ func Routes(app *echo.Echo, handler *handler.Handler) {
 		)
 	})
 
+	// auth := app.Group("/auth")
+
+	api := app.Group("/api")
+	games := api.Group("/games")
+	games.GET("/random", handler.GetRandomGame)
+
 }

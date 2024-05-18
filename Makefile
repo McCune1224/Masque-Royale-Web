@@ -7,7 +7,7 @@ css:
 .SILENT:
 .PHONY: sql
 sql: 
-	psql $(shell cat .env | grep DATABASE_URL | cut -d '=' -f2)
+	psql $(shell cat .env | grep DATABASE_NEW | cut -d '=' -f2)
 
 stage: 
 	templ generate&& tailwindcss -i ./static/input.css -o ./static/output.css

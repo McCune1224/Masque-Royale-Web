@@ -12,7 +12,7 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/mccune1224/betrayal-widget/handler"
 
-	appMiddleware "github.com/mccune1224/betrayal-widget/middleware"
+	//appMiddleware "github.com/mccune1224/betrayal-widget/middleware"
 	"github.com/mccune1224/betrayal-widget/route"
 )
 
@@ -40,7 +40,8 @@ func main() {
 
 	route.Routes(app, handler)
 
-	sm := appMiddleware.NewSyncMiddleware(db)
-	app.Use(sm.SyncGameInfo)
+	// sm := appMiddleware.NewSyncMiddleware(db)
+	// app.Use(sm.SyncGameInfo)
+
 	log.Fatal(app.Start(":" + os.Getenv("PORT")))
 }

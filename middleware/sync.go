@@ -1,10 +1,7 @@
 package middleware
 
 import (
-	"strconv"
-
 	"github.com/jmoiron/sqlx"
-	"github.com/labstack/echo/v4"
 	"github.com/mccune1224/betrayal-widget/data"
 )
 
@@ -19,25 +16,26 @@ func NewSyncMiddleware(db *sqlx.DB) *SyncMiddleware {
 	}
 }
 
-func (s *SyncMiddleware) SyncGameInfo(next echo.HandlerFunc) echo.HandlerFunc {
-	return func(c echo.Context) error {
-		if c.Param("game_id") == "" {
-			return next(c)
-		}
-		gameID, err := strconv.Atoi(c.Param("game_id"))
-		if err != nil {
-			return err
-		}
-
-		game, err := s.models.Games.GetByID(gameID)
-		if err != nil {
-			return err
-		}
-		c.Set("game", game)
-		return next(c)
-	}
-}
-
+//
+// func (s *SyncMiddleware) SyncGameInfo(next echo.HandlerFunc) echo.HandlerFunc {
+// 	return func(c echo.Context) error {
+// 		if c.Param("game_id") == "" {
+// 			return next(c)
+// 		}
+// 		gameID, err := strconv.Atoi(c.Param("game_id"))
+// 		if err != nil {
+// 			return err
+// 		}
+//
+// 		game, err := s.models.Games.GetByID(gameID)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		c.Set("game", game)
+// 		return next(c)
+// 	}
+// }
+//
 // func (s *SyncMiddleware) SyncGameInfo(next echo.HandlerFunc) echo.HandlerFunc {
 // 	return func(c echo.Context) error {
 // 		if c.Param("game_id") == "" {

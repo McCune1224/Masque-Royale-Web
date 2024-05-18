@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"net/http"
 	"os"
 
 	"github.com/jmoiron/sqlx"
@@ -24,9 +25,13 @@ func main() {
 	}
 
 	handler := handler.NewHandler(db)
-	app.Static("static/", "static")
 	app.Pre(middleware.RemoveTrailingSlash())
-	app.Use(middleware.CORS())
+
+	//TODO: Setup CORS for frontend domain
+	app.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{os.Getenv("FRONTEND_URL")},
+		AllowMethods: []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete},
+	}))
 	app.Use(middleware.LoggerWithConfig(
 		middleware.LoggerConfig{
 			Format: "${status} | ${latency_human} | ${method} | ${uri} | ${error} \n",

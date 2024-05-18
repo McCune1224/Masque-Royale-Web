@@ -20,24 +20,6 @@ templ PlayerFlashcard(c echo.Context, player *data.Player, role *data.ComplexRol
 	}
 }
 
-func splitArray(target string, arr []string) (before string, middle string, after string) {
-	var index int
-	for i, val := range arr {
-		if val == target {
-			index = i
-			break
-		}
-	}
-
-	before = strings.Join(arr[:index], " ")
-	after = strings.Join(arr[index+1:], " ")
-	return before, target, after
-}
-
-templ Highlight(left string, middle string, right string) {
-	<p>{ left }<b class="text-xl text-red-400">{ middle }</b>{ right }</p>
-}
-
 templ PlayerRoleResults(c echo.Context, roles []*data.ComplexRole, search ...string) {
 	<section id="role-search-results">
 		for _, role := range roles {

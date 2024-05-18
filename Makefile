@@ -11,3 +11,9 @@ sql:
 
 stage: 
 	templ generate&& tailwindcss -i ./static/input.css -o ./static/output.css
+
+migrate-up:
+	migrate -database $(shell cat .env | grep DATABASE_NEW | cut -d '=' -f2) -path migration up
+
+migrate-down:
+	migrate -database $(shell cat .env | grep DATABASE_NEW | cut -d '=' -f2) -path migration down

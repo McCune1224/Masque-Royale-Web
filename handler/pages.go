@@ -2,9 +2,11 @@ package handler
 
 import (
 	"log"
+	"sort"
 	"strconv"
 
 	"github.com/labstack/echo/v4"
+	"github.com/mccune1224/betrayal-widget/data"
 	"github.com/mccune1224/betrayal-widget/util"
 	"github.com/mccune1224/betrayal-widget/view/page"
 )
@@ -69,6 +71,20 @@ func (h *Handler) PlayerDashboardPage(c echo.Context) error {
 	if err != nil {
 		return TemplRender(c, page.Error500(c, err))
 	}
+
+	for _, roleAbility := range role.Abilities {
+		actions = append(actions, data.Action{
+			AbilityName:     roleAbility.Name + " (provided by role)",
+			Description:     roleAbility.Description,
+			Rarity:          roleAbility.Rarity,
+			RoleAssociation: role.Name,
+			Categories:      roleAbility.Categories,
+		})
+	}
+
+	sort.Slice(actions, func(i, j int) bool {
+		return actions[i].AbilityName < actions[j].AbilityName
+	})
 
 	pa, err := h.models.Actions.GetAllPlayerUnapprovedRequestsByPlayerID(player.ID)
 	if err != nil {

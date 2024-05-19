@@ -22,5 +22,7 @@ func Routes(app *echo.Echo, handler *handler.Handler) {
 	api := app.Group("/api")
 	games := api.Group("/games")
 	games.GET("/random", handler.GetRandomGame)
+	games.GET("/all", handler.GetAllGames)
+	games.GET("/:game_id", handler.GetGameByID)
 
 }

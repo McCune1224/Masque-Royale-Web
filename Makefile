@@ -17,3 +17,10 @@ migrate-up:
 
 migrate-down:
 	migrate -database $(shell cat .env | grep DATABASE_NEW | cut -d '=' -f2) -path migration down
+
+
+mock-migrate-up:
+	migrate -database $(shell cat .env | grep MOCK_DATABASE | cut -d '=' -f2) -path migration up
+
+mock-migrate-down:
+	migrate -database $(shell cat .env | grep MOCK_DATABASE | cut -d '=' -f2) -path migration down

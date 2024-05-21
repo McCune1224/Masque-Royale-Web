@@ -45,12 +45,14 @@ func (gm *GameModel) GetGameByID(id int) (*Game, error) {
 	return game, nil
 }
 
-func (gm *GameModel) InsertGame(name string, playerCount ...int) error {
+func (gm *GameModel) InsertGame(name string) error {
 	var err error
-	if len(playerCount) > 0 {
-		_, err = gm.Exec("INSERT INTO games (name, playercount) VALUES ($1, $2)", name, playerCount[0])
-	} else {
-		_, err = gm.Exec("INSERT INTO games (name, playercount) VALUES ($1)", name)
-	}
+	_, err = gm.Exec("INSERT INTO games (name) VALUES ($1)", name)
+	return err
+}
+
+func (gm *GameModel) UpdateGame(game *Game) error {
+	query := `UPDATE games SET ` + PSQLGeneratedUpdate(game) + ` WHERE id = :id`
+	_, err := gm.NamedExec(query, game)
 	return err
 }

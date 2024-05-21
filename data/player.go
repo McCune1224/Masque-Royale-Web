@@ -21,6 +21,7 @@ type Player struct {
 	Notes             string `db:"notes"`
 	StartingRoom      string `db:"starting_room"`
 }
+
 // ComplexPlayer is a player with a role
 type ComplexPlayer struct {
 	P Player `db:"players"`
@@ -109,14 +110,14 @@ func (m *PlayerModel) Create(player *Player) error {
 	return nil
 }
 
-func (m *PlayerModel) Update(player *Player) error {
-	query := `UPDATE players SET ` + PSQLGeneratedUpdate(player) + ` WHERE id = :id`
-	_, err := m.DB.NamedExec(query, &player)
-	if err != nil {
-		return err
-	}
-	return nil
-}
+// func (m *PlayerModel) Update(player *Player) error {
+// 	query := `UPDATE players SET ` + PSQLGeneratedUpdate(player) + ` WHERE id = :id`
+// 	_, err := m.DB.NamedExec(query, &player)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	return nil
+// }
 
 func (m *PlayerModel) UpdateProperty(id int, property string, value interface{}) error {
 	_, err := m.DB.Exec("UPDATE players SET $1 = $2 WHERE id = $3", property, value, id)

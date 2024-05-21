@@ -224,11 +224,11 @@ func (a *AbilityModel) GetAllApprovedPlayerRequestsByGameID(gameID string) ([]*P
 	return playerActions, err
 }
 
-func (a *ActionModel) InsertPlayerRequest(pa *PlayerRequest) error {
-	query := `INSERT INTO player_requests ` + PSQLGeneratedInsert(pa)
-	_, err := a.NamedExec(query, &pa)
-	return err
-}
+// func (a *ActionModel) InsertPlayerRequest(pa *PlayerRequest) error {
+// 	query := `INSERT INTO player_requests ` + PSQLGeneratedInsert(pa)
+// 	_, err := a.NamedExec(query, &pa)
+// 	return err
+// }
 
 func (a *ActionModel) ApprovePlayerRequest(id int) error {
 	_, err := a.Exec("UPDATE player_requests SET approved = true WHERE id = $1", id)

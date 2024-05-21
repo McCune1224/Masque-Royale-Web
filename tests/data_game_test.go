@@ -50,3 +50,62 @@ func (suite *DatabaseTestSuite) TestGetAllGames() {
 
 	suite.Len(got, 3)
 }
+
+func (suite *DatabaseTestSuite) TestInsertGame() {
+	mockGameModel := data.GameModel{DB: suite.DB}
+
+	type test struct {
+		targetName    string
+		expectedError bool
+	}
+
+	tests := []test{
+		{"unique", false},
+		{"UniQuE", false},
+		{"unique", true},
+	}
+
+	for _, tt := range tests {
+		err := mockGameModel.InsertGame(tt.targetName)
+		if tt.expectedError {
+			suite.Error(err)
+		} else {
+			suite.NoError(err)
+		}
+
+	}
+
+}
+func (suite *DatabaseTestSuite) TestUpdateGame() {
+	mockGameModel := data.GameModel{DB: suite.DB}
+
+	suite.DB.Exec(gamesTruncate)
+	suite.DB.Exec(`INSERT INTO games (name) VALUES ('Foo'), ('Bar');`)
+
+	type test struct {
+		game          *data.Game
+		expectedError bool
+	}
+
+	updatedName := "A Brand New Name!"
+	updatedPlayerCount := 1924
+
+	g1, err := mockGameModel.GetGameByID(1)
+
+	suite.NoError(err)
+
+	g1.Name = updatedName
+	g1.PlayerCount = updatedPlayerCount
+	err = mockGameModel.UpdateGame(g1)
+	suite.NoError(err)
+
+	t1Updated, err := mockGameModel.GetGameByID(1)
+	suite.NoError(err)
+
+	suite.Equal(updatedName, t1Updated.Name)
+	suite.NotEqual(0, t1Updated.PlayerCount)
+
+	g1.Name = "Bar"
+	err = mockGameModel.UpdateGame(g1)
+	suite.Error(err)
+}

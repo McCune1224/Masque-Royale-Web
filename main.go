@@ -40,8 +40,5 @@ func main() {
 
 	route.Routes(app, handler)
 
-	// sm := appMiddleware.NewSyncMiddleware(db)
-	// app.Use(sm.SyncGameInfo)
-
 	log.Fatal(app.Start(":" + os.Getenv("PORT")))
 }

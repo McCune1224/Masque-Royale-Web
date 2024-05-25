@@ -1,16 +1,13 @@
 package handler
 
 import (
-	"github.com/jmoiron/sqlx"
-	"github.com/mccune1224/betrayal-widget/data"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type Handler struct {
-	models data.Models
+	Db *pgxpool.Pool
 }
 
-func NewHandler(db *sqlx.DB) *Handler {
-	return &Handler{
-		models: *data.NewModels(db),
-	}
+func NewHandler(db *pgxpool.Pool) *Handler {
+	return &Handler{Db: db}
 }

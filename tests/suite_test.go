@@ -1,10 +1,11 @@
 package tests
 
 import (
+	"context"
 	"os"
 	"testing"
 
-	"github.com/jmoiron/sqlx"
+	"github.com/jackc/pgx/v5"
 	"github.com/joho/godotenv"
 	_ "github.com/joho/godotenv/autoload"
 	_ "github.com/lib/pq"
@@ -16,7 +17,7 @@ import (
 // Define a test suite struct
 type DatabaseTestSuite struct {
 	suite.Suite
-	DB *sqlx.DB
+	DB *pgx.Conn
 }
 
 // SetupSuite is run once before all tests in the suite
@@ -24,7 +25,7 @@ func (suite *DatabaseTestSuite) SetupSuite() {
 	// Open the database connection
 	godotenv.Load("../.env")
 	trueDsn := os.Getenv("MOCK_DATABASE_URL")
-	db, err := sqlx.Open("postgres", trueDsn)
+	db, err := pgx.Connect(context.Background(), trueDsn)
 	if err != nil {
 		suite.T().Fatal(err)
 	}
@@ -35,9 +36,10 @@ func (suite *DatabaseTestSuite) SetupSuite() {
 
 // TearDownSuite is run once after all tests in the suite
 func (suite *DatabaseTestSuite) TearDownSuite() {
+	ctx := context.Background()
 	// Close the database connection
-	suite.DB.Exec(gamesTruncate)
-	suite.DB.Close()
+	suite.DB.Exec(ctx, gamesTruncate)
+	suite.DB.Close(ctx)
 }
 
 // Entry point for the test suite

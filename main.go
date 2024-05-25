@@ -1,25 +1,26 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"os"
 
-	"github.com/jmoiron/sqlx"
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	_ "github.com/lib/pq"
 	"github.com/mccune1224/betrayal-widget/handler"
+	"github.com/mccune1224/betrayal-widget/route"
 
 	//appMiddleware "github.com/mccune1224/betrayal-widget/middleware"
-	"github.com/mccune1224/betrayal-widget/route"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 func main() {
 	app := echo.New()
 	// Connect to DB
-	db, err := sqlx.Connect("postgres", os.Getenv("DATABASE_URL"))
+	db, err := pgxpool.New(context.Background(), os.Getenv("DATABASE_URL"))
 	if err != nil {
 		log.Fatal("error opening database,", err)
 	}
@@ -30,7 +31,7 @@ func main() {
 	//TODO: Setup CORS for frontend domain
 	app.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{os.Getenv("FRONTEND_URL")},
-		AllowMethods: []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete},
+		AllowMethods: []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete, http.MethodPatch, http.MethodHead, http.MethodTrace},
 	}))
 	app.Use(middleware.LoggerWithConfig(
 		middleware.LoggerConfig{

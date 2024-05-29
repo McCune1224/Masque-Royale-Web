@@ -29,6 +29,6 @@ Makefile
 *.txt
 routes.json
 *.csv
+sqllsrc.json
 
-# Nixos stuff
-result 
+

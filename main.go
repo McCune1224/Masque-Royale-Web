@@ -40,6 +40,5 @@ func main() {
 	))
 
 	route.Routes(app, handler)
-
 	log.Fatal(app.Start(":" + os.Getenv("PORT")))
 }

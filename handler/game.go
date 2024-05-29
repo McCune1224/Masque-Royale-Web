@@ -70,7 +70,6 @@ func (h *Handler) InsertGame(c echo.Context) error {
 			}
 
 		} else {
-			log.Println("NON PGERR", err)
 			return c.JSON(500, echo.Map{"error": err.Error()})
 		}
 

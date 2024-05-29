@@ -25,6 +25,5 @@ func Routes(app *echo.Echo, handler *handler.Handler) {
 	games.POST("", handler.InsertGame)
 	games.GET("", handler.GetAllGames)
 	games.GET("/:game_id", handler.GetGameByID)
-	games.GET("/:game_id/join", handler.GetGameByID)
 
 }

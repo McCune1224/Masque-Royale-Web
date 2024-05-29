@@ -1,0 +1,13 @@
+DO $$
+BEGIN
+   IF EXISTS (SELECT 1 FROM pg_type WHERE typname = 'alignment') THEN
+      DROP TYPE alignment CASCADE;
+   END IF;
+END $$;
+DROP TABLE IF EXISTS roles CASCADE;
+DROP TABLE IF EXISTS ability_details CASCADE;
+DROP TABLE IF EXISTS abilities CASCADE;
+DROP TABLE IF EXISTS player_inventories CASCADE;
+DROP TABLE IF EXISTS status_details CASCADE;
+DROP TABLE IF EXISTS categories CASCADE;
+

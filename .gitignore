@@ -25,7 +25,6 @@ go.work
 *.env
 .air.toml
 tmp
-Makefile
 *.txt
 routes.json
 *.csv

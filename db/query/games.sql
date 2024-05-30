@@ -1,18 +1,29 @@
 -- name: GetGame :one
-SELECT * FROM games
-WHERE id = $1 LIMIT 1;
+select *
+from games
+where id = $1
+limit 1
+;
 
 -- name: GetGameByName :one
-SELECT * FROM games
-WHERE name = $1 LIMIT 1;
+select *
+from games
+where name = $1
+limit 1
+;
 
 -- name: ListGames :many
-SELECT * FROM games
-ORDER BY name;
+select *
+from games
+order by name
+;
 
 -- name: GetRandomGame :one
-SELECT * FROM games
-ORDER BY random() LIMIT 1;
+select *
+from games
+order by random()
+limit 1
+;
 
 -- name: UpdateGame :one
 UPDATE games
@@ -32,5 +43,7 @@ INSERT INTO games (
 RETURNING *;
 
 -- name: DeleteGame :exec
-DELETE FROM games
-WHERE id = $1;
+delete from games
+where id = $1
+;
+

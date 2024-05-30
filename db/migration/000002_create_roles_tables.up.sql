@@ -49,3 +49,10 @@ name VARCHAR(64) NOT NULL,
 description TEXT
 );
 
+
+CREATE TABLE IF NOT EXISTS passive_details(
+id serial PRIMARY KEY,
+name VARCHAR(64) UNIQUE NOT NULL,
+description TEXT NOT NULL
+);
+

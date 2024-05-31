@@ -6,37 +6,48 @@ where id = $1
 
 -- name: CreateAbilityDetail :one
 INSERT INTO ability_details (
-  name, description, role_id, category_ids, any_ability, rarity
+  name, description, default_charges, role_id, category_ids, any_ability, rarity
 ) VALUES (
-  $1, $2, $3, $4, $5, $6
+  $1, $2, $3, $4, $5, $6, $7
 )
 RETURNING *;
 
 -- name: GetAllAbilityDetails :many
-SELECT * FROM ability_details;
+select *
+from ability_details
+;
 
 -- name: GetAllAbilityDetailsByRoleID :many
-SELECT * FROM ability_details
-WHERE role_id = $1;
+select *
+from ability_details
+where role_id = $1
+;
 
 -- name: GetAllAbilityDetailsByCategoryID :many
-SELECT * FROM ability_details
-WHERE category_ids = $1;
+select *
+from ability_details
+where category_ids = $1
+;
 
 -- name: GetAllAbilityDetailsByAnyAbility :many
-SELECT * FROM ability_details
-WHERE any_ability = $1;
+select *
+from ability_details
+where any_ability = $1
+;
 
 -- name: UpdateAbilityDetail :one
 UPDATE ability_details
   SET name = $2,
   description = $3,
-  role_id = $4,
-  category_ids = $5,
-  any_ability = $6
+  default_charges = $4,
+  role_id = $5,
+  category_ids = $6,
+  any_ability = $7
 WHERE id = $1
 RETURNING *;
 
 -- name: DeleteAbilityDetail :exec
-DELETE FROM ability_details
-WHERE id = $1;
+delete from ability_details
+where id = $1
+;
+

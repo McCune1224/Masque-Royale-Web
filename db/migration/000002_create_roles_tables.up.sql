@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS ability_details(
 id serial PRIMARY KEY,
 name VARCHAR(64) UNIQUE NOT NULL,
 description TEXT NOT NULL,
+default_charges int,
 role_id int REFERENCES roles (id),
 category_ids INT[] DEFAULT '{}',
 rarity rarity NOT NULL,

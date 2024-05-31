@@ -13,26 +13,28 @@ import (
 
 const createAbilityDetail = `-- name: CreateAbilityDetail :one
 INSERT INTO ability_details (
-  name, description, role_id, category_ids, any_ability, rarity
+  name, description, default_charges, role_id, category_ids, any_ability, rarity
 ) VALUES (
-  $1, $2, $3, $4, $5, $6
+  $1, $2, $3, $4, $5, $6, $7
 )
-RETURNING id, name, description, role_id, category_ids, rarity, any_ability
+RETURNING id, name, description, default_charges, role_id, category_ids, rarity, any_ability
 `
 
 type CreateAbilityDetailParams struct {
-	Name        string      `json:"name"`
-	Description string      `json:"description"`
-	RoleID      pgtype.Int4 `json:"role_id"`
-	CategoryIds []int32     `json:"category_ids"`
-	AnyAbility  pgtype.Bool `json:"any_ability"`
-	Rarity      Rarity      `json:"rarity"`
+	Name           string      `json:"name"`
+	Description    string      `json:"description"`
+	DefaultCharges pgtype.Int4 `json:"default_charges"`
+	RoleID         pgtype.Int4 `json:"role_id"`
+	CategoryIds    []int32     `json:"category_ids"`
+	AnyAbility     pgtype.Bool `json:"any_ability"`
+	Rarity         Rarity      `json:"rarity"`
 }
 
 func (q *Queries) CreateAbilityDetail(ctx context.Context, arg CreateAbilityDetailParams) (AbilityDetail, error) {
 	row := q.db.QueryRow(ctx, createAbilityDetail,
 		arg.Name,
 		arg.Description,
+		arg.DefaultCharges,
 		arg.RoleID,
 		arg.CategoryIds,
 		arg.AnyAbility,
@@ -43,6 +45,7 @@ func (q *Queries) CreateAbilityDetail(ctx context.Context, arg CreateAbilityDeta
 		&i.ID,
 		&i.Name,
 		&i.Description,
+		&i.DefaultCharges,
 		&i.RoleID,
 		&i.CategoryIds,
 		&i.Rarity,
@@ -52,8 +55,8 @@ func (q *Queries) CreateAbilityDetail(ctx context.Context, arg CreateAbilityDeta
 }
 
 const deleteAbilityDetail = `-- name: DeleteAbilityDetail :exec
-DELETE FROM ability_details
-WHERE id = $1
+delete from ability_details
+where id = $1
 `
 
 func (q *Queries) DeleteAbilityDetail(ctx context.Context, id int32) error {
@@ -62,7 +65,7 @@ func (q *Queries) DeleteAbilityDetail(ctx context.Context, id int32) error {
 }
 
 const getAbilityDetail = `-- name: GetAbilityDetail :one
-select id, name, description, role_id, category_ids, rarity, any_ability
+select id, name, description, default_charges, role_id, category_ids, rarity, any_ability
 from ability_details
 where id = $1
 `
@@ -74,6 +77,7 @@ func (q *Queries) GetAbilityDetail(ctx context.Context, id int32) (AbilityDetail
 		&i.ID,
 		&i.Name,
 		&i.Description,
+		&i.DefaultCharges,
 		&i.RoleID,
 		&i.CategoryIds,
 		&i.Rarity,
@@ -83,7 +87,8 @@ func (q *Queries) GetAbilityDetail(ctx context.Context, id int32) (AbilityDetail
 }
 
 const getAllAbilityDetails = `-- name: GetAllAbilityDetails :many
-SELECT id, name, description, role_id, category_ids, rarity, any_ability FROM ability_details
+select id, name, description, default_charges, role_id, category_ids, rarity, any_ability
+from ability_details
 `
 
 func (q *Queries) GetAllAbilityDetails(ctx context.Context) ([]AbilityDetail, error) {
@@ -99,6 +104,7 @@ func (q *Queries) GetAllAbilityDetails(ctx context.Context) ([]AbilityDetail, er
 			&i.ID,
 			&i.Name,
 			&i.Description,
+			&i.DefaultCharges,
 			&i.RoleID,
 			&i.CategoryIds,
 			&i.Rarity,
@@ -115,8 +121,9 @@ func (q *Queries) GetAllAbilityDetails(ctx context.Context) ([]AbilityDetail, er
 }
 
 const getAllAbilityDetailsByAnyAbility = `-- name: GetAllAbilityDetailsByAnyAbility :many
-SELECT id, name, description, role_id, category_ids, rarity, any_ability FROM ability_details
-WHERE any_ability = $1
+select id, name, description, default_charges, role_id, category_ids, rarity, any_ability
+from ability_details
+where any_ability = $1
 `
 
 func (q *Queries) GetAllAbilityDetailsByAnyAbility(ctx context.Context, anyAbility pgtype.Bool) ([]AbilityDetail, error) {
@@ -132,6 +139,7 @@ func (q *Queries) GetAllAbilityDetailsByAnyAbility(ctx context.Context, anyAbili
 			&i.ID,
 			&i.Name,
 			&i.Description,
+			&i.DefaultCharges,
 			&i.RoleID,
 			&i.CategoryIds,
 			&i.Rarity,
@@ -148,8 +156,9 @@ func (q *Queries) GetAllAbilityDetailsByAnyAbility(ctx context.Context, anyAbili
 }
 
 const getAllAbilityDetailsByCategoryID = `-- name: GetAllAbilityDetailsByCategoryID :many
-SELECT id, name, description, role_id, category_ids, rarity, any_ability FROM ability_details
-WHERE category_ids = $1
+select id, name, description, default_charges, role_id, category_ids, rarity, any_ability
+from ability_details
+where category_ids = $1
 `
 
 func (q *Queries) GetAllAbilityDetailsByCategoryID(ctx context.Context, categoryIds []int32) ([]AbilityDetail, error) {
@@ -165,6 +174,7 @@ func (q *Queries) GetAllAbilityDetailsByCategoryID(ctx context.Context, category
 			&i.ID,
 			&i.Name,
 			&i.Description,
+			&i.DefaultCharges,
 			&i.RoleID,
 			&i.CategoryIds,
 			&i.Rarity,
@@ -181,8 +191,9 @@ func (q *Queries) GetAllAbilityDetailsByCategoryID(ctx context.Context, category
 }
 
 const getAllAbilityDetailsByRoleID = `-- name: GetAllAbilityDetailsByRoleID :many
-SELECT id, name, description, role_id, category_ids, rarity, any_ability FROM ability_details
-WHERE role_id = $1
+select id, name, description, default_charges, role_id, category_ids, rarity, any_ability
+from ability_details
+where role_id = $1
 `
 
 func (q *Queries) GetAllAbilityDetailsByRoleID(ctx context.Context, roleID pgtype.Int4) ([]AbilityDetail, error) {
@@ -198,6 +209,7 @@ func (q *Queries) GetAllAbilityDetailsByRoleID(ctx context.Context, roleID pgtyp
 			&i.ID,
 			&i.Name,
 			&i.Description,
+			&i.DefaultCharges,
 			&i.RoleID,
 			&i.CategoryIds,
 			&i.Rarity,
@@ -217,20 +229,22 @@ const updateAbilityDetail = `-- name: UpdateAbilityDetail :one
 UPDATE ability_details
   SET name = $2,
   description = $3,
-  role_id = $4,
-  category_ids = $5,
-  any_ability = $6
+  default_charges = $4,
+  role_id = $5,
+  category_ids = $6,
+  any_ability = $7
 WHERE id = $1
-RETURNING id, name, description, role_id, category_ids, rarity, any_ability
+RETURNING id, name, description, default_charges, role_id, category_ids, rarity, any_ability
 `
 
 type UpdateAbilityDetailParams struct {
-	ID          int32       `json:"id"`
-	Name        string      `json:"name"`
-	Description string      `json:"description"`
-	RoleID      pgtype.Int4 `json:"role_id"`
-	CategoryIds []int32     `json:"category_ids"`
-	AnyAbility  pgtype.Bool `json:"any_ability"`
+	ID             int32       `json:"id"`
+	Name           string      `json:"name"`
+	Description    string      `json:"description"`
+	DefaultCharges pgtype.Int4 `json:"default_charges"`
+	RoleID         pgtype.Int4 `json:"role_id"`
+	CategoryIds    []int32     `json:"category_ids"`
+	AnyAbility     pgtype.Bool `json:"any_ability"`
 }
 
 func (q *Queries) UpdateAbilityDetail(ctx context.Context, arg UpdateAbilityDetailParams) (AbilityDetail, error) {
@@ -238,6 +252,7 @@ func (q *Queries) UpdateAbilityDetail(ctx context.Context, arg UpdateAbilityDeta
 		arg.ID,
 		arg.Name,
 		arg.Description,
+		arg.DefaultCharges,
 		arg.RoleID,
 		arg.CategoryIds,
 		arg.AnyAbility,
@@ -247,6 +262,7 @@ func (q *Queries) UpdateAbilityDetail(ctx context.Context, arg UpdateAbilityDeta
 		&i.ID,
 		&i.Name,
 		&i.Description,
+		&i.DefaultCharges,
 		&i.RoleID,
 		&i.CategoryIds,
 		&i.Rarity,

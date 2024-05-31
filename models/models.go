@@ -108,13 +108,14 @@ type Ability struct {
 }
 
 type AbilityDetail struct {
-	ID          int32       `json:"id"`
-	Name        string      `json:"name"`
-	Description string      `json:"description"`
-	RoleID      pgtype.Int4 `json:"role_id"`
-	CategoryIds []int32     `json:"category_ids"`
-	Rarity      Rarity      `json:"rarity"`
-	AnyAbility  pgtype.Bool `json:"any_ability"`
+	ID             int32       `json:"id"`
+	Name           string      `json:"name"`
+	Description    string      `json:"description"`
+	DefaultCharges pgtype.Int4 `json:"default_charges"`
+	RoleID         pgtype.Int4 `json:"role_id"`
+	CategoryIds    []int32     `json:"category_ids"`
+	Rarity         Rarity      `json:"rarity"`
+	AnyAbility     pgtype.Bool `json:"any_ability"`
 }
 
 type Category struct {

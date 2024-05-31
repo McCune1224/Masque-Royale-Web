@@ -17,10 +17,10 @@ VALUES ( $1, $2, $3, $4) RETURNING id, name, alignment, ability_ids, passive_ids
 `
 
 type CreateRoleParams struct {
-	Name       string      `json:"name"`
-	Alignment  interface{} `json:"alignment"`
-	AbilityIds []int32     `json:"ability_ids"`
-	PassiveIds []int32     `json:"passive_ids"`
+	Name       string    `json:"name"`
+	Alignment  Alignment `json:"alignment"`
+	AbilityIds []int32   `json:"ability_ids"`
+	PassiveIds []int32   `json:"passive_ids"`
 }
 
 func (q *Queries) CreateRole(ctx context.Context, arg CreateRoleParams) (Role, error) {

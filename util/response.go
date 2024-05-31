@@ -6,6 +6,11 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// c.JSON(200 echo.Map{"message": ...} shorthand
+func OkJson(c echo.Context, msg string) error {
+	return c.JSON(http.StatusOK, echo.Map{"message": msg})
+}
+
 // c.JSON(400 echo.Map{"message": ...} shorthand
 func BadRequestJson(c echo.Context, msg string) error {
 	return c.JSON(http.StatusBadRequest, echo.Map{"message": msg})

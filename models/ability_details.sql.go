@@ -13,11 +13,11 @@ import (
 
 const createAbilityDetail = `-- name: CreateAbilityDetail :one
 INSERT INTO ability_details (
-  name, description, role_id, category_ids, any_ability
+  name, description, role_id, category_ids, any_ability, rarity
 ) VALUES (
-  $1, $2, $3, $4, $5
+  $1, $2, $3, $4, $5, $6
 )
-RETURNING id, name, description, role_id, category_ids, any_ability
+RETURNING id, name, description, role_id, category_ids, rarity, any_ability
 `
 
 type CreateAbilityDetailParams struct {
@@ -26,6 +26,7 @@ type CreateAbilityDetailParams struct {
 	RoleID      pgtype.Int4 `json:"role_id"`
 	CategoryIds []int32     `json:"category_ids"`
 	AnyAbility  pgtype.Bool `json:"any_ability"`
+	Rarity      Rarity      `json:"rarity"`
 }
 
 func (q *Queries) CreateAbilityDetail(ctx context.Context, arg CreateAbilityDetailParams) (AbilityDetail, error) {
@@ -35,6 +36,7 @@ func (q *Queries) CreateAbilityDetail(ctx context.Context, arg CreateAbilityDeta
 		arg.RoleID,
 		arg.CategoryIds,
 		arg.AnyAbility,
+		arg.Rarity,
 	)
 	var i AbilityDetail
 	err := row.Scan(
@@ -43,13 +45,24 @@ func (q *Queries) CreateAbilityDetail(ctx context.Context, arg CreateAbilityDeta
 		&i.Description,
 		&i.RoleID,
 		&i.CategoryIds,
+		&i.Rarity,
 		&i.AnyAbility,
 	)
 	return i, err
 }
 
+const deleteAbilityDetail = `-- name: DeleteAbilityDetail :exec
+DELETE FROM ability_details
+WHERE id = $1
+`
+
+func (q *Queries) DeleteAbilityDetail(ctx context.Context, id int32) error {
+	_, err := q.db.Exec(ctx, deleteAbilityDetail, id)
+	return err
+}
+
 const getAbilityDetail = `-- name: GetAbilityDetail :one
-select id, name, description, role_id, category_ids, any_ability
+select id, name, description, role_id, category_ids, rarity, any_ability
 from ability_details
 where id = $1
 `
@@ -63,6 +76,180 @@ func (q *Queries) GetAbilityDetail(ctx context.Context, id int32) (AbilityDetail
 		&i.Description,
 		&i.RoleID,
 		&i.CategoryIds,
+		&i.Rarity,
+		&i.AnyAbility,
+	)
+	return i, err
+}
+
+const getAllAbilityDetails = `-- name: GetAllAbilityDetails :many
+SELECT id, name, description, role_id, category_ids, rarity, any_ability FROM ability_details
+`
+
+func (q *Queries) GetAllAbilityDetails(ctx context.Context) ([]AbilityDetail, error) {
+	rows, err := q.db.Query(ctx, getAllAbilityDetails)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []AbilityDetail
+	for rows.Next() {
+		var i AbilityDetail
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.RoleID,
+			&i.CategoryIds,
+			&i.Rarity,
+			&i.AnyAbility,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAllAbilityDetailsByAnyAbility = `-- name: GetAllAbilityDetailsByAnyAbility :many
+SELECT id, name, description, role_id, category_ids, rarity, any_ability FROM ability_details
+WHERE any_ability = $1
+`
+
+func (q *Queries) GetAllAbilityDetailsByAnyAbility(ctx context.Context, anyAbility pgtype.Bool) ([]AbilityDetail, error) {
+	rows, err := q.db.Query(ctx, getAllAbilityDetailsByAnyAbility, anyAbility)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []AbilityDetail
+	for rows.Next() {
+		var i AbilityDetail
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.RoleID,
+			&i.CategoryIds,
+			&i.Rarity,
+			&i.AnyAbility,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAllAbilityDetailsByCategoryID = `-- name: GetAllAbilityDetailsByCategoryID :many
+SELECT id, name, description, role_id, category_ids, rarity, any_ability FROM ability_details
+WHERE category_ids = $1
+`
+
+func (q *Queries) GetAllAbilityDetailsByCategoryID(ctx context.Context, categoryIds []int32) ([]AbilityDetail, error) {
+	rows, err := q.db.Query(ctx, getAllAbilityDetailsByCategoryID, categoryIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []AbilityDetail
+	for rows.Next() {
+		var i AbilityDetail
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.RoleID,
+			&i.CategoryIds,
+			&i.Rarity,
+			&i.AnyAbility,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAllAbilityDetailsByRoleID = `-- name: GetAllAbilityDetailsByRoleID :many
+SELECT id, name, description, role_id, category_ids, rarity, any_ability FROM ability_details
+WHERE role_id = $1
+`
+
+func (q *Queries) GetAllAbilityDetailsByRoleID(ctx context.Context, roleID pgtype.Int4) ([]AbilityDetail, error) {
+	rows, err := q.db.Query(ctx, getAllAbilityDetailsByRoleID, roleID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []AbilityDetail
+	for rows.Next() {
+		var i AbilityDetail
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.RoleID,
+			&i.CategoryIds,
+			&i.Rarity,
+			&i.AnyAbility,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const updateAbilityDetail = `-- name: UpdateAbilityDetail :one
+UPDATE ability_details
+  SET name = $2,
+  description = $3,
+  role_id = $4,
+  category_ids = $5,
+  any_ability = $6
+WHERE id = $1
+RETURNING id, name, description, role_id, category_ids, rarity, any_ability
+`
+
+type UpdateAbilityDetailParams struct {
+	ID          int32       `json:"id"`
+	Name        string      `json:"name"`
+	Description string      `json:"description"`
+	RoleID      pgtype.Int4 `json:"role_id"`
+	CategoryIds []int32     `json:"category_ids"`
+	AnyAbility  pgtype.Bool `json:"any_ability"`
+}
+
+func (q *Queries) UpdateAbilityDetail(ctx context.Context, arg UpdateAbilityDetailParams) (AbilityDetail, error) {
+	row := q.db.QueryRow(ctx, updateAbilityDetail,
+		arg.ID,
+		arg.Name,
+		arg.Description,
+		arg.RoleID,
+		arg.CategoryIds,
+		arg.AnyAbility,
+	)
+	var i AbilityDetail
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Description,
+		&i.RoleID,
+		&i.CategoryIds,
+		&i.Rarity,
 		&i.AnyAbility,
 	)
 	return i, err

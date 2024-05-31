@@ -1,9 +1,7 @@
-DO $$
-BEGIN
-IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'alignment') THEN
 CREATE TYPE alignment AS ENUM ('LAWFUL', 'OUTLANDER', 'CHAOTIC');
-END IF;
-END $$;
+CREATE TYPE rarity AS ENUM ('COMMON', 'UNCOMMON', 'RARE', 'EPIC', 'LEGENDARY', 'MYTHICAL', 'ROLE_SPECIFIC');
+
+
 CREATE TABLE IF NOT EXISTS roles(
 id serial PRIMARY KEY,
 name VARCHAR(64) UNIQUE NOT NULL,
@@ -25,6 +23,7 @@ name VARCHAR(64) UNIQUE NOT NULL,
 description TEXT NOT NULL,
 role_id int REFERENCES roles (id),
 category_ids INT[] DEFAULT '{}',
+rarity rarity NOT NULL,
 any_ability bool
 );
 

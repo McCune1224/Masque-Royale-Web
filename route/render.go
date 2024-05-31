@@ -26,4 +26,7 @@ func Routes(app *echo.Echo, handler *handler.Handler) {
 	games.GET("", handler.GetAllGames)
 	games.GET("/:game_id", handler.GetGameByID)
 
+	admin := games.Group("/:game_id/admin")
+	admin.POST("/sync-roles-csv", handler.SyncRolesCsv)
+
 }

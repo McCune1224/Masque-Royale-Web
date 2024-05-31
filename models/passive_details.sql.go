@@ -30,6 +30,65 @@ func (q *Queries) CreatePassiveDetail(ctx context.Context, arg CreatePassiveDeta
 	return i, err
 }
 
+const deletePassiveDetail = `-- name: DeletePassiveDetail :exec
+DELETE FROM passive_details
+WHERE id = $1
+`
+
+func (q *Queries) DeletePassiveDetail(ctx context.Context, id int32) error {
+	_, err := q.db.Exec(ctx, deletePassiveDetail, id)
+	return err
+}
+
+const getAllPassiveDetails = `-- name: GetAllPassiveDetails :many
+SELECT id, name, description FROM passive_details
+`
+
+func (q *Queries) GetAllPassiveDetails(ctx context.Context) ([]PassiveDetail, error) {
+	rows, err := q.db.Query(ctx, getAllPassiveDetails)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []PassiveDetail
+	for rows.Next() {
+		var i PassiveDetail
+		if err := rows.Scan(&i.ID, &i.Name, &i.Description); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAllPassiveDetailsByID = `-- name: GetAllPassiveDetailsByID :many
+SELECT id, name, description FROM passive_details
+WHERE id = $1
+`
+
+func (q *Queries) GetAllPassiveDetailsByID(ctx context.Context, id int32) ([]PassiveDetail, error) {
+	rows, err := q.db.Query(ctx, getAllPassiveDetailsByID, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []PassiveDetail
+	for rows.Next() {
+		var i PassiveDetail
+		if err := rows.Scan(&i.ID, &i.Name, &i.Description); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getPassiveDetail = `-- name: GetPassiveDetail :one
 select id, name, description
 from passive_details
@@ -38,6 +97,27 @@ where id = $1
 
 func (q *Queries) GetPassiveDetail(ctx context.Context, id int32) (PassiveDetail, error) {
 	row := q.db.QueryRow(ctx, getPassiveDetail, id)
+	var i PassiveDetail
+	err := row.Scan(&i.ID, &i.Name, &i.Description)
+	return i, err
+}
+
+const updatePassiveDetail = `-- name: UpdatePassiveDetail :one
+UPDATE passive_details
+  SET name = $2,
+  description = $3
+WHERE id = $1
+RETURNING id, name, description
+`
+
+type UpdatePassiveDetailParams struct {
+	ID          int32  `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+}
+
+func (q *Queries) UpdatePassiveDetail(ctx context.Context, arg UpdatePassiveDetailParams) (PassiveDetail, error) {
+	row := q.db.QueryRow(ctx, updatePassiveDetail, arg.ID, arg.Name, arg.Description)
 	var i PassiveDetail
 	err := row.Scan(&i.ID, &i.Name, &i.Description)
 	return i, err

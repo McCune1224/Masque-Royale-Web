@@ -8,4 +8,6 @@ DROP TABLE IF EXISTS player_inventories CASCADE;
 DROP TABLE IF EXISTS status_details CASCADE;
 DROP TABLE IF EXISTS categories CASCADE;
 DROP TABLE IF EXISTS passive_details CASCADE;
+DROP TABLE IF EXISTS role_abilites_join CASCADE;
+DROP TABLE IF EXISTS role_passives_join CASCADE;
 

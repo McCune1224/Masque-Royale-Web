@@ -7,13 +7,23 @@ limit 1
 
 -- name: CreateRole :one
 INSERT INTO roles (
- name, alignment, ability_ids, passive_ids
+ name, alignment 
   )
-VALUES ( $1, $2, $3, $4) RETURNING *;
+VALUES ( $1, $2 ) RETURNING *;
 
 
 -- name: ListRoles :many
 select *
 from roles
 ;
+
+-- name: GetRoleAbilityAndPassiveJoin :one
+SELECT sqlc.embed(role_abilites_join), sqlc.embed(abilities), sqlc.embed(passive_details)
+FROM role_abilites_join
+JOIN abilities ON role_abilites_join.ability_id = abilities.id
+JOIN passive_details ON role_abilites_join.passive_id = passive_details.id
+;
+
+-- name: NukeRoles :exec
+TRUNCATE roles, role_abilites_join, role_passives_join, ability_details, passive_details RESTART IDENTITY CASCADE;
 

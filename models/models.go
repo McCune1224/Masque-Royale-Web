@@ -112,7 +112,6 @@ type AbilityDetail struct {
 	Name           string      `json:"name"`
 	Description    string      `json:"description"`
 	DefaultCharges pgtype.Int4 `json:"default_charges"`
-	RoleID         pgtype.Int4 `json:"role_id"`
 	CategoryIds    []int32     `json:"category_ids"`
 	Rarity         Rarity      `json:"rarity"`
 	AnyAbility     pgtype.Bool `json:"any_ability"`
@@ -147,11 +146,19 @@ type PlayerInventory struct {
 }
 
 type Role struct {
-	ID         int32     `json:"id"`
-	Name       string    `json:"name"`
-	Alignment  Alignment `json:"alignment"`
-	AbilityIds []int32   `json:"ability_ids"`
-	PassiveIds []int32   `json:"passive_ids"`
+	ID        int32     `json:"id"`
+	Name      string    `json:"name"`
+	Alignment Alignment `json:"alignment"`
+}
+
+type RoleAbilitesJoin struct {
+	RoleID    int32 `json:"role_id"`
+	AbilityID int32 `json:"ability_id"`
+}
+
+type RolePassivesJoin struct {
+	RoleID    int32 `json:"role_id"`
+	PassiveID int32 `json:"passive_id"`
 }
 
 type StatusDetail struct {

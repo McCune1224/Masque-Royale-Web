@@ -3,8 +3,8 @@ package util
 import (
 	"errors"
 	"strconv"
+	"strings"
 
-	"github.com/jackc/pgconn"
 	"github.com/labstack/echo/v4"
 )
 
@@ -18,10 +18,6 @@ func ParseInt32Param(c echo.Context, str string) (int32, error) {
 	return int32(i), err
 }
 
-func ParsePgError(err error) *pgconn.PgError {
-	var pgErr *pgconn.PgError
-	if ok := errors.As(err, &pgErr); ok {
-		return pgErr
-	}
-	return nil
+func ErrorContains(err error, msg string) bool {
+	return strings.Contains(err.Error(), msg)
 }

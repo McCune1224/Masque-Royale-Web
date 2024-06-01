@@ -13,18 +13,17 @@ import (
 
 const createAbilityDetail = `-- name: CreateAbilityDetail :one
 INSERT INTO ability_details (
-  name, description, default_charges, role_id, category_ids, any_ability, rarity
+  name, description, default_charges, category_ids, any_ability, rarity
 ) VALUES (
-  $1, $2, $3, $4, $5, $6, $7
+  $1, $2, $3, $4, $5, $6
 )
-RETURNING id, name, description, default_charges, role_id, category_ids, rarity, any_ability
+RETURNING id, name, description, default_charges, category_ids, rarity, any_ability
 `
 
 type CreateAbilityDetailParams struct {
 	Name           string      `json:"name"`
 	Description    string      `json:"description"`
 	DefaultCharges pgtype.Int4 `json:"default_charges"`
-	RoleID         pgtype.Int4 `json:"role_id"`
 	CategoryIds    []int32     `json:"category_ids"`
 	AnyAbility     pgtype.Bool `json:"any_ability"`
 	Rarity         Rarity      `json:"rarity"`
@@ -35,7 +34,6 @@ func (q *Queries) CreateAbilityDetail(ctx context.Context, arg CreateAbilityDeta
 		arg.Name,
 		arg.Description,
 		arg.DefaultCharges,
-		arg.RoleID,
 		arg.CategoryIds,
 		arg.AnyAbility,
 		arg.Rarity,
@@ -46,7 +44,6 @@ func (q *Queries) CreateAbilityDetail(ctx context.Context, arg CreateAbilityDeta
 		&i.Name,
 		&i.Description,
 		&i.DefaultCharges,
-		&i.RoleID,
 		&i.CategoryIds,
 		&i.Rarity,
 		&i.AnyAbility,
@@ -65,7 +62,7 @@ func (q *Queries) DeleteAbilityDetail(ctx context.Context, id int32) error {
 }
 
 const getAbilityDetail = `-- name: GetAbilityDetail :one
-select id, name, description, default_charges, role_id, category_ids, rarity, any_ability
+select id, name, description, default_charges, category_ids, rarity, any_ability
 from ability_details
 where id = $1
 `
@@ -78,7 +75,6 @@ func (q *Queries) GetAbilityDetail(ctx context.Context, id int32) (AbilityDetail
 		&i.Name,
 		&i.Description,
 		&i.DefaultCharges,
-		&i.RoleID,
 		&i.CategoryIds,
 		&i.Rarity,
 		&i.AnyAbility,
@@ -87,7 +83,7 @@ func (q *Queries) GetAbilityDetail(ctx context.Context, id int32) (AbilityDetail
 }
 
 const getAllAbilityDetails = `-- name: GetAllAbilityDetails :many
-select id, name, description, default_charges, role_id, category_ids, rarity, any_ability
+select id, name, description, default_charges, category_ids, rarity, any_ability
 from ability_details
 `
 
@@ -105,7 +101,6 @@ func (q *Queries) GetAllAbilityDetails(ctx context.Context) ([]AbilityDetail, er
 			&i.Name,
 			&i.Description,
 			&i.DefaultCharges,
-			&i.RoleID,
 			&i.CategoryIds,
 			&i.Rarity,
 			&i.AnyAbility,
@@ -121,7 +116,7 @@ func (q *Queries) GetAllAbilityDetails(ctx context.Context) ([]AbilityDetail, er
 }
 
 const getAllAbilityDetailsByAnyAbility = `-- name: GetAllAbilityDetailsByAnyAbility :many
-select id, name, description, default_charges, role_id, category_ids, rarity, any_ability
+select id, name, description, default_charges, category_ids, rarity, any_ability
 from ability_details
 where any_ability = $1
 `
@@ -140,77 +135,6 @@ func (q *Queries) GetAllAbilityDetailsByAnyAbility(ctx context.Context, anyAbili
 			&i.Name,
 			&i.Description,
 			&i.DefaultCharges,
-			&i.RoleID,
-			&i.CategoryIds,
-			&i.Rarity,
-			&i.AnyAbility,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const getAllAbilityDetailsByCategoryID = `-- name: GetAllAbilityDetailsByCategoryID :many
-select id, name, description, default_charges, role_id, category_ids, rarity, any_ability
-from ability_details
-where category_ids = $1
-`
-
-func (q *Queries) GetAllAbilityDetailsByCategoryID(ctx context.Context, categoryIds []int32) ([]AbilityDetail, error) {
-	rows, err := q.db.Query(ctx, getAllAbilityDetailsByCategoryID, categoryIds)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []AbilityDetail
-	for rows.Next() {
-		var i AbilityDetail
-		if err := rows.Scan(
-			&i.ID,
-			&i.Name,
-			&i.Description,
-			&i.DefaultCharges,
-			&i.RoleID,
-			&i.CategoryIds,
-			&i.Rarity,
-			&i.AnyAbility,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const getAllAbilityDetailsByRoleID = `-- name: GetAllAbilityDetailsByRoleID :many
-select id, name, description, default_charges, role_id, category_ids, rarity, any_ability
-from ability_details
-where role_id = $1
-`
-
-func (q *Queries) GetAllAbilityDetailsByRoleID(ctx context.Context, roleID pgtype.Int4) ([]AbilityDetail, error) {
-	rows, err := q.db.Query(ctx, getAllAbilityDetailsByRoleID, roleID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []AbilityDetail
-	for rows.Next() {
-		var i AbilityDetail
-		if err := rows.Scan(
-			&i.ID,
-			&i.Name,
-			&i.Description,
-			&i.DefaultCharges,
-			&i.RoleID,
 			&i.CategoryIds,
 			&i.Rarity,
 			&i.AnyAbility,
@@ -230,11 +154,10 @@ UPDATE ability_details
   SET name = $2,
   description = $3,
   default_charges = $4,
-  role_id = $5,
-  category_ids = $6,
-  any_ability = $7
+  category_ids = $5,
+  any_ability = $6
 WHERE id = $1
-RETURNING id, name, description, default_charges, role_id, category_ids, rarity, any_ability
+RETURNING id, name, description, default_charges, category_ids, rarity, any_ability
 `
 
 type UpdateAbilityDetailParams struct {
@@ -242,7 +165,6 @@ type UpdateAbilityDetailParams struct {
 	Name           string      `json:"name"`
 	Description    string      `json:"description"`
 	DefaultCharges pgtype.Int4 `json:"default_charges"`
-	RoleID         pgtype.Int4 `json:"role_id"`
 	CategoryIds    []int32     `json:"category_ids"`
 	AnyAbility     pgtype.Bool `json:"any_ability"`
 }
@@ -253,7 +175,6 @@ func (q *Queries) UpdateAbilityDetail(ctx context.Context, arg UpdateAbilityDeta
 		arg.Name,
 		arg.Description,
 		arg.DefaultCharges,
-		arg.RoleID,
 		arg.CategoryIds,
 		arg.AnyAbility,
 	)
@@ -263,7 +184,6 @@ func (q *Queries) UpdateAbilityDetail(ctx context.Context, arg UpdateAbilityDeta
 		&i.Name,
 		&i.Description,
 		&i.DefaultCharges,
-		&i.RoleID,
 		&i.CategoryIds,
 		&i.Rarity,
 		&i.AnyAbility,

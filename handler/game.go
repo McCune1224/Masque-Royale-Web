@@ -62,21 +62,14 @@ func (h *Handler) InsertGame(c echo.Context) error {
 	q := models.New(h.Db)
 	game, err := q.CreateGame(c.Request().Context(), *gm)
 	if err != nil {
-		pgerr := util.ParsePgError(err)
-		if pgerr != nil {
-			switch pgerr.Code {
-			case pgerrcode.UniqueViolation:
-				util.BadRequestJson(c, "Game name already exists")
-			default:
-				log.Println(err)
-				return util.InternalServerErrorJson(c, err.Error())
-			}
-
+		if util.ErrorContains(err, pgerrcode.UniqueViolation) {
+			util.BadRequestJson(c, "Game name already exists")
 		} else {
+			log.Println(err)
 			return util.InternalServerErrorJson(c, err.Error())
 		}
-
 	}
+
 	return c.JSON(200, game)
 
 }

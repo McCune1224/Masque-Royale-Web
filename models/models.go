@@ -139,6 +139,17 @@ type PassiveDetail struct {
 	Description string `json:"description"`
 }
 
+type Player struct {
+	ID                int32       `json:"id"`
+	Name              string      `json:"name"`
+	GameID            pgtype.Int4 `json:"game_id"`
+	RoleID            pgtype.Int4 `json:"role_id"`
+	Alive             bool        `json:"alive"`
+	AlignmentOverride pgtype.Text `json:"alignment_override"`
+	Notes             string      `json:"notes"`
+	RoomID            pgtype.Int4 `json:"room_id"`
+}
+
 type PlayerInventory struct {
 	PlayerID        int32       `json:"player_id"`
 	AbilityName     string      `json:"ability_name"`
@@ -159,6 +170,12 @@ type RoleAbilitesJoin struct {
 type RolePassivesJoin struct {
 	RoleID    int32 `json:"role_id"`
 	PassiveID int32 `json:"passive_id"`
+}
+
+type Room struct {
+	ID          int32  `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
 }
 
 type StatusDetail struct {

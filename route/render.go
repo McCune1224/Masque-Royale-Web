@@ -20,13 +20,28 @@ func Routes(app *echo.Echo, handler *handler.Handler) {
 	// auth := app.Group("/auth")
 
 	api := app.Group("/api")
+
+	room := api.Group("/rooms")
+	room.GET("", handler.GetAllRooms)
+	room.GET("/:room_id", handler.GetRoomByID)
+	room.POST("", handler.GetRoomByName)
+
 	games := api.Group("/games")
 	games.GET("/random", handler.GetRandomGame)
 	games.POST("", handler.InsertGame)
 	games.GET("", handler.GetAllGames)
 	games.GET("/:game_id", handler.GetGameByID)
 
+	roles := api.Group("/roles")
+	roles.GET("", handler.GetAllRoles)
+	// roles.GET("/:role_id", handler.GetRoleByID)
+	// roles.POST("", handler.InsertRole)
+
+	players := games.Group("/:game_id/players")
+	players.GET("", handler.GetAllPlayers)
+	players.GET("/:player_id", handler.GetPlayerByID)
+	players.POST("", handler.InsertPlayer)
+
 	admin := games.Group("/:game_id/admin")
 	admin.POST("/sync-roles-csv", handler.SyncRolesCsv)
-
 }

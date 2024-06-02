@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"log"
-	"net/http"
 	"os"
 
 	_ "github.com/joho/godotenv/autoload"
@@ -29,10 +28,19 @@ func main() {
 	app.Pre(middleware.RemoveTrailingSlash())
 
 	//TODO: Setup CORS for frontend domain
+	// app.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+	// 	AllowOrigins: []string{os.Getenv("FRONTEND_URL")},
+	// 	AllowMethods: []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete, http.MethodPatch, http.MethodHead, http.MethodTrace},
+	// }))
+
+	// CORS allow ALL origins and ALL methods and headers
 	app.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{os.Getenv("FRONTEND_URL")},
-		AllowMethods: []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete, http.MethodPatch, http.MethodHead, http.MethodTrace},
+		AllowOrigins:     []string{"*"},
+		AllowMethods:     []string{"*"},
+		AllowHeaders:     []string{"*"},
+		AllowCredentials: true,
 	}))
+
 	app.Use(middleware.LoggerWithConfig(
 		middleware.LoggerConfig{
 			Format: "${status} | ${latency_human} | ${method} | ${uri} | ${error} \n",

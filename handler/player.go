@@ -61,5 +61,40 @@ func (h *Handler) GetPlayerByID(c echo.Context) error {
 }
 
 func (h *Handler) GetAllPlayers(c echo.Context) error {
-	return c.JSON(200, "Success")
+	gameId, err := util.ParseInt32Param(c, "game_id")
+	if err != nil {
+		return util.BadRequestJson(c, "Invalid Game ID")
+	}
+	q := models.New(h.Db)
+	players, err := q.ListPlayersByGame(c.Request().Context(), pgtype.Int4{Int32: gameId, Valid: true})
+	if err != nil {
+		return util.InternalServerErrorJson(c, err.Error())
+	}
+
+	return c.JSON(200, players)
+}
+
+func (h *Handler) UpdatePlayer(c echo.Context) error {
+	var player models.Player
+	err := c.Bind(&player)
+	if err != nil {
+		log.Println(err)
+		return util.BadRequestJson(c, err.Error())
+	}
+	q := models.New(h.Db)
+	player, err = q.UpdatePlayer(c.Request().Context(), models.UpdatePlayerParams{
+		ID:                player.ID,
+		Name:              player.Name,
+		GameID:            player.GameID,
+		RoleID:            player.RoleID,
+		Alive:             player.Alive,
+		AlignmentOverride: player.AlignmentOverride,
+		Notes:             player.Notes,
+		RoomID:            player.RoomID,
+	})
+	if err != nil {
+		log.Println(err)
+		return util.InternalServerErrorJson(c, err.Error())
+	}
+	return c.JSON(200, player)
 }

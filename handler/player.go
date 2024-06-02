@@ -98,3 +98,17 @@ func (h *Handler) UpdatePlayer(c echo.Context) error {
 	}
 	return c.JSON(200, player)
 }
+
+func (h *Handler) DeletePlayer(c echo.Context) error {
+	playerID, err := util.ParseInt32Param(c, "player_id")
+	if err != nil {
+		return util.BadRequestJson(c, "Invalid Player ID")
+	}
+	q := models.New(h.Db)
+	err = q.DeletePlayer(c.Request().Context(), playerID)
+	if err != nil {
+		log.Println(err)
+		return util.InternalServerErrorJson(c, err.Error())
+	}
+	return c.JSON(200, "Success")
+}

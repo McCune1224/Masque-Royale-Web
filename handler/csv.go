@@ -68,7 +68,7 @@ func (h *Handler) SyncRolesCsv(c echo.Context) error {
 	for i := range chunks {
 		roleParams, roleAbilityDetailParams, rolePassiveDetailParams, err := parseRoleChunk(chunks[i])
 		if err != nil {
-			log.Println(err)
+			log.Println("Error Parsing Roles CSV into chunks", err)
 			return util.InternalServerErrorJson(c, err.Error())
 		}
 		bulkEntry := bulkRoleCreate{
@@ -83,7 +83,7 @@ func (h *Handler) SyncRolesCsv(c echo.Context) error {
 
 	err = q.NukeRoles(c.Request().Context())
 	if err != nil {
-		log.Println(err)
+		log.Println("Error Nuking Roles", err)
 		return util.InternalServerErrorJson(c, err.Error())
 	}
 
@@ -93,16 +93,14 @@ func (h *Handler) SyncRolesCsv(c echo.Context) error {
 	for _, roleParams := range bulkRoleCreateList {
 		r, err := q.CreateRole(c.Request().Context(), roleParams.R)
 		if err != nil {
-			log.Println(err)
+			log.Println("Error Creating Role", err)
 			return util.InternalServerErrorJson(c, err.Error())
 		}
 		roleIds = append(roleIds, r.ID)
 	}
 	for i, roleParams := range bulkRoleCreateList {
-		log.Println(roleParams.R.Name)
 		for _, a := range roleParams.A {
 			roleID := roleIds[i]
-			log.Println("\t", a.Name)
 			dbAbility, err := q.CreateAbilityDetail(c.Request().Context(), a)
 
 			if err != nil {
@@ -187,6 +185,7 @@ func parseRoleChunk(chunk [][]string) (models.CreateRoleParams, []models.CreateA
 func parseAbility(row []string) (models.CreateAbilityDetailParams, error) {
 	abilityDetail := models.CreateAbilityDetailParams{}
 	abilityDetail.Name = row[1]
+	abilityDetail.Description = row[4]
 
 	iCharge := int32(999999)
 	if row[2] != "∞" {

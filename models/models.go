@@ -162,7 +162,7 @@ type Role struct {
 	Alignment Alignment `json:"alignment"`
 }
 
-type RoleAbilitesJoin struct {
+type RoleAbilitiesJoin struct {
 	RoleID    int32 `json:"role_id"`
 	AbilityID int32 `json:"ability_id"`
 }

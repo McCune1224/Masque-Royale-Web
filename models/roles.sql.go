@@ -42,32 +42,22 @@ func (q *Queries) GetRole(ctx context.Context, id int32) (Role, error) {
 	return i, err
 }
 
-const getRoleAbilityAndPassiveJoin = `-- name: GetRoleAbilityAndPassiveJoin :one
-SELECT role_abilites_join.role_id, role_abilites_join.ability_id, abilities.id, abilities.ability_details_id, abilities.player_inventory_id, passive_details.id, passive_details.name, passive_details.description
-FROM role_abilites_join
-JOIN abilities ON role_abilites_join.ability_id = abilities.id
-JOIN passive_details ON role_abilites_join.passive_id = passive_details.id
+const getRolePassivesAggregate = `-- name: GetRolePassivesAggregate :one
+SELECT ARRAY_AGG(passive_details.name) AS passive_names, ARRAY_AGG(passive_details.description) AS passive_descriptions FROM roles
+JOIN role_passives_join ON role_passives_join.role_id = roles.id
+JOIN passive_details ON passive_details.id = role_passives_join.passive_id
+WHERE roles.id = $1 GROUP BY roles.id
 `
 
-type GetRoleAbilityAndPassiveJoinRow struct {
-	RoleAbilitesJoin RoleAbilitesJoin `json:"role_abilites_join"`
-	Ability          Ability          `json:"ability"`
-	PassiveDetail    PassiveDetail    `json:"passive_detail"`
+type GetRolePassivesAggregateRow struct {
+	PassiveNames        interface{} `json:"passive_names"`
+	PassiveDescriptions interface{} `json:"passive_descriptions"`
 }
 
-func (q *Queries) GetRoleAbilityAndPassiveJoin(ctx context.Context) (GetRoleAbilityAndPassiveJoinRow, error) {
-	row := q.db.QueryRow(ctx, getRoleAbilityAndPassiveJoin)
-	var i GetRoleAbilityAndPassiveJoinRow
-	err := row.Scan(
-		&i.RoleAbilitesJoin.RoleID,
-		&i.RoleAbilitesJoin.AbilityID,
-		&i.Ability.ID,
-		&i.Ability.AbilityDetailsID,
-		&i.Ability.PlayerInventoryID,
-		&i.PassiveDetail.ID,
-		&i.PassiveDetail.Name,
-		&i.PassiveDetail.Description,
-	)
+func (q *Queries) GetRolePassivesAggregate(ctx context.Context, id int32) (GetRolePassivesAggregateRow, error) {
+	row := q.db.QueryRow(ctx, getRolePassivesAggregate, id)
+	var i GetRolePassivesAggregateRow
+	err := row.Scan(&i.PassiveNames, &i.PassiveDescriptions)
 	return i, err
 }
 
@@ -97,7 +87,7 @@ func (q *Queries) ListRoles(ctx context.Context) ([]Role, error) {
 }
 
 const nukeRoles = `-- name: NukeRoles :exec
-TRUNCATE roles, role_abilites_join, role_passives_join, ability_details, passive_details RESTART IDENTITY CASCADE
+TRUNCATE roles, role_abilities_join, role_passives_join, ability_details, passive_details RESTART IDENTITY CASCADE
 `
 
 func (q *Queries) NukeRoles(ctx context.Context) error {

@@ -24,7 +24,7 @@ description TEXT NOT NULL
 );
 
 
-CREATE TABLE IF NOT EXISTS role_abilites_join(
+CREATE TABLE IF NOT EXISTS role_abilities_join(
   role_id INT NOT NULL,
   ability_id INT NOT NULL,
   PRIMARY KEY (role_id, ability_id)

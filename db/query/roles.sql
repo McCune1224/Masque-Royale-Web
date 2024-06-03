@@ -17,13 +17,15 @@ select *
 from roles
 ;
 
--- name: GetRoleAbilityAndPassiveJoin :one
-SELECT sqlc.embed(role_abilites_join), sqlc.embed(abilities), sqlc.embed(passive_details)
-FROM role_abilites_join
-JOIN abilities ON role_abilites_join.ability_id = abilities.id
-JOIN passive_details ON role_abilites_join.passive_id = passive_details.id
+-- name: GetRolePassivesAggregate :one
+SELECT ARRAY_AGG(passive_details.name) AS passive_names, ARRAY_AGG(passive_details.description) AS passive_descriptions FROM roles
+JOIN role_passives_join ON role_passives_join.role_id = roles.id
+JOIN passive_details ON passive_details.id = role_passives_join.passive_id
+WHERE roles.id = $1 GROUP BY roles.id;
 ;
 
+
+
 -- name: NukeRoles :exec
-TRUNCATE roles, role_abilites_join, role_passives_join, ability_details, passive_details RESTART IDENTITY CASCADE;
+TRUNCATE roles, role_abilities_join, role_passives_join, ability_details, passive_details RESTART IDENTITY CASCADE;
 

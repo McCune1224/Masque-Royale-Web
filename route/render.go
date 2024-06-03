@@ -34,7 +34,8 @@ func Routes(app *echo.Echo, handler *handler.Handler) {
 
 	roles := api.Group("/roles")
 	roles.GET("", handler.GetAllRoles)
-	// roles.GET("/:role_id", handler.GetRoleByID)
+	roles.GET("/:role_id", handler.GetRoleByID)
+	roles.GET("/:role_id/complete", handler.GetCompleteRole)
 	// roles.POST("", handler.InsertRole)
 
 	players := games.Group("/:game_id/players")

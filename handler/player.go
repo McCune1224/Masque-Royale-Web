@@ -57,7 +57,17 @@ func (h *Handler) InsertPlayer(c echo.Context) error {
 }
 
 func (h *Handler) GetPlayerByID(c echo.Context) error {
-	return c.JSON(200, "Success")
+	playerID, err := util.ParseInt32Param(c, "player_id")
+	if err != nil {
+		return util.BadRequestJson(c, "Invalid Player ID")
+	}
+	q := models.New(h.Db)
+	player, err := q.GetPlayer(c.Request().Context(), playerID)
+	if err != nil {
+		log.Println(err)
+	}
+
+	return c.JSON(200, player)
 }
 
 func (h *Handler) GetAllPlayers(c echo.Context) error {

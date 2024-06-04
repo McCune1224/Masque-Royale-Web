@@ -39,3 +39,9 @@ delete from ability_details
 where id = $1
 ;
 
+-- name: GetAnyAbilityDetailsMarkedAnyAbility :many
+select *
+from ability_details
+where any_ability = true
+;
+

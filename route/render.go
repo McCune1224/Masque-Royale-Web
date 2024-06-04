@@ -52,4 +52,5 @@ func Routes(app *echo.Echo, handler *handler.Handler) {
 
 	admin := games.Group("/:game_id/admin")
 	admin.POST("/sync-roles-csv", handler.SyncRolesCsv)
+	admin.POST("/sync-any-abilities-csv", handler.SyncStatusDetailsCSV)
 }

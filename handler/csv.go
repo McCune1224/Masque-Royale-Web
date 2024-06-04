@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/csv"
 	"errors"
+	"fmt"
 	"io"
 	"log"
 	"strconv"
@@ -290,35 +291,110 @@ func (h *Handler) SyncStatusDetailsCSV(c echo.Context) error {
 
 	rawFile, err := form.Open()
 	if err != nil {
+		log.Println("Error opening file", err)
 		return util.InternalServerErrorJson(c, err.Error())
 	}
 	defer rawFile.Close()
 
-	//read all csv func
 	reader := csv.NewReader(rawFile)
 	records, err := reader.ReadAll()
 	if err != nil {
+		log.Println("Error reading file", err)
 		return util.InternalServerErrorJson(c, err.Error())
 	}
+	// Drop first and second row as they are headers / useless
+	records = records[2:]
 
-	if len(records) < 1 {
-		return util.BadRequestJson(c, "No records found")
-	}
+	// Rarity	Name	Categories	Description
+	// Common	Silence	Debuff/Negative/Visiting/Night	Choose a player, inflicting them with the Blackmailed status.
 
 	q := models.New(h.Db)
-	for i := 0; i < len(records); i++ {
-		desc := pgtype.Text{
-			String: records[i][2],
-			Valid:  true,
-		}
 
-		status := models.CreateStatusDetailParams{
-			Name:        records[i][1],
-			Description: desc,
+	csvAnyAbilityDetails := []models.CreateAnyAbilityDetailParams{}
+	for _, r := range records {
+		csvAnyAbilityLine := models.CreateAnyAbilityDetailParams{}
+		switch r[1] {
+		case "Common":
+			csvAnyAbilityLine.Rarity = models.RarityCOMMON
+		case "Uncommon":
+			csvAnyAbilityLine.Rarity = models.RarityUNCOMMON
+		case "Rare":
+			csvAnyAbilityLine.Rarity = models.RarityRARE
+		case "Epic":
+			csvAnyAbilityLine.Rarity = models.RarityEPIC
+		case "Legendary":
+			csvAnyAbilityLine.Rarity = models.RarityLEGENDARY
+		case "Mythical":
+			csvAnyAbilityLine.Rarity = models.RarityMYTHICAL
+		case "Role Specific Ability (Non AA)":
+			csvAnyAbilityLine.Rarity = models.RarityROLESPECIFIC
+		default:
+			return util.BadRequestJson(c, "Invalid Rarity")
 		}
-		_, err = q.CreateStatusDetail(c.Request().Context(), status)
+		csvAnyAbilityLine.Name = r[2]
+		csvAnyAbilityLine.Shorthand = r[3]
+		csvAnyAbilityLine.Description = r[6]
+		csvAnyAbilityLine.CategoryIds = []int32{}
+
+		priority := int32(200)
+		log.Println(r[5])
+		for _, cat := range strings.Split(r[5], "/") {
+			dbCat, err := q.GetCategoryByName(c.Request().Context(), pgtype.Text{String: strings.ToUpper(cat), Valid: true})
+			if err != nil {
+				log.Println("Error getting category", cat, err)
+				return util.InternalServerErrorJson(c, err.Error())
+			}
+			if dbCat.Priority.Int32 < priority {
+				priority = dbCat.Priority.Int32
+			}
+			csvAnyAbilityLine.CategoryIds = append(csvAnyAbilityLine.CategoryIds, dbCat.ID)
+		}
+		csvAnyAbilityDetails = append(csvAnyAbilityDetails, csvAnyAbilityLine)
+	}
+
+	// AbilityDetails that have the any_ability flag set to true also need to be synced
+	regularAbilityDetailsToSync, err := q.GetAnyAbilityDetailsMarkedAnyAbility(c.Request().Context())
+	if err != nil {
+		log.Println("Error getting regular ability details to sync", err)
+		return util.InternalServerErrorJson(c, err.Error())
+	}
+	for _, a := range regularAbilityDetailsToSync {
+		_, err := q.CreateAnyAbilityDetail(c.Request().Context(), models.CreateAnyAbilityDetailParams{
+			Name:        a.Name,
+			Description: a.Description,
+			CategoryIds: a.CategoryIds,
+			Rarity:      a.Rarity,
+			Priority:    a.Priority,
+		})
 		if err != nil {
-			return util.InternalServerErrorJson(c, err.Error())
+			return util.InternalServerErrorJson(c, fmt.Sprintf("Error creating Role Any Ability details for %s: %s", a.Name, err.Error()))
+		}
+	}
+
+	anyAbilityDetailsToSync, err := q.GetAnyAbilityDetailsMarkedAnyAbility(c.Request().Context())
+	if err != nil {
+		log.Println("Error getting any ability details to sync", err)
+		return util.InternalServerErrorJson(c, err.Error())
+	}
+	for _, a := range anyAbilityDetailsToSync {
+		_, err := q.CreateAnyAbilityDetail(c.Request().Context(), models.CreateAnyAbilityDetailParams{
+			Name:        a.Name,
+			Description: a.Description,
+			CategoryIds: a.CategoryIds,
+			Rarity:      a.Rarity,
+			Priority:    a.Priority,
+		})
+		if err != nil {
+			log.Println("Error creating any ability details for", a.Name, err)
+			return util.InternalServerErrorJson(c, fmt.Sprintf("Error creating Role Any Ability details for %s: %s", a.Name, err.Error()))
+		}
+	}
+
+	for _, a := range csvAnyAbilityDetails {
+		_, err := q.CreateAnyAbilityDetail(c.Request().Context(), a)
+		if err != nil {
+			log.Println("Error creating any ability details for", a.Name, err)
+			return util.InternalServerErrorJson(c, fmt.Sprintf("Error creating CSV Any Ability details for %s: %s", a.Name, err.Error()))
 		}
 	}
 

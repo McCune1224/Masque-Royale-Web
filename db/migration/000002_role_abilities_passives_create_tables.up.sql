@@ -18,6 +18,16 @@ priority int,
 any_ability bool
 );
 
+CREATE TABLE IF NOT EXISTS any_ability_details (
+id serial PRIMARY KEY,
+name VARCHAR(64) UNIQUE NOT NULL,
+shorthand VARCHAR(20) UNIQUE NOT NULL,
+description TEXT NOT NULL,
+category_ids INT[] DEFAULT '{}',
+rarity rarity NOT NULL,
+priority int
+);
+
 CREATE TABLE IF NOT EXISTS passive_details(
 id serial PRIMARY KEY,
 name VARCHAR(64) UNIQUE NOT NULL,
@@ -45,7 +55,8 @@ priority int
 );
 
 
--- FIXME: There's no uniform system for categories, so for right now I'm just hardcoding the name and associated priority here
+-- FIXME: There's no uniform system for categories, so for right now I'm just
+-- hardcoding the name and associated priority here
 INSERT INTO categories 
 (name, priority) 
 VALUES 
@@ -74,6 +85,7 @@ VALUES
 ('NEGATIVE', 20),
 ('NEUTRAL', 20),
 ('NON-VISITING', 20),
+('NON VISITING', 20),
 ('INSTANT', 20),
 ('NIGHT', 20);
 
@@ -85,7 +97,8 @@ description TEXT
 );
 
 
--- WARNING: This is so infrequently used that it is not worth creating a create for it, but it is used in the game so it needs to be here
+-- WARNING: This is so infrequently used that it is not worth creating a create for
+-- it, but it is used in the game so it needs to be here
 INSERT INTO status_details (name, description) VALUES
 ('Cursed', 'If it isn’t removed within three cycles, you will die.'),
 ('Empowered', '"You can use any one of your abilities for 2 nights, even if you had previously ran out of charges. Does not consume a charge on use, but still requires an action to use. 

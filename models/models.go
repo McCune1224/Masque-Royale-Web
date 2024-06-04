@@ -129,6 +129,16 @@ type Action struct {
 	Context          string      `json:"context"`
 }
 
+type AnyAbilityDetail struct {
+	ID          int32       `json:"id"`
+	Name        string      `json:"name"`
+	Shorthand   string      `json:"shorthand"`
+	Description string      `json:"description"`
+	CategoryIds []int32     `json:"category_ids"`
+	Rarity      Rarity      `json:"rarity"`
+	Priority    pgtype.Int4 `json:"priority"`
+}
+
 type Category struct {
 	ID       int32       `json:"id"`
 	Name     pgtype.Text `json:"name"`

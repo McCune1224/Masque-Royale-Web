@@ -155,6 +155,41 @@ func (q *Queries) GetAllAbilityDetailsByAnyAbility(ctx context.Context, anyAbili
 	return items, nil
 }
 
+const getAnyAbilityDetailsMarkedAnyAbility = `-- name: GetAnyAbilityDetailsMarkedAnyAbility :many
+select id, name, description, default_charges, category_ids, rarity, priority, any_ability
+from ability_details
+where any_ability = true
+`
+
+func (q *Queries) GetAnyAbilityDetailsMarkedAnyAbility(ctx context.Context) ([]AbilityDetail, error) {
+	rows, err := q.db.Query(ctx, getAnyAbilityDetailsMarkedAnyAbility)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []AbilityDetail
+	for rows.Next() {
+		var i AbilityDetail
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.DefaultCharges,
+			&i.CategoryIds,
+			&i.Rarity,
+			&i.Priority,
+			&i.AnyAbility,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const updateAbilityDetail = `-- name: UpdateAbilityDetail :one
 UPDATE ability_details
   SET name = $2,

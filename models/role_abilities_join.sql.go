@@ -30,7 +30,7 @@ func (q *Queries) CreateRoleAbilityJoin(ctx context.Context, arg CreateRoleAbili
 }
 
 const getAssociatedRoleAbilities = `-- name: GetAssociatedRoleAbilities :many
-SELECT ab.id, ab.name, ab.description, ab.default_charges, ab.category_ids, ab.rarity, ab.any_ability
+SELECT ab.id, ab.name, ab.description, ab.default_charges, ab.category_ids, ab.rarity, ab.priority, ab.any_ability
 FROM role_abilities_join raj
 JOIN ability_details ab ON raj.ability_id = ab.id
 WHERE raj.role_id = $1
@@ -52,6 +52,7 @@ func (q *Queries) GetAssociatedRoleAbilities(ctx context.Context, roleID int32) 
 			&i.DefaultCharges,
 			&i.CategoryIds,
 			&i.Rarity,
+			&i.Priority,
 			&i.AnyAbility,
 		); err != nil {
 			return nil, err

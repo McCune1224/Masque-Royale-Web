@@ -6,9 +6,9 @@ where id = $1
 
 -- name: CreateAbilityDetail :one
 INSERT INTO ability_details (
-  name, description, default_charges, category_ids, any_ability, rarity
+  name, description, default_charges, category_ids, any_ability, priority, rarity
 ) VALUES (
-  $1, $2, $3, $4, $5, $6
+  $1, $2, $3, $4, $5, $6, $7
 )
 RETURNING *;
 
@@ -29,7 +29,8 @@ UPDATE ability_details
   description = $3,
   default_charges = $4,
   category_ids = $5,
-  any_ability = $6
+  priority = $6,
+  any_ability = $7
 WHERE id = $1
 RETURNING *;
 

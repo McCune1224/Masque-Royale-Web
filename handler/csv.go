@@ -59,7 +59,7 @@ func (h *Handler) SyncRolesCsv(c echo.Context) error {
 
 	type bulkRoleCreate struct {
 		R models.CreateRoleParams
-		A []models.CreateAbilityDetailParams
+		A []TempCreateAbilityDetailParams
 		P []models.CreatePassiveDetailParams
 	}
 
@@ -98,10 +98,34 @@ func (h *Handler) SyncRolesCsv(c echo.Context) error {
 		}
 		roleIds = append(roleIds, r.ID)
 	}
+
+	realAbility := models.CreateAbilityDetailParams{}
 	for i, roleParams := range bulkRoleCreateList {
 		for _, a := range roleParams.A {
 			roleID := roleIds[i]
-			dbAbility, err := q.CreateAbilityDetail(c.Request().Context(), a)
+
+			priority := int32(200)
+			for _, categoryName := range a.CategoryNames {
+				cat, err := q.GetCategoryByName(c.Request().Context(), pgtype.Text{String: strings.ToUpper(categoryName), Valid: true})
+				if err != nil {
+					log.Println("Error Getting Category ID", categoryName, err)
+					return util.InternalServerErrorJson(c, err.Error())
+				}
+				if cat.Priority.Int32 < priority {
+					priority = cat.Priority.Int32
+				}
+
+				realAbility.CategoryIds = append(realAbility.CategoryIds, cat.ID)
+			}
+
+			realAbility.Name = a.Name
+			realAbility.Description = a.Description
+			realAbility.DefaultCharges = a.DefaultCharges
+			realAbility.Rarity = a.Rarity
+			realAbility.AnyAbility = a.AnyAbility
+			realAbility.Priority = pgtype.Int4{Int32: priority, Valid: true}
+
+			dbAbility, err := q.CreateAbilityDetail(c.Request().Context(), realAbility)
 
 			if err != nil {
 				if util.ErrorContains(err, pgerrcode.UniqueViolation) {
@@ -148,9 +172,16 @@ func (h *Handler) SyncRolesCsv(c echo.Context) error {
 
 }
 
-func parseRoleChunk(chunk [][]string) (models.CreateRoleParams, []models.CreateAbilityDetailParams, []models.CreatePassiveDetailParams, error) {
+// FIXME: This is a temporary solution to not making abilities within its own function.
+// Right now I dont have a db context here so I can't immediatly get the assocaited cateogries
+type TempCreateAbilityDetailParams struct {
+	models.CreateAbilityDetailParams
+	CategoryNames []string
+}
+
+func parseRoleChunk(chunk [][]string) (models.CreateRoleParams, []TempCreateAbilityDetailParams, []models.CreatePassiveDetailParams, error) {
 	roleParams := models.CreateRoleParams{}
-	roleAbilityDetailParams := []models.CreateAbilityDetailParams{}
+	tempRoleAbilityDetailParams := []TempCreateAbilityDetailParams{}
 	rolePassiveDetailParams := []models.CreatePassiveDetailParams{}
 	roleParams.Name = chunk[1][1]
 	switch strings.ToUpper(chunk[3][1]) {
@@ -162,16 +193,17 @@ func parseRoleChunk(chunk [][]string) (models.CreateRoleParams, []models.CreateA
 		roleParams.Alignment = models.AlignmentOUTLANDER
 	default:
 		log.Println(chunk[3][1])
-		return roleParams, roleAbilityDetailParams, rolePassiveDetailParams, errors.New("Invalid alignment")
+		return roleParams, tempRoleAbilityDetailParams, rolePassiveDetailParams, errors.New("Invalid alignment")
 	}
 
 	abParseIndex := 5
 	for chunk[abParseIndex][1] != "Passives:" {
 		ab, err := parseAbility(chunk[abParseIndex])
 		if err != nil {
-			return roleParams, roleAbilityDetailParams, rolePassiveDetailParams, err
+			return roleParams, tempRoleAbilityDetailParams, rolePassiveDetailParams, err
 		}
-		roleAbilityDetailParams = append(roleAbilityDetailParams, ab)
+
+		tempRoleAbilityDetailParams = append(tempRoleAbilityDetailParams, ab)
 		abParseIndex++
 	}
 	for _, p := range chunk[abParseIndex+1:] {
@@ -179,11 +211,11 @@ func parseRoleChunk(chunk [][]string) (models.CreateRoleParams, []models.CreateA
 		rolePassiveDetailParams = append(rolePassiveDetailParams, createPassive)
 	}
 
-	return roleParams, roleAbilityDetailParams, rolePassiveDetailParams, nil
+	return roleParams, tempRoleAbilityDetailParams, rolePassiveDetailParams, nil
 }
 
-func parseAbility(row []string) (models.CreateAbilityDetailParams, error) {
-	abilityDetail := models.CreateAbilityDetailParams{}
+func parseAbility(row []string) (TempCreateAbilityDetailParams, error) {
+	abilityDetail := TempCreateAbilityDetailParams{}
 	abilityDetail.Name = row[1]
 	abilityDetail.Description = row[4]
 
@@ -241,6 +273,8 @@ func parseAbility(row []string) (models.CreateAbilityDetailParams, error) {
 		// abilityDetail.RoleSpecific = roleName
 		abilityDetail.Rarity = models.RarityROLESPECIFIC
 	}
+
+	abilityDetail.CategoryNames = strings.Split(row[5], "/")
 	return abilityDetail, nil
 }
 

@@ -14,6 +14,7 @@ description TEXT NOT NULL,
 default_charges int,
 category_ids INT[] DEFAULT '{}',
 rarity rarity NOT NULL,
+priority int,
 any_ability bool
 );
 
@@ -48,24 +49,33 @@ priority int
 INSERT INTO categories 
 (name, priority) 
 VALUES 
-('Alteration', 1),
-('Reactive', 2),
-('Redirection', 3),
-('Vote Redirection', 3),
-('Investigation', 4),
-('Protection', 5),
-('Visit', 6), 
-('Blocking', 6),
-('Vote', 7), 
-('Immunity', 7),
-('Vote Immunity', 7),
-('Vote Manipulation', 8),
-('Support', 9),
-('Debuff', 10),
-('Theft', 11),
-('Healing', 12),
-('Destruction', 13),
-('Killing', 14);
+('ALTERATION', 1),
+('REACTIVE', 2),
+('REDIRECTION', 3),
+('VISIT REDIRECTION', 3),
+('VOTE REDIRECTION', 3),
+('INVESTIGATION', 4),
+('PROTECTION', 5),
+('VISIT', 6), 
+('VISITING', 6), 
+('VISIT BLOCKING', 6),
+('BLOCKING', 6),
+('VOTE', 7), 
+('IMMUNITY', 7),
+('VOTE IMMUNITY', 7),
+('VOTE MANIPULATION', 8),
+('SUPPORT', 9),
+('DEBUFF', 10),
+('THEFT', 11),
+('HEALING', 12),
+('DESTRUCTION', 13),
+('KILLING', 14),
+('POSITIVE', 20),
+('NEGATIVE', 20),
+('NEUTRAL', 20),
+('NON-VISITING', 20),
+('INSTANT', 20),
+('NIGHT', 20);
 
 
 CREATE TABLE IF NOT EXISTS status_details(

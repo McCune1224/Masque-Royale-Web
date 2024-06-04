@@ -13,11 +13,11 @@ import (
 
 const createAbilityDetail = `-- name: CreateAbilityDetail :one
 INSERT INTO ability_details (
-  name, description, default_charges, category_ids, any_ability, rarity
+  name, description, default_charges, category_ids, any_ability, priority, rarity
 ) VALUES (
-  $1, $2, $3, $4, $5, $6
+  $1, $2, $3, $4, $5, $6, $7
 )
-RETURNING id, name, description, default_charges, category_ids, rarity, any_ability
+RETURNING id, name, description, default_charges, category_ids, rarity, priority, any_ability
 `
 
 type CreateAbilityDetailParams struct {
@@ -26,6 +26,7 @@ type CreateAbilityDetailParams struct {
 	DefaultCharges pgtype.Int4 `json:"default_charges"`
 	CategoryIds    []int32     `json:"category_ids"`
 	AnyAbility     pgtype.Bool `json:"any_ability"`
+	Priority       pgtype.Int4 `json:"priority"`
 	Rarity         Rarity      `json:"rarity"`
 }
 
@@ -36,6 +37,7 @@ func (q *Queries) CreateAbilityDetail(ctx context.Context, arg CreateAbilityDeta
 		arg.DefaultCharges,
 		arg.CategoryIds,
 		arg.AnyAbility,
+		arg.Priority,
 		arg.Rarity,
 	)
 	var i AbilityDetail
@@ -46,6 +48,7 @@ func (q *Queries) CreateAbilityDetail(ctx context.Context, arg CreateAbilityDeta
 		&i.DefaultCharges,
 		&i.CategoryIds,
 		&i.Rarity,
+		&i.Priority,
 		&i.AnyAbility,
 	)
 	return i, err
@@ -62,7 +65,7 @@ func (q *Queries) DeleteAbilityDetail(ctx context.Context, id int32) error {
 }
 
 const getAbilityDetail = `-- name: GetAbilityDetail :one
-select id, name, description, default_charges, category_ids, rarity, any_ability
+select id, name, description, default_charges, category_ids, rarity, priority, any_ability
 from ability_details
 where id = $1
 `
@@ -77,13 +80,14 @@ func (q *Queries) GetAbilityDetail(ctx context.Context, id int32) (AbilityDetail
 		&i.DefaultCharges,
 		&i.CategoryIds,
 		&i.Rarity,
+		&i.Priority,
 		&i.AnyAbility,
 	)
 	return i, err
 }
 
 const getAllAbilityDetails = `-- name: GetAllAbilityDetails :many
-select id, name, description, default_charges, category_ids, rarity, any_ability
+select id, name, description, default_charges, category_ids, rarity, priority, any_ability
 from ability_details
 `
 
@@ -103,6 +107,7 @@ func (q *Queries) GetAllAbilityDetails(ctx context.Context) ([]AbilityDetail, er
 			&i.DefaultCharges,
 			&i.CategoryIds,
 			&i.Rarity,
+			&i.Priority,
 			&i.AnyAbility,
 		); err != nil {
 			return nil, err
@@ -116,7 +121,7 @@ func (q *Queries) GetAllAbilityDetails(ctx context.Context) ([]AbilityDetail, er
 }
 
 const getAllAbilityDetailsByAnyAbility = `-- name: GetAllAbilityDetailsByAnyAbility :many
-select id, name, description, default_charges, category_ids, rarity, any_ability
+select id, name, description, default_charges, category_ids, rarity, priority, any_ability
 from ability_details
 where any_ability = $1
 `
@@ -137,6 +142,7 @@ func (q *Queries) GetAllAbilityDetailsByAnyAbility(ctx context.Context, anyAbili
 			&i.DefaultCharges,
 			&i.CategoryIds,
 			&i.Rarity,
+			&i.Priority,
 			&i.AnyAbility,
 		); err != nil {
 			return nil, err
@@ -155,9 +161,10 @@ UPDATE ability_details
   description = $3,
   default_charges = $4,
   category_ids = $5,
-  any_ability = $6
+  priority = $6,
+  any_ability = $7
 WHERE id = $1
-RETURNING id, name, description, default_charges, category_ids, rarity, any_ability
+RETURNING id, name, description, default_charges, category_ids, rarity, priority, any_ability
 `
 
 type UpdateAbilityDetailParams struct {
@@ -166,6 +173,7 @@ type UpdateAbilityDetailParams struct {
 	Description    string      `json:"description"`
 	DefaultCharges pgtype.Int4 `json:"default_charges"`
 	CategoryIds    []int32     `json:"category_ids"`
+	Priority       pgtype.Int4 `json:"priority"`
 	AnyAbility     pgtype.Bool `json:"any_ability"`
 }
 
@@ -176,6 +184,7 @@ func (q *Queries) UpdateAbilityDetail(ctx context.Context, arg UpdateAbilityDeta
 		arg.Description,
 		arg.DefaultCharges,
 		arg.CategoryIds,
+		arg.Priority,
 		arg.AnyAbility,
 	)
 	var i AbilityDetail
@@ -186,6 +195,7 @@ func (q *Queries) UpdateAbilityDetail(ctx context.Context, arg UpdateAbilityDeta
 		&i.DefaultCharges,
 		&i.CategoryIds,
 		&i.Rarity,
+		&i.Priority,
 		&i.AnyAbility,
 	)
 	return i, err

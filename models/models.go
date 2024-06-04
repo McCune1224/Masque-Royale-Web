@@ -114,7 +114,19 @@ type AbilityDetail struct {
 	DefaultCharges pgtype.Int4 `json:"default_charges"`
 	CategoryIds    []int32     `json:"category_ids"`
 	Rarity         Rarity      `json:"rarity"`
+	Priority       pgtype.Int4 `json:"priority"`
 	AnyAbility     pgtype.Bool `json:"any_ability"`
+}
+
+type Action struct {
+	ID               int32       `json:"id"`
+	AbilityDetailsID pgtype.Int4 `json:"ability_details_id"`
+	PlayerID         pgtype.Int4 `json:"player_id"`
+	GameID           pgtype.Int4 `json:"game_id"`
+	PendingApproval  bool        `json:"pending_approval"`
+	Resolved         bool        `json:"resolved"`
+	Target           string      `json:"target"`
+	Context          string      `json:"context"`
 }
 
 type Category struct {

@@ -16,6 +16,8 @@ migrate-up:
 migrate-down:
 	migrate -database $(shell cat .env | grep DATABASE_URL | cut -d '=' -f2) -path db/migration down
 
+migrate-sync:
+	migrate -database $(shell cat .env | grep DATABASE_URL | cut -d '=' -f2) -path db/migration down && migrate -database $(shell cat .env | grep DATABASE_URL | cut -d '=' -f2) -path db/migration up
 
 mock-migrate-up:
 	migrate -database $(shell cat .env | grep MOCK_DATABASE | cut -d '=' -f2) -path db/migration up

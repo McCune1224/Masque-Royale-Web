@@ -4,14 +4,6 @@ from any_ability_details
 where id = $1
 ;
 
--- CREATE TABLE IF NOT EXISTS any_ability_details (
--- id serial PRIMARY KEY,
--- name VARCHAR(64) UNIQUE NOT NULL,
--- description TEXT NOT NULL,
--- category_ids INT[] DEFAULT '{}',
--- rarity rarity NOT NULL,
--- priority int
--- );
 -- name: CreateAnyAbilityDetail :one
 INSERT INTO any_ability_details (
   name, description, category_ids, shorthand, rarity, priority

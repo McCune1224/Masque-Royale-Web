@@ -1,8 +1,7 @@
-
 -- name: GetRoleAbilityJoin :one
-SELECT sqlc.embed(role_abilities_join), sqlc.embed(abilities)
-FROM role_abilities_join
-JOIN abilities ON role_abilities_join.ability_id = abilities.id
+select sqlc.embed(role_abilities_join), sqlc.embed(abilities)
+from role_abilities_join
+join abilities on role_abilities_join.ability_id = abilities.id
 ;
 
 -- name: CreateRoleAbilityJoin :one
@@ -14,7 +13,13 @@ INSERT INTO role_abilities_join (
 
 
 -- name: GetAssociatedRoleAbilities :many
-SELECT ab.*
-FROM role_abilities_join raj
-JOIN ability_details ab ON raj.ability_id = ab.id
-WHERE raj.role_id = $1;
+select ab.*
+from role_abilities_join raj
+join ability_details ab on raj.ability_id = ab.id
+where raj.role_id = $1
+;
+
+
+-- name: NukeAnyAbilities :exec
+TRUNCATE  any_ability_details RESTART IDENTITY CASCADE;
+

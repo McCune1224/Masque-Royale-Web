@@ -355,74 +355,94 @@ func (h *Handler) SyncStatusDetailsCSV(c echo.Context) error {
 			if dbCat.Priority.Int32 < priority {
 				priority = dbCat.Priority.Int32
 			}
-			log.Printf("%d -> %v\n", dbCat.Priority.Int32, csvAnyAbilityLine.CategoryIds)
 			csvAnyAbilityLine.CategoryIds = append(csvAnyAbilityLine.CategoryIds, dbCat.ID)
 		}
 		csvAnyAbilityDetails = append(csvAnyAbilityDetails, csvAnyAbilityLine)
 	}
 
+	err = q.NukeAnyAbilities(c.Request().Context())
+	if err != nil {
+		log.Println("Error nuking any ability details", err)
+		return util.InternalServerErrorJson(c, err.Error())
+	}
+
+	for _, a := range csvAnyAbilityDetails {
+		log.Println(a.Name, a.CategoryIds)
+		_, err := q.CreateAnyAbilityDetail(c.Request().Context(), a)
+		if err != nil {
+			if util.ErrorContains(err, "23505") {
+				log.Println("Entry already exists, skipping: ", a.Name, err)
+				continue
+			} else {
+				log.Println("Unhandled error on upload", err)
+				return util.InternalServerErrorJson(c, fmt.Sprintf("Error creating CSV Any Ability details for %s: %s", a.Name, err.Error()))
+			}
+		}
+	}
+
 	// AbilityDetails that have the any_ability flag set to true also need to be synced
+
 	regularAbilityDetailsToSync, err := q.GetAnyAbilityDetailsMarkedAnyAbility(c.Request().Context())
 	if err != nil {
 		log.Println("Error getting regular ability details to sync", err)
 		return util.InternalServerErrorJson(c, err.Error())
 	}
 	for _, a := range regularAbilityDetailsToSync {
-		entry, _ := q.CreateAnyAbilityDetail(c.Request().Context(), models.CreateAnyAbilityDetailParams{
+		_, err := q.CreateAnyAbilityDetail(c.Request().Context(), models.CreateAnyAbilityDetailParams{
 			Name:        a.Name,
 			Description: a.Description,
 			CategoryIds: a.CategoryIds,
 			Rarity:      a.Rarity,
 			Priority:    a.Priority,
 		})
-		if entry.ID == 0 {
-			log.Println("FIXME: Error creating any ability details for", a.Name, err)
-		}
-
-		// if err != nil {
-		// 	log.Println("Error creating regular ability details for", a.Name, err)
-		// 	return util.InternalServerErrorJson(c, fmt.Sprintf("Error creating Role Any Ability details for %s: %s", a.Name, err.Error()))
-		// }
-	}
-
-	anyAbilityDetailsToSync, err := q.GetAnyAbilityDetailsMarkedAnyAbility(c.Request().Context())
-	if err != nil {
-		log.Println("Error getting any ability details to sync", err)
-		return util.InternalServerErrorJson(c, err.Error())
-	}
-	for _, a := range anyAbilityDetailsToSync {
-		entry, _ := q.CreateAnyAbilityDetail(c.Request().Context(), models.CreateAnyAbilityDetailParams{
-			Name:        a.Name,
-			Description: a.Description,
-			CategoryIds: a.CategoryIds,
-			Rarity:      a.Rarity,
-			Priority:    a.Priority,
-		})
-		if entry.ID == 0 {
-			log.Println("Error creating any ability details for", a.Name, err)
-		}
-		// if err != nil {
-		// 	if util.ErrorContains(err, "23505") {
-		// 		return util.InternalServerErrorJson(c, fmt.Sprintf("Error creating CSV Any Ability details for %s: %s", a.Name, err.Error()))
-		// 	} else {
-		// 		log.Println("Unhandled error on upload", err)
-		// 	}
-		//
-		// }
-	}
-	log.Println("Successfully synced base any ability details")
-
-	for _, a := range csvAnyAbilityDetails {
-		_, err := q.CreateAnyAbilityDetail(c.Request().Context(), a)
 		if err != nil {
 			if util.ErrorContains(err, "23505") {
-				return util.InternalServerErrorJson(c, fmt.Sprintf("Error creating CSV Any Ability details for %s: %s", a.Name, err.Error()))
+				log.Println("Entry already exists, skipping: ", a.Name, err)
 			} else {
-				log.Println("Unhandled error on upload", err)
+				log.Println("Error creating regular ability details for", a.Name, err)
+				return util.InternalServerErrorJson(c, fmt.Sprintf("Error creating Role Any Ability details for %s: %s", a.Name, err.Error()))
 			}
 		}
 	}
-	log.Println("Successfully synced CSV any ability details")
+
+	// anyAbilityDetailsToSync, err := q.GetAnyAbilityDetailsMarkedAnyAbility(c.Request().Context())
+	// if err != nil {
+	// 	log.Println("Error getting any ability details to sync", err)
+	// 	return util.InternalServerErrorJson(c, err.Error())
+	// }
+	// for _, a := range anyAbilityDetailsToSync {
+	// 	entry, _ := q.CreateAnyAbilityDetail(c.Request().Context(), models.CreateAnyAbilityDetailParams{
+	// 		Name:        a.Name,
+	// 		Description: a.Description,
+	// 		CategoryIds: a.CategoryIds,
+	// 		Rarity:      a.Rarity,
+	// 		Priority:    a.Priority,
+	// 	})
+	// 	if entry.ID == 0 {
+	// 		log.Println("Error creating any ability details for", a.Name, err)
+	// 	}
+	// 	// if err != nil {
+	// 	// 	if util.ErrorContains(err, "23505") {
+	// 	// 		return util.InternalServerErrorJson(c, fmt.Sprintf("Error creating CSV Any Ability details for %s: %s", a.Name, err.Error()))
+	// 	// 	} else {
+	// 	// 		log.Println("Unhandled error on upload", err)
+	// 	// 	}
+	// 	//
+	// 	// }
+	// }
+	// log.Println("Successfully synced base any ability details")
+	//
+	// for _, a := range csvAnyAbilityDetails {
+	// 	_, err := q.CreateAnyAbilityDetail(c.Request().Context(), a)
+	// 	if err != nil {
+	// 		if util.ErrorContains(err, "23505") {
+	// 			return util.InternalServerErrorJson(c, fmt.Sprintf("Error creating CSV Any Ability details for %s: %s", a.Name, err.Error()))
+	// 		} else {
+	// 			log.Println("Unhandled error on upload", err)
+	// 		}
+	// 	}
+	// }
+	// log.Println("Successfully synced CSV any ability details")
 
 	return c.JSON(200, "Success")
 }

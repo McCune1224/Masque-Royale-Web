@@ -21,7 +21,7 @@ any_ability bool
 CREATE TABLE IF NOT EXISTS any_ability_details (
 id serial PRIMARY KEY,
 name VARCHAR(64) UNIQUE NOT NULL,
-shorthand VARCHAR(20) UNIQUE NOT NULL,
+shorthand VARCHAR(20),
 description TEXT NOT NULL,
 category_ids INT[] DEFAULT '{}',
 rarity rarity NOT NULL,

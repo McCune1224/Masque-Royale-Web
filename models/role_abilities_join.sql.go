@@ -30,10 +30,10 @@ func (q *Queries) CreateRoleAbilityJoin(ctx context.Context, arg CreateRoleAbili
 }
 
 const getAssociatedRoleAbilities = `-- name: GetAssociatedRoleAbilities :many
-SELECT ab.id, ab.name, ab.description, ab.default_charges, ab.category_ids, ab.rarity, ab.priority, ab.any_ability
-FROM role_abilities_join raj
-JOIN ability_details ab ON raj.ability_id = ab.id
-WHERE raj.role_id = $1
+select ab.id, ab.name, ab.description, ab.default_charges, ab.category_ids, ab.rarity, ab.priority, ab.any_ability
+from role_abilities_join raj
+join ability_details ab on raj.ability_id = ab.id
+where raj.role_id = $1
 `
 
 func (q *Queries) GetAssociatedRoleAbilities(ctx context.Context, roleID int32) ([]AbilityDetail, error) {
@@ -66,9 +66,9 @@ func (q *Queries) GetAssociatedRoleAbilities(ctx context.Context, roleID int32) 
 }
 
 const getRoleAbilityJoin = `-- name: GetRoleAbilityJoin :one
-SELECT role_abilities_join.role_id, role_abilities_join.ability_id, abilities.id, abilities.ability_details_id, abilities.player_inventory_id
-FROM role_abilities_join
-JOIN abilities ON role_abilities_join.ability_id = abilities.id
+select role_abilities_join.role_id, role_abilities_join.ability_id, abilities.id, abilities.ability_details_id, abilities.player_inventory_id
+from role_abilities_join
+join abilities on role_abilities_join.ability_id = abilities.id
 `
 
 type GetRoleAbilityJoinRow struct {
@@ -87,4 +87,13 @@ func (q *Queries) GetRoleAbilityJoin(ctx context.Context) (GetRoleAbilityJoinRow
 		&i.Ability.PlayerInventoryID,
 	)
 	return i, err
+}
+
+const nukeAnyAbilities = `-- name: NukeAnyAbilities :exec
+TRUNCATE  any_ability_details RESTART IDENTITY CASCADE
+`
+
+func (q *Queries) NukeAnyAbilities(ctx context.Context) error {
+	_, err := q.db.Exec(ctx, nukeAnyAbilities)
+	return err
 }

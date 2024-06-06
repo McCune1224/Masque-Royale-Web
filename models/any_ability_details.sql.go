@@ -29,14 +29,6 @@ type CreateAnyAbilityDetailParams struct {
 	Priority    pgtype.Int4 `json:"priority"`
 }
 
-// CREATE TABLE IF NOT EXISTS any_ability_details (
-// id serial PRIMARY KEY,
-// name VARCHAR(64) UNIQUE NOT NULL,
-// description TEXT NOT NULL,
-// category_ids INT[] DEFAULT '{}',
-// rarity rarity NOT NULL,
-// priority int
-// );
 func (q *Queries) CreateAnyAbilityDetail(ctx context.Context, arg CreateAnyAbilityDetailParams) (AnyAbilityDetail, error) {
 	row := q.db.QueryRow(ctx, createAnyAbilityDetail,
 		arg.Name,

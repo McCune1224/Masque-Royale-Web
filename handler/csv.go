@@ -341,7 +341,7 @@ func (h *Handler) SyncStatusDetailsCSV(c echo.Context) error {
 			return util.BadRequestJson(c, "Invalid Rarity")
 		}
 		csvAnyAbilityLine.Name = r[2]
-		csvAnyAbilityLine.Shorthand = r[3]
+		csvAnyAbilityLine.Shorthand = pgtype.Text{String: r[3], Valid: true}
 		csvAnyAbilityLine.Description = r[6]
 		csvAnyAbilityLine.CategoryIds = []int32{}
 

@@ -119,20 +119,21 @@ type AbilityDetail struct {
 }
 
 type Action struct {
-	ID               int32       `json:"id"`
-	AbilityDetailsID pgtype.Int4 `json:"ability_details_id"`
-	PlayerID         pgtype.Int4 `json:"player_id"`
-	GameID           pgtype.Int4 `json:"game_id"`
-	PendingApproval  bool        `json:"pending_approval"`
-	Resolved         bool        `json:"resolved"`
-	Target           string      `json:"target"`
-	Context          string      `json:"context"`
+	ID              int32       `json:"id"`
+	GameID          pgtype.Int4 `json:"game_id"`
+	PlayerID        pgtype.Int4 `json:"player_id"`
+	PendingApproval bool        `json:"pending_approval"`
+	Resolved        bool        `json:"resolved"`
+	Target          string      `json:"target"`
+	Context         string      `json:"context"`
+	AbilityName     string      `json:"ability_name"`
+	RoleID          pgtype.Int4 `json:"role_id"`
 }
 
 type AnyAbilityDetail struct {
 	ID          int32       `json:"id"`
 	Name        string      `json:"name"`
-	Shorthand   string      `json:"shorthand"`
+	Shorthand   pgtype.Text `json:"shorthand"`
 	Description string      `json:"description"`
 	CategoryIds []int32     `json:"category_ids"`
 	Rarity      Rarity      `json:"rarity"`

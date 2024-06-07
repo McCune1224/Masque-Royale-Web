@@ -53,6 +53,14 @@ func Routes(app *echo.Echo, handler *handler.Handler) {
 	players.PATCH("/:player_id", handler.UpdatePlayer)
 	players.DELETE("/:player_id", handler.DeletePlayer)
 
+	actions := games.Group("/:game_id/actions")
+	actions.GET("", handler.GetAllActions)
+	actions.POST("", handler.InsertAction)
+	// actions.GET("/:action_id", handler.GetActionByID)
+	// actions.PUT("/:action_id", handler.UpdateAction)
+	// actions.PATCH("/:action_id", handler.UpdateAction)
+	// actions.DELETE("/:action_id", handler.DeleteAction)
+
 	admin := games.Group("/:game_id/admin")
 	admin.POST("/sync-roles-csv", handler.SyncRolesCsv)
 	admin.POST("/sync-any-abilities-csv", handler.SyncStatusDetailsCSV)

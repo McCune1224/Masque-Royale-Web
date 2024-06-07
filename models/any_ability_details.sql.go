@@ -24,7 +24,7 @@ type CreateAnyAbilityDetailParams struct {
 	Name        string      `json:"name"`
 	Description string      `json:"description"`
 	CategoryIds []int32     `json:"category_ids"`
-	Shorthand   string      `json:"shorthand"`
+	Shorthand   pgtype.Text `json:"shorthand"`
 	Rarity      Rarity      `json:"rarity"`
 	Priority    pgtype.Int4 `json:"priority"`
 }
@@ -167,7 +167,7 @@ type UpdateAnyAbilityDetailParams struct {
 	Description string      `json:"description"`
 	CategoryIds []int32     `json:"category_ids"`
 	Rarity      Rarity      `json:"rarity"`
-	Shorthand   string      `json:"shorthand"`
+	Shorthand   pgtype.Text `json:"shorthand"`
 	Priority    pgtype.Int4 `json:"priority"`
 }
 

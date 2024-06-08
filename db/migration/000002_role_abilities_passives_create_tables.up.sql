@@ -57,6 +57,7 @@ priority int
 
 -- FIXME: There's no uniform system for categories, so for right now I'm just
 -- hardcoding the name and associated priority here
+-- -1 indicates to skip using this for a priority
 INSERT INTO categories 
 (name, priority) 
 VALUES 
@@ -81,13 +82,13 @@ VALUES
 ('HEALING', 12),
 ('DESTRUCTION', 13),
 ('KILLING', 14),
-('POSITIVE', 20),
-('NEGATIVE', 20),
-('NEUTRAL', 20),
-('NON-VISITING', 20),
-('NON VISITING', 20),
-('INSTANT', 20),
-('NIGHT', 20);
+('POSITIVE', -1),
+('NEGATIVE', -1),
+('NEUTRAL', -1),
+('NON-VISITING', -1),
+('NON VISITING', -1),
+('INSTANT', -1),
+('NIGHT', -1);
 
 
 CREATE TABLE IF NOT EXISTS status_details(

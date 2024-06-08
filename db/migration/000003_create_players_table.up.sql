@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS players(
 id serial PRIMARY KEY,
 name VARCHAR(64) UNIQUE NOT NULL,
-game_id INT REFERENCES games (id),
+game_id INT REFERENCES games (id) ON DELETE CASCADE,
 role_id INT REFERENCES roles (id),
 alive bool NOT NULL,
 alignment_override VARCHAR(64),

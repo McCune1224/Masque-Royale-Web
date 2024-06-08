@@ -64,6 +64,28 @@ func (q *Queries) DeleteAbilityDetail(ctx context.Context, id int32) error {
 	return err
 }
 
+const getAbilityByName = `-- name: GetAbilityByName :one
+select id, name, description, default_charges, category_ids, rarity, priority, any_ability
+from ability_details
+where name = $1
+`
+
+func (q *Queries) GetAbilityByName(ctx context.Context, name string) (AbilityDetail, error) {
+	row := q.db.QueryRow(ctx, getAbilityByName, name)
+	var i AbilityDetail
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Description,
+		&i.DefaultCharges,
+		&i.CategoryIds,
+		&i.Rarity,
+		&i.Priority,
+		&i.AnyAbility,
+	)
+	return i, err
+}
+
 const getAbilityDetail = `-- name: GetAbilityDetail :one
 select id, name, description, default_charges, category_ids, rarity, priority, any_ability
 from ability_details
@@ -84,40 +106,6 @@ func (q *Queries) GetAbilityDetail(ctx context.Context, id int32) (AbilityDetail
 		&i.AnyAbility,
 	)
 	return i, err
-}
-
-const getAllAbilityDetails = `-- name: GetAllAbilityDetails :many
-select id, name, description, default_charges, category_ids, rarity, priority, any_ability
-from ability_details
-`
-
-func (q *Queries) GetAllAbilityDetails(ctx context.Context) ([]AbilityDetail, error) {
-	rows, err := q.db.Query(ctx, getAllAbilityDetails)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []AbilityDetail
-	for rows.Next() {
-		var i AbilityDetail
-		if err := rows.Scan(
-			&i.ID,
-			&i.Name,
-			&i.Description,
-			&i.DefaultCharges,
-			&i.CategoryIds,
-			&i.Rarity,
-			&i.Priority,
-			&i.AnyAbility,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
 }
 
 const getAllAbilityDetailsByAnyAbility = `-- name: GetAllAbilityDetailsByAnyAbility :many
@@ -163,6 +151,40 @@ where any_ability = true
 
 func (q *Queries) GetAnyAbilityDetailsMarkedAnyAbility(ctx context.Context) ([]AbilityDetail, error) {
 	rows, err := q.db.Query(ctx, getAnyAbilityDetailsMarkedAnyAbility)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []AbilityDetail
+	for rows.Next() {
+		var i AbilityDetail
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.DefaultCharges,
+			&i.CategoryIds,
+			&i.Rarity,
+			&i.Priority,
+			&i.AnyAbility,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listAbilityDetails = `-- name: ListAbilityDetails :many
+select id, name, description, default_charges, category_ids, rarity, priority, any_ability
+from ability_details
+`
+
+func (q *Queries) ListAbilityDetails(ctx context.Context) ([]AbilityDetail, error) {
+	rows, err := q.db.Query(ctx, listAbilityDetails)
 	if err != nil {
 		return nil, err
 	}

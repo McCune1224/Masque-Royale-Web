@@ -122,3 +122,20 @@ func (h *Handler) DeletePlayer(c echo.Context) error {
 	}
 	return c.JSON(200, "Success")
 }
+
+func (h *Handler) GetPlayerActions(c echo.Context) error {
+	// gameID, err := util.ParseInt32Param(c, "game_id")
+	// if err != nil {
+	// 	return util.BadRequestJson(c, "Invalid Game ID")
+	// }
+	playerID, err := util.ParseInt32Param(c, "player_id")
+	if err != nil {
+		return util.BadRequestJson(c, "Invalid Player ID")
+	}
+	q := models.New(h.Db)
+	actions, err := q.ListActionsByPlayer(c.Request().Context(), playerID)
+	if err != nil {
+		return util.InternalServerErrorJson(c, err.Error())
+	}
+	return c.JSON(200, actions)
+}

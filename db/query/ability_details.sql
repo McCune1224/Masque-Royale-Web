@@ -4,6 +4,12 @@ from ability_details
 where id = $1
 ;
 
+-- name: GetAbilityByName :one
+select *
+from ability_details
+where name = $1
+;
+
 -- name: CreateAbilityDetail :one
 INSERT INTO ability_details (
   name, description, default_charges, category_ids, any_ability, priority, rarity
@@ -12,7 +18,7 @@ INSERT INTO ability_details (
 )
 RETURNING *;
 
--- name: GetAllAbilityDetails :many
+-- name: ListAbilityDetails :many
 select *
 from ability_details
 ;

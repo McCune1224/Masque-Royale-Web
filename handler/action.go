@@ -58,8 +58,13 @@ func (h *Handler) InsertAction(c echo.Context) error {
 		log.Println(err)
 		return util.BadRequestJson(c, err.Error())
 	}
-	log.Println(action)
+
 	q := models.New(h.Db)
+
+	game, err := q.GetGame(c.Request().Context(), action.GameID.Int32)
+	if err != nil {
+		return util.InternalServerErrorJson(c, err.Error())
+	}
 	action, err = q.CreateAction(c.Request().Context(), models.CreateActionParams{
 		GameID:          action.GameID,
 		PlayerID:        action.PlayerID,
@@ -68,10 +73,52 @@ func (h *Handler) InsertAction(c echo.Context) error {
 		Target:          action.Target,
 		Context:         action.Context,
 		AbilityName:     action.AbilityName,
+		Priority:        action.Priority,
+		Round:           game.Round,
 	})
 	if err != nil {
 		log.Println(err)
 		return util.InternalServerErrorJson(c, err.Error())
 	}
 	return c.JSON(200, action)
+}
+
+func (h *Handler) UpdateAction(c echo.Context) error {
+	var action models.Action
+	err := c.Bind(&action)
+	if err != nil {
+		log.Println(err)
+		return util.BadRequestJson(c, err.Error())
+	}
+	q := models.New(h.Db)
+	action, err = q.UpdateAction(c.Request().Context(), models.UpdateActionParams{
+		ID:              action.ID,
+		GameID:          action.GameID,
+		PlayerID:        action.PlayerID,
+		PendingApproval: action.PendingApproval,
+		Resolved:        action.Resolved,
+		Target:          action.Target,
+		Context:         action.Context,
+		AbilityName:     action.AbilityName,
+		Priority:        action.Priority,
+		Round:           action.Round,
+	})
+	if err != nil {
+		log.Println(err)
+		return util.InternalServerErrorJson(c, err.Error())
+	}
+	return c.JSON(200, action)
+}
+
+func (h *Handler) DeleteAction(c echo.Context) error {
+	actionId, err := util.ParseInt32Param(c, "action_id")
+	if err != nil {
+		return util.BadRequestJson(c, "Invalid Action ID")
+	}
+	q := models.New(h.Db)
+	err = q.DeleteAction(c.Request().Context(), int32(actionId))
+	if err != nil {
+		return util.InternalServerErrorJson(c, err.Error())
+	}
+	return c.JSON(200, "Success")
 }

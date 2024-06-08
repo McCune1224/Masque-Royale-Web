@@ -44,5 +44,5 @@ RETURNING *;
 
 -- name: DeleteGame :exec
 delete from games
-where id = $1
+where id = $1 
 ;

@@ -127,6 +127,8 @@ type Action struct {
 	Target          string      `json:"target"`
 	Context         string      `json:"context"`
 	AbilityName     string      `json:"ability_name"`
+	Round           int32       `json:"round"`
+	Priority        int32       `json:"priority"`
 	RoleID          pgtype.Int4 `json:"role_id"`
 }
 

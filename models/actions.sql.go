@@ -13,11 +13,11 @@ import (
 
 const createAction = `-- name: CreateAction :one
 INSERT INTO actions (
-  game_id, player_id, pending_approval, resolved, target, context, ability_name, role_id
+  game_id, player_id, pending_approval, resolved, target, context, ability_name, round, priority, role_id
 ) VALUES (
-  $1, $2, $3, $4, $5, $6, $7, $8 
+  $1, $2, $3, $4, $5, $6, $7, $8, $9, $10
 )
-RETURNING id, game_id, player_id, pending_approval, resolved, target, context, ability_name, role_id
+RETURNING id, game_id, player_id, pending_approval, resolved, target, context, ability_name, round, priority, role_id
 `
 
 type CreateActionParams struct {
@@ -28,6 +28,8 @@ type CreateActionParams struct {
 	Target          string      `json:"target"`
 	Context         string      `json:"context"`
 	AbilityName     string      `json:"ability_name"`
+	Round           int32       `json:"round"`
+	Priority        int32       `json:"priority"`
 	RoleID          pgtype.Int4 `json:"role_id"`
 }
 
@@ -40,6 +42,8 @@ func (q *Queries) CreateAction(ctx context.Context, arg CreateActionParams) (Act
 		arg.Target,
 		arg.Context,
 		arg.AbilityName,
+		arg.Round,
+		arg.Priority,
 		arg.RoleID,
 	)
 	var i Action
@@ -52,6 +56,8 @@ func (q *Queries) CreateAction(ctx context.Context, arg CreateActionParams) (Act
 		&i.Target,
 		&i.Context,
 		&i.AbilityName,
+		&i.Round,
+		&i.Priority,
 		&i.RoleID,
 	)
 	return i, err
@@ -68,7 +74,7 @@ func (q *Queries) DeleteAction(ctx context.Context, id int32) error {
 }
 
 const getAction = `-- name: GetAction :one
-select id, game_id, player_id, pending_approval, resolved, target, context, ability_name, role_id
+select id, game_id, player_id, pending_approval, resolved, target, context, ability_name, round, priority, role_id
 from actions
 where id = $1
 `
@@ -85,13 +91,15 @@ func (q *Queries) GetAction(ctx context.Context, id int32) (Action, error) {
 		&i.Target,
 		&i.Context,
 		&i.AbilityName,
+		&i.Round,
+		&i.Priority,
 		&i.RoleID,
 	)
 	return i, err
 }
 
 const getActionByID = `-- name: GetActionByID :one
-select id, game_id, player_id, pending_approval, resolved, target, context, ability_name, role_id
+select id, game_id, player_id, pending_approval, resolved, target, context, ability_name, round, priority, role_id
 from actions
 where id = $1
 `
@@ -108,13 +116,15 @@ func (q *Queries) GetActionByID(ctx context.Context, id int32) (Action, error) {
 		&i.Target,
 		&i.Context,
 		&i.AbilityName,
+		&i.Round,
+		&i.Priority,
 		&i.RoleID,
 	)
 	return i, err
 }
 
 const listActions = `-- name: ListActions :many
-select id, game_id, player_id, pending_approval, resolved, target, context, ability_name, role_id
+select id, game_id, player_id, pending_approval, resolved, target, context, ability_name, round, priority, role_id
 from actions
 `
 
@@ -136,6 +146,8 @@ func (q *Queries) ListActions(ctx context.Context) ([]Action, error) {
 			&i.Target,
 			&i.Context,
 			&i.AbilityName,
+			&i.Round,
+			&i.Priority,
 			&i.RoleID,
 		); err != nil {
 			return nil, err
@@ -149,7 +161,7 @@ func (q *Queries) ListActions(ctx context.Context) ([]Action, error) {
 }
 
 const listActionsByGame = `-- name: ListActionsByGame :many
-select id, game_id, player_id, pending_approval, resolved, target, context, ability_name, role_id
+select id, game_id, player_id, pending_approval, resolved, target, context, ability_name, round, priority, role_id
 from actions
 where game_id = $1
 `
@@ -172,6 +184,8 @@ func (q *Queries) ListActionsByGame(ctx context.Context, gameID pgtype.Int4) ([]
 			&i.Target,
 			&i.Context,
 			&i.AbilityName,
+			&i.Round,
+			&i.Priority,
 			&i.RoleID,
 		); err != nil {
 			return nil, err
@@ -185,7 +199,7 @@ func (q *Queries) ListActionsByGame(ctx context.Context, gameID pgtype.Int4) ([]
 }
 
 const listActionsByPlayer = `-- name: ListActionsByPlayer :many
-SELECT a.id, a.game_id, a.player_id, a.pending_approval, a.resolved, a.target, a.context, a.ability_name, a.role_id
+SELECT a.id, a.game_id, a.player_id, a.pending_approval, a.resolved, a.target, a.context, a.ability_name, a.round, a.priority, a.role_id
 FROM actions a
 JOIN players p on p.id = a.player_id
 WHERE p.id = $1
@@ -209,6 +223,8 @@ func (q *Queries) ListActionsByPlayer(ctx context.Context, id int32) ([]Action, 
 			&i.Target,
 			&i.Context,
 			&i.AbilityName,
+			&i.Round,
+			&i.Priority,
 			&i.RoleID,
 		); err != nil {
 			return nil, err
@@ -222,7 +238,7 @@ func (q *Queries) ListActionsByPlayer(ctx context.Context, id int32) ([]Action, 
 }
 
 const listActionsByRoundForGame = `-- name: ListActionsByRoundForGame :many
-SELECT a.id, a.game_id, a.player_id, a.pending_approval, a.resolved, a.target, a.context, a.ability_name, a.role_id
+SELECT a.id, a.game_id, a.player_id, a.pending_approval, a.resolved, a.target, a.context, a.ability_name, a.round, a.priority, a.role_id
 FROM actions a
 JOIN games g on $1 = a.game_id
 WHERE g.round = $2
@@ -251,6 +267,8 @@ func (q *Queries) ListActionsByRoundForGame(ctx context.Context, arg ListActions
 			&i.Target,
 			&i.Context,
 			&i.AbilityName,
+			&i.Round,
+			&i.Priority,
 			&i.RoleID,
 		); err != nil {
 			return nil, err
@@ -272,9 +290,11 @@ UPDATE actions
   target = $6,
   context = $7,
   ability_name = $8,
-  role_id = $9
+  round = $9,
+  priority = $10,
+  role_id = $11
 WHERE id = $1
-RETURNING id, game_id, player_id, pending_approval, resolved, target, context, ability_name, role_id
+RETURNING id, game_id, player_id, pending_approval, resolved, target, context, ability_name, round, priority, role_id
 `
 
 type UpdateActionParams struct {
@@ -286,6 +306,8 @@ type UpdateActionParams struct {
 	Target          string      `json:"target"`
 	Context         string      `json:"context"`
 	AbilityName     string      `json:"ability_name"`
+	Round           int32       `json:"round"`
+	Priority        int32       `json:"priority"`
 	RoleID          pgtype.Int4 `json:"role_id"`
 }
 
@@ -299,6 +321,8 @@ func (q *Queries) UpdateAction(ctx context.Context, arg UpdateActionParams) (Act
 		arg.Target,
 		arg.Context,
 		arg.AbilityName,
+		arg.Round,
+		arg.Priority,
 		arg.RoleID,
 	)
 	var i Action
@@ -311,6 +335,8 @@ func (q *Queries) UpdateAction(ctx context.Context, arg UpdateActionParams) (Act
 		&i.Target,
 		&i.Context,
 		&i.AbilityName,
+		&i.Round,
+		&i.Priority,
 		&i.RoleID,
 	)
 	return i, err

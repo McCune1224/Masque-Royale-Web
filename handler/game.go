@@ -38,7 +38,6 @@ func (h *Handler) GetGameByID(c echo.Context) error {
 	if err != nil {
 		return util.InternalServerErrorJson(c, err.Error())
 	}
-
 	return c.JSON(200, game)
 }
 
@@ -72,4 +71,39 @@ func (h *Handler) InsertGame(c echo.Context) error {
 
 	return c.JSON(200, game)
 
+}
+
+func (h *Handler) DeleteGame(c echo.Context) error {
+	gameId, err := util.ParseInt32Param(c, "game_id")
+	if err != nil {
+		return util.BadRequestJson(c, "Invalid Game ID")
+	}
+	q := models.New(h.Db)
+	err = q.DeleteGame(c.Request().Context(), int32(gameId))
+	if err != nil {
+		return util.InternalServerErrorJson(c, err.Error())
+	}
+	return c.JSON(200, "Success")
+}
+
+func (h *Handler) UpdateGame(c echo.Context) error {
+	var game models.Game
+	err := c.Bind(&game)
+	if err != nil {
+		log.Println(err)
+		return util.BadRequestJson(c, err.Error())
+	}
+	q := models.New(h.Db)
+	game, err = q.UpdateGame(c.Request().Context(), models.UpdateGameParams{
+		ID:        game.ID,
+		Name:      game.Name,
+		Phase:     game.Phase,
+		Round:     game.Round,
+		PlayerIds: game.PlayerIds,
+	})
+	if err != nil {
+		log.Println(err)
+		return util.InternalServerErrorJson(c, err.Error())
+	}
+	return c.JSON(200, game)
 }

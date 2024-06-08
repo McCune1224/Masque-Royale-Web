@@ -4,6 +4,12 @@ from any_ability_details
 where id = $1
 ;
 
+-- name: GetAnyAbilityByName :one
+select *
+from any_ability_details
+where name = $1
+;
+
 -- name: CreateAnyAbilityDetail :one
 INSERT INTO any_ability_details (
   name, description, category_ids, shorthand, rarity, priority
@@ -15,12 +21,6 @@ INSERT INTO any_ability_details (
 -- name: ListAnyAbilityDetails :many
 select *
 from any_ability_details
-;
-
--- name: GetAnyAbilityDetailsByID :many
-select *
-from any_ability_details
-where id = $1
 ;
 
 -- name: UpdateAnyAbilityDetail :one

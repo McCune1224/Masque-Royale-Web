@@ -6,9 +6,9 @@ where id = $1
 
 -- name: CreateAction :one
 INSERT INTO actions (
-  game_id, player_id, pending_approval, resolved, target, context, ability_name, role_id
+  game_id, player_id, pending_approval, resolved, target, context, ability_name, round, priority, role_id
 ) VALUES (
-  $1, $2, $3, $4, $5, $6, $7, $8 
+  $1, $2, $3, $4, $5, $6, $7, $8, $9, $10
 )
 RETURNING *;
 
@@ -37,7 +37,9 @@ UPDATE actions
   target = $6,
   context = $7,
   ability_name = $8,
-  role_id = $9
+  round = $9,
+  priority = $10,
+  role_id = $11
 WHERE id = $1
 RETURNING *;
 

@@ -105,14 +105,14 @@ func (h *Handler) SyncRolesCsv(c echo.Context) error {
 		for _, a := range roleParams.A {
 			roleID := roleIds[i]
 
-			priority := int32(200)
+			priority := int32(20)
 			for _, categoryName := range a.CategoryNames {
 				cat, err := q.GetCategoryByName(c.Request().Context(), pgtype.Text{String: strings.ToUpper(categoryName), Valid: true})
 				if err != nil {
 					log.Println("Error Getting Category ID", categoryName, err)
 					return util.InternalServerErrorJson(c, err.Error())
 				}
-				if cat.Priority.Int32 < priority {
+				if cat.Priority.Int32 > priority && cat.Priority.Int32 != -1 {
 					priority = cat.Priority.Int32
 				}
 
@@ -345,16 +345,17 @@ func (h *Handler) SyncStatusDetailsCSV(c echo.Context) error {
 		csvAnyAbilityLine.Description = r[6]
 		csvAnyAbilityLine.CategoryIds = []int32{}
 
-		priority := int32(200)
+		priority := int32(20)
 		for _, cat := range strings.Split(r[5], "/") {
 			dbCat, err := q.GetCategoryByName(c.Request().Context(), pgtype.Text{String: strings.ToUpper(cat), Valid: true})
 			if err != nil {
 				log.Println("Error getting category", cat, err)
 				return util.InternalServerErrorJson(c, err.Error())
 			}
-			if dbCat.Priority.Int32 < priority {
+			if dbCat.Priority.Int32 > priority && dbCat.Priority.Int32 != -1 {
 				priority = dbCat.Priority.Int32
 			}
+			csvAnyAbilityLine.Priority = pgtype.Int4{Int32: priority, Valid: true}
 			csvAnyAbilityLine.CategoryIds = append(csvAnyAbilityLine.CategoryIds, dbCat.ID)
 		}
 		csvAnyAbilityDetails = append(csvAnyAbilityDetails, csvAnyAbilityLine)
@@ -382,7 +383,8 @@ func (h *Handler) SyncStatusDetailsCSV(c echo.Context) error {
 
 	// AbilityDetails that have the any_ability flag set to true also need to be synced
 
-	regularAbilityDetailsToSync, err := q.GetAnyAbilityDetailsMarkedAnyAbility(c.Request().Context())
+	// regularAbilityDetailsToSync, err := q.GetAnyAbilityDetailsMarkedAnyAbility(c.Request().Context())
+	regularAbilityDetailsToSync, err := q.ListAbilityDetails(c.Request().Context())
 	if err != nil {
 		log.Println("Error getting regular ability details to sync", err)
 		return util.InternalServerErrorJson(c, err.Error())

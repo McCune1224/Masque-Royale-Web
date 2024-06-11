@@ -55,6 +55,9 @@ func Routes(app *echo.Echo, handler *handler.Handler) {
 	anyAbilities.GET("/:any_ability_id", handler.GetAnyAbilityByID)
 	anyAbilities.GET("/search", handler.GetAnyAbilityByName)
 
+	statuses := api.Group("/statuses")
+	statuses.GET("", handler.GetAllStatuses)
+
 	players := games.Group("/:game_id/players")
 	players.GET("", handler.GetAllPlayers)
 	players.POST("", handler.InsertPlayer)

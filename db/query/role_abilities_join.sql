@@ -20,6 +20,16 @@ where raj.role_id = $1
 ;
 
 
+
+-- name: GetRoleFromAbilityID :one
+SELECT r.*
+FROM roles r
+JOIN role_abilities_Join ra ON r.id = ra.role_id
+WHERE ra.ability_id = $1;
+;
+
 -- name: NukeAnyAbilities :exec
 TRUNCATE  any_ability_details RESTART IDENTITY CASCADE;
+
+
 

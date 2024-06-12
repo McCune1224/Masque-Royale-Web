@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"log"
+
 	"github.com/labstack/echo/v4"
 	"github.com/mccune1224/betrayal-widget/models"
 	"github.com/mccune1224/betrayal-widget/util"
@@ -37,4 +39,19 @@ func (h *Handler) GetAbilityByName(c echo.Context) error {
 		return util.InternalServerErrorJson(c, err.Error())
 	}
 	return c.JSON(200, ability)
+}
+
+func (h *Handler) GetRoleForAbility(c echo.Context) error {
+	abilityId, err := util.ParseInt32Param(c, "ability_id")
+	if err != nil {
+		log.Println(err)
+		return util.InternalServerErrorJson(c, err.Error())
+	}
+	q := models.New(h.Db)
+	role, err := q.GetRoleFromAbilityID(c.Request().Context(), abilityId)
+	if err != nil {
+		log.Println(err)
+		return util.InternalServerErrorJson(c, err.Error())
+	}
+	return c.JSON(200, role)
 }

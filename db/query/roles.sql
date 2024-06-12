@@ -27,7 +27,7 @@ join passive_details on passive_details.id = role_passives_join.passive_id
 where roles.id = $1
 group by roles.id
 ;
-;
+
 
 
 -- name: NukeRoles :exec

@@ -37,8 +37,10 @@ func Routes(app *echo.Echo, handler *handler.Handler) {
 
 	roles := api.Group("/roles")
 	roles.GET("", handler.GetAllRoles)
+	roles.GET("/complete", handler.GetAllCompleteRoles)
 	roles.GET("/:role_id", handler.GetRoleByID)
 	roles.GET("/:role_id/complete", handler.GetCompleteRole)
+
 	// roles.POST("", handler.InsertRole)
 
 	categories := api.Group("/categories")
@@ -48,6 +50,7 @@ func Routes(app *echo.Echo, handler *handler.Handler) {
 	abilities := api.Group("/abilities")
 	abilities.GET("", handler.GetAllAbilities)
 	abilities.GET("/:ability_id", handler.GetAbilityByID)
+	abilities.GET("/:ability_id/role", handler.GetRoleForAbility)
 	abilities.GET("/search", handler.GetAbilityByName)
 
 	anyAbilities := api.Group("/any_abilities")

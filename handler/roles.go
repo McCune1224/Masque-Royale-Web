@@ -67,3 +67,24 @@ func (h *Handler) GetCompleteRole(c echo.Context) error {
 	completeRole := CompleteRole{Role: role, Passives: passives, Abilities: abilities}
 	return c.JSON(200, completeRole)
 }
+
+func (h *Handler) GetAllCompleteRoles(c echo.Context) error {
+	q := models.New(h.Db)
+	roles, err := q.ListRoles(c.Request().Context())
+	if err != nil {
+		return util.InternalServerErrorJson(c, err.Error())
+	}
+	completeRoles := []CompleteRole{}
+	for _, role := range roles {
+		passives, err := q.GetAssociatedRolePassives(context.Background(), role.ID)
+		if err != nil {
+			return util.InternalServerErrorJson(c, err.Error())
+		}
+		abilities, err := q.GetAssociatedRoleAbilities(context.Background(), role.ID)
+		if err != nil {
+			return util.InternalServerErrorJson(c, err.Error())
+		}
+		completeRoles = append(completeRoles, CompleteRole{Role: role, Passives: passives, Abilities: abilities})
+	}
+	return c.JSON(200, completeRoles)
+}

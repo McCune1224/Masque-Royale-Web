@@ -89,6 +89,20 @@ func (q *Queries) GetRoleAbilityJoin(ctx context.Context) (GetRoleAbilityJoinRow
 	return i, err
 }
 
+const getRoleFromAbilityID = `-- name: GetRoleFromAbilityID :one
+SELECT r.id, r.name, r.alignment
+FROM roles r
+JOIN role_abilities_Join ra ON r.id = ra.role_id
+WHERE ra.ability_id = $1
+`
+
+func (q *Queries) GetRoleFromAbilityID(ctx context.Context, abilityID int32) (Role, error) {
+	row := q.db.QueryRow(ctx, getRoleFromAbilityID, abilityID)
+	var i Role
+	err := row.Scan(&i.ID, &i.Name, &i.Alignment)
+	return i, err
+}
+
 const nukeAnyAbilities = `-- name: NukeAnyAbilities :exec
 TRUNCATE  any_ability_details RESTART IDENTITY CASCADE
 `

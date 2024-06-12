@@ -24,7 +24,7 @@ type DatabaseTestSuite struct {
 func (suite *DatabaseTestSuite) SetupSuite() {
 	// Open the database connection
 	godotenv.Load("../.env")
-	trueDsn := os.Getenv("MOCK_DATABASE_URL")
+	trueDsn := os.Getenv("DATABASE_URL")
 	db, err := pgx.Connect(context.Background(), trueDsn)
 	if err != nil {
 		suite.T().Fatal(err)
@@ -37,8 +37,6 @@ func (suite *DatabaseTestSuite) SetupSuite() {
 // TearDownSuite is run once after all tests in the suite
 func (suite *DatabaseTestSuite) TearDownSuite() {
 	ctx := context.Background()
-	// Close the database connection
-	suite.DB.Exec(ctx, gamesTruncate)
 	suite.DB.Close(ctx)
 }
 

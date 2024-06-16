@@ -66,6 +66,7 @@ func (h *Handler) SyncRolesCsv(c echo.Context) error {
 
 	bulkRoleCreateList := []bulkRoleCreate{}
 
+	// TODO: Remove this hardcoded limit after testing
 	for i := range chunks {
 		roleParams, roleAbilityDetailParams, rolePassiveDetailParams, err := parseRoleChunk(chunks[i])
 		if err != nil {
@@ -105,26 +106,11 @@ func (h *Handler) SyncRolesCsv(c echo.Context) error {
 		for _, a := range roleParams.A {
 			roleID := roleIds[i]
 
-			priority := int32(20)
-			for _, categoryName := range a.CategoryNames {
-				cat, err := q.GetCategoryByName(c.Request().Context(), pgtype.Text{String: strings.ToUpper(categoryName), Valid: true})
-				if err != nil {
-					log.Println("Error Getting Category ID", categoryName, err)
-					return util.InternalServerErrorJson(c, err.Error())
-				}
-				if cat.Priority.Int32 > priority && cat.Priority.Int32 != -1 {
-					priority = cat.Priority.Int32
-				}
-
-				realAbility.CategoryIds = append(realAbility.CategoryIds, cat.ID)
-			}
-
 			realAbility.Name = a.Name
 			realAbility.Description = a.Description
 			realAbility.DefaultCharges = a.DefaultCharges
 			realAbility.Rarity = a.Rarity
 			realAbility.AnyAbility = a.AnyAbility
-			realAbility.Priority = pgtype.Int4{Int32: priority, Valid: true}
 
 			dbAbility, err := q.CreateAbilityDetail(c.Request().Context(), realAbility)
 
@@ -136,6 +122,19 @@ func (h *Handler) SyncRolesCsv(c echo.Context) error {
 					return util.InternalServerErrorJson(c, err.Error())
 				}
 			}
+
+			for _, categoryName := range a.CategoryNames {
+				dbCategory, err := q.GetCategoryByName(c.Request().Context(), pgtype.Text{String: strings.ToUpper(categoryName), Valid: true})
+				if err != nil {
+					log.Println("Error Getting Category ID", categoryName, err)
+					return util.InternalServerErrorJson(c, err.Error())
+				}
+				q.CreateAbilityDetailsCategoriesJoin(c.Request().Context(), models.CreateAbilityDetailsCategoriesJoinParams{
+					AbilityDetailsID: dbAbility.ID,
+					CategoriesID:     dbCategory.ID,
+				})
+			}
+
 			_, err = q.CreateRoleAbilityJoin(c.Request().Context(), models.CreateRoleAbilityJoinParams{RoleID: roleID, AbilityID: dbAbility.ID})
 			if err != nil {
 				log.Println(err, roleParams.R.Name, a.Name)
@@ -145,19 +144,18 @@ func (h *Handler) SyncRolesCsv(c echo.Context) error {
 
 		for _, p := range roleParams.P {
 			rId := roleIds[i]
-			log.Println("\t", p.Name)
 			dbPassive, err := q.CreatePassiveDetail(c.Request().Context(), p)
-			// FIXME: For some god forsaken reason, this error is not being processed right, for right now im ignoring it
-			err = nil
 			if err != nil {
-				if util.ErrorContains(err, "23505") {
-					log.Println(p.Name, "already exists")
-				} else {
+				if !util.ErrorContains(err, "23505") {
 					log.Println(err, roleParams.R.Name, p.Name)
 					return util.InternalServerErrorJson(c, err.Error())
 				}
-				log.Println(err, roleParams.R.Name, p.Name)
-				return util.InternalServerErrorJson(c, err.Error())
+				// Passive already exists, so just grab it here before proceeding
+				dbPassive, err = q.GetPassiveDetailsByName(c.Request().Context(), p.Name)
+				if err != nil {
+					log.Println(err, roleParams.R.Name, p.Name)
+					return util.InternalServerErrorJson(c, err.Error())
+				}
 			}
 			// insert entry into role_passives_join
 			_, err = q.CreateRolePassiveJoin(c.Request().Context(), models.CreateRolePassiveJoinParams{RoleID: rId, PassiveID: dbPassive.ID})
@@ -307,12 +305,9 @@ func (h *Handler) SyncStatusDetailsCSV(c echo.Context) error {
 	// Drop first and second row as they are headers / useless
 	records = records[2:]
 
-	// Rarity	Name	Categories	Description
-	// Common	Silence	Debuff/Negative/Visiting/Night	Choose a player, inflicting them with the Blackmailed status.
-
 	q := models.New(h.Db)
 
-	csvAnyAbilityDetails := []models.CreateAnyAbilityDetailParams{}
+	csvAnyAbilityDetails := []TempCreateAbilityDetailParams{}
 	for i, r := range records {
 		// WARNING: For some god forsaken reason there's 80 empty lines in the CSV's normally so need to manually check
 		// for the actual "end of file" line
@@ -320,7 +315,7 @@ func (h *Handler) SyncStatusDetailsCSV(c echo.Context) error {
 			break
 		}
 
-		csvAnyAbilityLine := models.CreateAnyAbilityDetailParams{}
+		csvAnyAbilityLine := TempCreateAbilityDetailParams{}
 		switch strings.TrimSpace(r[1]) {
 		case "Common":
 			csvAnyAbilityLine.Rarity = models.RarityCOMMON
@@ -341,110 +336,40 @@ func (h *Handler) SyncStatusDetailsCSV(c echo.Context) error {
 			return util.BadRequestJson(c, "Invalid Rarity")
 		}
 		csvAnyAbilityLine.Name = r[2]
-		csvAnyAbilityLine.Shorthand = pgtype.Text{String: r[3], Valid: true}
 		csvAnyAbilityLine.Description = r[6]
-		csvAnyAbilityLine.CategoryIds = []int32{}
+		csvAnyAbilityLine.AnyAbility = pgtype.Bool{Bool: true, Valid: true}
+		csvAnyAbilityLine.CategoryNames = strings.Split(r[5], "/")
+		csvAnyAbilityDetails = append(csvAnyAbilityDetails, csvAnyAbilityLine)
+	}
 
-		priority := int32(20)
-		for _, cat := range strings.Split(r[5], "/") {
+	for _, a := range csvAnyAbilityDetails {
+		dbAbility, err := q.CreateAbilityDetail(c.Request().Context(), models.CreateAbilityDetailParams{
+			Name:        a.Name,
+			Description: a.Description,
+			AnyAbility:  a.AnyAbility,
+			Rarity:      a.Rarity,
+		})
+		if err != nil {
+			// WARNING: we can just skip this as the CSV can have duplicate entries from the roles csv...that should be changed but w/e
+			if util.ErrorContains(err, "23505") {
+				continue
+			} else {
+				log.Println("Unhandled error on upload", err, a.Name)
+				return util.InternalServerErrorJson(c, fmt.Sprintf("Error creating CSV Any Ability details for %s: %s", a.Name, err.Error()))
+			}
+		}
+		for _, cat := range a.CategoryNames {
 			dbCat, err := q.GetCategoryByName(c.Request().Context(), pgtype.Text{String: strings.ToUpper(cat), Valid: true})
 			if err != nil {
 				log.Println("Error getting category", cat, err)
 				return util.InternalServerErrorJson(c, err.Error())
 			}
-			if dbCat.Priority.Int32 > priority && dbCat.Priority.Int32 != -1 {
-				priority = dbCat.Priority.Int32
-			}
-			csvAnyAbilityLine.Priority = pgtype.Int4{Int32: priority, Valid: true}
-			csvAnyAbilityLine.CategoryIds = append(csvAnyAbilityLine.CategoryIds, dbCat.ID)
-		}
-		csvAnyAbilityDetails = append(csvAnyAbilityDetails, csvAnyAbilityLine)
-	}
-
-	err = q.NukeAnyAbilities(c.Request().Context())
-	if err != nil {
-		log.Println("Error nuking any ability details", err)
-		return util.InternalServerErrorJson(c, err.Error())
-	}
-
-	for _, a := range csvAnyAbilityDetails {
-		log.Println(a.Name, a.CategoryIds)
-		_, err := q.CreateAnyAbilityDetail(c.Request().Context(), a)
-		if err != nil {
-			if util.ErrorContains(err, "23505") {
-				log.Println("Entry already exists, skipping: ", a.Name, err)
-				continue
-			} else {
-				log.Println("Unhandled error on upload", err)
-				return util.InternalServerErrorJson(c, fmt.Sprintf("Error creating CSV Any Ability details for %s: %s", a.Name, err.Error()))
-			}
+			q.CreateAbilityDetailsCategoriesJoin(c.Request().Context(), models.CreateAbilityDetailsCategoriesJoinParams{
+				AbilityDetailsID: dbAbility.ID,
+				CategoriesID:     dbCat.ID,
+			})
 		}
 	}
-
-	// AbilityDetails that have the any_ability flag set to true also need to be synced
-
-	// regularAbilityDetailsToSync, err := q.GetAnyAbilityDetailsMarkedAnyAbility(c.Request().Context())
-	regularAbilityDetailsToSync, err := q.ListAbilityDetails(c.Request().Context())
-	if err != nil {
-		log.Println("Error getting regular ability details to sync", err)
-		return util.InternalServerErrorJson(c, err.Error())
-	}
-	for _, a := range regularAbilityDetailsToSync {
-		_, err := q.CreateAnyAbilityDetail(c.Request().Context(), models.CreateAnyAbilityDetailParams{
-			Name:        a.Name,
-			Description: a.Description,
-			CategoryIds: a.CategoryIds,
-			Rarity:      a.Rarity,
-			Priority:    a.Priority,
-		})
-		if err != nil {
-			if util.ErrorContains(err, "23505") {
-				log.Println("Entry already exists, skipping: ", a.Name, err)
-			} else {
-				log.Println("Error creating regular ability details for", a.Name, err)
-				return util.InternalServerErrorJson(c, fmt.Sprintf("Error creating Role Any Ability details for %s: %s", a.Name, err.Error()))
-			}
-		}
-	}
-
-	// anyAbilityDetailsToSync, err := q.GetAnyAbilityDetailsMarkedAnyAbility(c.Request().Context())
-	// if err != nil {
-	// 	log.Println("Error getting any ability details to sync", err)
-	// 	return util.InternalServerErrorJson(c, err.Error())
-	// }
-	// for _, a := range anyAbilityDetailsToSync {
-	// 	entry, _ := q.CreateAnyAbilityDetail(c.Request().Context(), models.CreateAnyAbilityDetailParams{
-	// 		Name:        a.Name,
-	// 		Description: a.Description,
-	// 		CategoryIds: a.CategoryIds,
-	// 		Rarity:      a.Rarity,
-	// 		Priority:    a.Priority,
-	// 	})
-	// 	if entry.ID == 0 {
-	// 		log.Println("Error creating any ability details for", a.Name, err)
-	// 	}
-	// 	// if err != nil {
-	// 	// 	if util.ErrorContains(err, "23505") {
-	// 	// 		return util.InternalServerErrorJson(c, fmt.Sprintf("Error creating CSV Any Ability details for %s: %s", a.Name, err.Error()))
-	// 	// 	} else {
-	// 	// 		log.Println("Unhandled error on upload", err)
-	// 	// 	}
-	// 	//
-	// 	// }
-	// }
-	// log.Println("Successfully synced base any ability details")
-	//
-	// for _, a := range csvAnyAbilityDetails {
-	// 	_, err := q.CreateAnyAbilityDetail(c.Request().Context(), a)
-	// 	if err != nil {
-	// 		if util.ErrorContains(err, "23505") {
-	// 			return util.InternalServerErrorJson(c, fmt.Sprintf("Error creating CSV Any Ability details for %s: %s", a.Name, err.Error()))
-	// 		} else {
-	// 			log.Println("Unhandled error on upload", err)
-	// 		}
-	// 	}
-	// }
-	// log.Println("Successfully synced CSV any ability details")
 
 	return c.JSON(200, "Success")
 }

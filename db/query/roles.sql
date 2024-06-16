@@ -29,7 +29,6 @@ group by roles.id
 ;
 
 
-
 -- name: NukeRoles :exec
-TRUNCATE roles, role_abilities_join, role_passives_join, ability_details, any_ability_details, passive_details RESTART IDENTITY CASCADE;
+TRUNCATE roles, role_abilities_join, role_passives_join, ability_details, passive_details, ability_details_categories_join RESTART IDENTITY CASCADE;
 

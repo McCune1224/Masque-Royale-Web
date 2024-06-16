@@ -4,7 +4,7 @@ from ability_details
 where id = $1
 ;
 
--- name: GetAbilityByName :one
+-- name: GetAbilityDetailsByName :one
 select *
 from ability_details
 where name = $1
@@ -12,9 +12,9 @@ where name = $1
 
 -- name: CreateAbilityDetail :one
 INSERT INTO ability_details (
-  name, description, default_charges, category_ids, any_ability, priority, rarity
+  name, description, default_charges, any_ability, rarity
 ) VALUES (
-  $1, $2, $3, $4, $5, $6, $7
+  $1, $2, $3, $4, $5 
 )
 RETURNING *;
 
@@ -34,9 +34,7 @@ UPDATE ability_details
   SET name = $2,
   description = $3,
   default_charges = $4,
-  category_ids = $5,
-  priority = $6,
-  any_ability = $7
+  any_ability = $5
 WHERE id = $1
 RETURNING *;
 

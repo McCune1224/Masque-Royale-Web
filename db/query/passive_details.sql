@@ -1,7 +1,13 @@
--- name: GetPassiveDetail :one
+-- name: GetPassiveDetails :one
 select *
 from passive_details
 where id = $1
+;
+
+-- name: GetPassiveDetailsByName :one
+select *
+from passive_details
+where name = $1
 ;
 
 -- name: CreatePassiveDetail :one
@@ -13,11 +19,15 @@ INSERT INTO passive_details (
 RETURNING *;
 
 -- name: GetAllPassiveDetails :many
-SELECT * FROM passive_details;
+select *
+from passive_details
+;
 
 -- name: GetAllPassiveDetailsByID :many
-SELECT * FROM passive_details
-WHERE id = $1;
+select *
+from passive_details
+where id = $1
+;
 
 -- name: UpdatePassiveDetail :one
 UPDATE passive_details
@@ -27,5 +37,7 @@ WHERE id = $1
 RETURNING *;
 
 -- name: DeletePassiveDetail :exec
-DELETE FROM passive_details
-WHERE id = $1;
+delete from passive_details
+where id = $1
+;
+

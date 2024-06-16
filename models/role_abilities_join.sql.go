@@ -30,7 +30,7 @@ func (q *Queries) CreateRoleAbilityJoin(ctx context.Context, arg CreateRoleAbili
 }
 
 const getAssociatedRoleAbilities = `-- name: GetAssociatedRoleAbilities :many
-select ab.id, ab.name, ab.description, ab.default_charges, ab.category_ids, ab.rarity, ab.priority, ab.any_ability
+select ab.id, ab.name, ab.description, ab.default_charges, ab.rarity, ab.any_ability
 from role_abilities_join raj
 join ability_details ab on raj.ability_id = ab.id
 where raj.role_id = $1
@@ -50,9 +50,7 @@ func (q *Queries) GetAssociatedRoleAbilities(ctx context.Context, roleID int32) 
 			&i.Name,
 			&i.Description,
 			&i.DefaultCharges,
-			&i.CategoryIds,
 			&i.Rarity,
-			&i.Priority,
 			&i.AnyAbility,
 		); err != nil {
 			return nil, err
@@ -90,10 +88,10 @@ func (q *Queries) GetRoleAbilityJoin(ctx context.Context) (GetRoleAbilityJoinRow
 }
 
 const getRoleFromAbilityID = `-- name: GetRoleFromAbilityID :one
-SELECT r.id, r.name, r.alignment
-FROM roles r
-JOIN role_abilities_Join ra ON r.id = ra.role_id
-WHERE ra.ability_id = $1
+select r.id, r.name, r.alignment
+from roles r
+join role_abilities_join ra on r.id = ra.role_id
+where ra.ability_id = $1
 `
 
 func (q *Queries) GetRoleFromAbilityID(ctx context.Context, abilityID int32) (Role, error) {
@@ -101,13 +99,4 @@ func (q *Queries) GetRoleFromAbilityID(ctx context.Context, abilityID int32) (Ro
 	var i Role
 	err := row.Scan(&i.ID, &i.Name, &i.Alignment)
 	return i, err
-}
-
-const nukeAnyAbilities = `-- name: NukeAnyAbilities :exec
-TRUNCATE  any_ability_details RESTART IDENTITY CASCADE
-`
-
-func (q *Queries) NukeAnyAbilities(ctx context.Context) error {
-	_, err := q.db.Exec(ctx, nukeAnyAbilities)
-	return err
 }

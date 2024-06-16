@@ -11,22 +11,11 @@ CREATE TABLE IF NOT EXISTS ability_details (
 id serial PRIMARY KEY,
 name VARCHAR(64) UNIQUE NOT NULL,
 description TEXT NOT NULL,
-default_charges int,
-category_ids INT[] DEFAULT '{}',
+default_charges int DEFAULT 0,
 rarity rarity NOT NULL,
-priority int,
 any_ability bool
 );
 
-CREATE TABLE IF NOT EXISTS any_ability_details (
-id serial PRIMARY KEY,
-name VARCHAR(64) UNIQUE NOT NULL,
-shorthand VARCHAR(20),
-description TEXT NOT NULL,
-category_ids INT[] DEFAULT '{}',
-rarity rarity NOT NULL,
-priority int
-);
 
 CREATE TABLE IF NOT EXISTS passive_details(
 id serial PRIMARY KEY,
@@ -51,13 +40,19 @@ CREATE TABLE IF NOT EXISTS role_passives_join(
 CREATE TABLE IF NOT EXISTS categories (
 id serial PRIMARY KEY,
 name VARCHAR(64),
-priority int
+priority int -- Prioirty is optional,
+);
+
+CREATE TABLE IF NOT EXISTS ability_details_categories_join(
+  ability_details_id INT NOT NULL,
+  categories_id INT NOT NULL,
+  PRIMARY KEY (ability_details_id, categories_id)
 );
 
 
 -- FIXME: There's no uniform system for categories, so for right now I'm just
--- hardcoding the name and associated priority here
--- -1 indicates to skip using this for a priority
+-- hardcoding the name and associated priority here. Ideally should be better codified
+-- on the sheet we're parsing from
 INSERT INTO categories 
 (name, priority) 
 VALUES 
@@ -81,14 +76,20 @@ VALUES
 ('THEFT', 11),
 ('HEALING', 12),
 ('DESTRUCTION', 13),
-('KILLING', 14),
-('POSITIVE', -1),
-('NEGATIVE', -1),
-('NEUTRAL', -1),
-('NON-VISITING', -1),
-('NON VISITING', -1),
-('INSTANT', -1),
-('NIGHT', -1);
+('KILLING', 14);
+
+
+INSERT INTO categories 
+(name) 
+VALUES 
+-- NOTE: These are technically more descriptors than categories, so ordering is not important
+('POSITIVE'),
+('NEGATIVE'),
+('NEUTRAL'),
+('NON-VISITING'),
+('NON VISITING'),
+('INSTANT'),
+('NIGHT');
 
 
 CREATE TABLE IF NOT EXISTS status_details(

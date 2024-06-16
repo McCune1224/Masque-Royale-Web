@@ -91,7 +91,7 @@ func (q *Queries) ListRoles(ctx context.Context) ([]Role, error) {
 }
 
 const nukeRoles = `-- name: NukeRoles :exec
-TRUNCATE roles, role_abilities_join, role_passives_join, ability_details, any_ability_details, passive_details RESTART IDENTITY CASCADE
+TRUNCATE roles, role_abilities_join, role_passives_join, ability_details, passive_details, ability_details_categories_join RESTART IDENTITY CASCADE
 `
 
 func (q *Queries) NukeRoles(ctx context.Context) error {

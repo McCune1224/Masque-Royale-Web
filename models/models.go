@@ -112,10 +112,13 @@ type AbilityDetail struct {
 	Name           string      `json:"name"`
 	Description    string      `json:"description"`
 	DefaultCharges pgtype.Int4 `json:"default_charges"`
-	CategoryIds    []int32     `json:"category_ids"`
 	Rarity         Rarity      `json:"rarity"`
-	Priority       pgtype.Int4 `json:"priority"`
 	AnyAbility     pgtype.Bool `json:"any_ability"`
+}
+
+type AbilityDetailsCategoriesJoin struct {
+	AbilityDetailsID int32 `json:"ability_details_id"`
+	CategoriesID     int32 `json:"categories_id"`
 }
 
 type Action struct {
@@ -130,16 +133,6 @@ type Action struct {
 	Round           int32       `json:"round"`
 	Priority        int32       `json:"priority"`
 	RoleID          pgtype.Int4 `json:"role_id"`
-}
-
-type AnyAbilityDetail struct {
-	ID          int32       `json:"id"`
-	Name        string      `json:"name"`
-	Shorthand   pgtype.Text `json:"shorthand"`
-	Description string      `json:"description"`
-	CategoryIds []int32     `json:"category_ids"`
-	Rarity      Rarity      `json:"rarity"`
-	Priority    pgtype.Int4 `json:"priority"`
 }
 
 type Category struct {

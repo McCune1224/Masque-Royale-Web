@@ -13,20 +13,18 @@ import (
 
 const createAbilityDetail = `-- name: CreateAbilityDetail :one
 INSERT INTO ability_details (
-  name, description, default_charges, category_ids, any_ability, priority, rarity
+  name, description, default_charges, any_ability, rarity
 ) VALUES (
-  $1, $2, $3, $4, $5, $6, $7
+  $1, $2, $3, $4, $5 
 )
-RETURNING id, name, description, default_charges, category_ids, rarity, priority, any_ability
+RETURNING id, name, description, default_charges, rarity, any_ability
 `
 
 type CreateAbilityDetailParams struct {
 	Name           string      `json:"name"`
 	Description    string      `json:"description"`
 	DefaultCharges pgtype.Int4 `json:"default_charges"`
-	CategoryIds    []int32     `json:"category_ids"`
 	AnyAbility     pgtype.Bool `json:"any_ability"`
-	Priority       pgtype.Int4 `json:"priority"`
 	Rarity         Rarity      `json:"rarity"`
 }
 
@@ -35,9 +33,7 @@ func (q *Queries) CreateAbilityDetail(ctx context.Context, arg CreateAbilityDeta
 		arg.Name,
 		arg.Description,
 		arg.DefaultCharges,
-		arg.CategoryIds,
 		arg.AnyAbility,
-		arg.Priority,
 		arg.Rarity,
 	)
 	var i AbilityDetail
@@ -46,9 +42,7 @@ func (q *Queries) CreateAbilityDetail(ctx context.Context, arg CreateAbilityDeta
 		&i.Name,
 		&i.Description,
 		&i.DefaultCharges,
-		&i.CategoryIds,
 		&i.Rarity,
-		&i.Priority,
 		&i.AnyAbility,
 	)
 	return i, err
@@ -64,30 +58,8 @@ func (q *Queries) DeleteAbilityDetail(ctx context.Context, id int32) error {
 	return err
 }
 
-const getAbilityByName = `-- name: GetAbilityByName :one
-select id, name, description, default_charges, category_ids, rarity, priority, any_ability
-from ability_details
-where name = $1
-`
-
-func (q *Queries) GetAbilityByName(ctx context.Context, name string) (AbilityDetail, error) {
-	row := q.db.QueryRow(ctx, getAbilityByName, name)
-	var i AbilityDetail
-	err := row.Scan(
-		&i.ID,
-		&i.Name,
-		&i.Description,
-		&i.DefaultCharges,
-		&i.CategoryIds,
-		&i.Rarity,
-		&i.Priority,
-		&i.AnyAbility,
-	)
-	return i, err
-}
-
 const getAbilityDetail = `-- name: GetAbilityDetail :one
-select id, name, description, default_charges, category_ids, rarity, priority, any_ability
+select id, name, description, default_charges, rarity, any_ability
 from ability_details
 where id = $1
 `
@@ -100,16 +72,34 @@ func (q *Queries) GetAbilityDetail(ctx context.Context, id int32) (AbilityDetail
 		&i.Name,
 		&i.Description,
 		&i.DefaultCharges,
-		&i.CategoryIds,
 		&i.Rarity,
-		&i.Priority,
+		&i.AnyAbility,
+	)
+	return i, err
+}
+
+const getAbilityDetailsByName = `-- name: GetAbilityDetailsByName :one
+select id, name, description, default_charges, rarity, any_ability
+from ability_details
+where name = $1
+`
+
+func (q *Queries) GetAbilityDetailsByName(ctx context.Context, name string) (AbilityDetail, error) {
+	row := q.db.QueryRow(ctx, getAbilityDetailsByName, name)
+	var i AbilityDetail
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Description,
+		&i.DefaultCharges,
+		&i.Rarity,
 		&i.AnyAbility,
 	)
 	return i, err
 }
 
 const getAllAbilityDetailsByAnyAbility = `-- name: GetAllAbilityDetailsByAnyAbility :many
-select id, name, description, default_charges, category_ids, rarity, priority, any_ability
+select id, name, description, default_charges, rarity, any_ability
 from ability_details
 where any_ability = $1
 `
@@ -128,9 +118,7 @@ func (q *Queries) GetAllAbilityDetailsByAnyAbility(ctx context.Context, anyAbili
 			&i.Name,
 			&i.Description,
 			&i.DefaultCharges,
-			&i.CategoryIds,
 			&i.Rarity,
-			&i.Priority,
 			&i.AnyAbility,
 		); err != nil {
 			return nil, err
@@ -144,7 +132,7 @@ func (q *Queries) GetAllAbilityDetailsByAnyAbility(ctx context.Context, anyAbili
 }
 
 const getAnyAbilityDetailsMarkedAnyAbility = `-- name: GetAnyAbilityDetailsMarkedAnyAbility :many
-select id, name, description, default_charges, category_ids, rarity, priority, any_ability
+select id, name, description, default_charges, rarity, any_ability
 from ability_details
 where any_ability = true
 `
@@ -163,9 +151,7 @@ func (q *Queries) GetAnyAbilityDetailsMarkedAnyAbility(ctx context.Context) ([]A
 			&i.Name,
 			&i.Description,
 			&i.DefaultCharges,
-			&i.CategoryIds,
 			&i.Rarity,
-			&i.Priority,
 			&i.AnyAbility,
 		); err != nil {
 			return nil, err
@@ -179,7 +165,7 @@ func (q *Queries) GetAnyAbilityDetailsMarkedAnyAbility(ctx context.Context) ([]A
 }
 
 const listAbilityDetails = `-- name: ListAbilityDetails :many
-select id, name, description, default_charges, category_ids, rarity, priority, any_ability
+select id, name, description, default_charges, rarity, any_ability
 from ability_details
 `
 
@@ -197,9 +183,7 @@ func (q *Queries) ListAbilityDetails(ctx context.Context) ([]AbilityDetail, erro
 			&i.Name,
 			&i.Description,
 			&i.DefaultCharges,
-			&i.CategoryIds,
 			&i.Rarity,
-			&i.Priority,
 			&i.AnyAbility,
 		); err != nil {
 			return nil, err
@@ -217,11 +201,9 @@ UPDATE ability_details
   SET name = $2,
   description = $3,
   default_charges = $4,
-  category_ids = $5,
-  priority = $6,
-  any_ability = $7
+  any_ability = $5
 WHERE id = $1
-RETURNING id, name, description, default_charges, category_ids, rarity, priority, any_ability
+RETURNING id, name, description, default_charges, rarity, any_ability
 `
 
 type UpdateAbilityDetailParams struct {
@@ -229,8 +211,6 @@ type UpdateAbilityDetailParams struct {
 	Name           string      `json:"name"`
 	Description    string      `json:"description"`
 	DefaultCharges pgtype.Int4 `json:"default_charges"`
-	CategoryIds    []int32     `json:"category_ids"`
-	Priority       pgtype.Int4 `json:"priority"`
 	AnyAbility     pgtype.Bool `json:"any_ability"`
 }
 
@@ -240,8 +220,6 @@ func (q *Queries) UpdateAbilityDetail(ctx context.Context, arg UpdateAbilityDeta
 		arg.Name,
 		arg.Description,
 		arg.DefaultCharges,
-		arg.CategoryIds,
-		arg.Priority,
 		arg.AnyAbility,
 	)
 	var i AbilityDetail
@@ -250,9 +228,7 @@ func (q *Queries) UpdateAbilityDetail(ctx context.Context, arg UpdateAbilityDeta
 		&i.Name,
 		&i.Description,
 		&i.DefaultCharges,
-		&i.CategoryIds,
 		&i.Rarity,
-		&i.Priority,
 		&i.AnyAbility,
 	)
 	return i, err

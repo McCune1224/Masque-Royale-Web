@@ -34,7 +34,7 @@ func (h *Handler) GetAbilityByID(c echo.Context) error {
 
 func (h *Handler) GetAbilityByName(c echo.Context) error {
 	q := models.New(h.Db)
-	ability, err := q.GetAbilityByName(c.Request().Context(), c.QueryParam("name"))
+	ability, err := q.GetAbilityDetailsByName(c.Request().Context(), c.QueryParam("name"))
 	if err != nil {
 		return util.InternalServerErrorJson(c, err.Error())
 	}

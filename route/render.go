@@ -55,8 +55,8 @@ func Routes(app *echo.Echo, handler *handler.Handler) {
 
 	anyAbilities := api.Group("/any_abilities")
 	anyAbilities.GET("", handler.GetAllAnyAbilities)
-	anyAbilities.GET("/:any_ability_id", handler.GetAnyAbilityByID)
-	anyAbilities.GET("/search", handler.GetAnyAbilityByName)
+	// anyAbilities.GET("/:any_ability_id", handler.GetAnyAbilityByID)
+	// anyAbilities.GET("/search", handler.GetAnyAbilityByName)
 
 	statuses := api.Group("/statuses")
 	statuses.GET("", handler.GetAllStatuses)

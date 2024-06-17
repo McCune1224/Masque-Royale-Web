@@ -45,13 +45,17 @@ func (h *Handler) GetRoleForAbility(c echo.Context) error {
 	abilityId, err := util.ParseInt32Param(c, "ability_id")
 	if err != nil {
 		log.Println(err)
-		return util.InternalServerErrorJson(c, err.Error())
+		return util.BadRequestJson(c, err.Error())
 	}
 	q := models.New(h.Db)
-	role, err := q.GetRoleFromAbilityID(c.Request().Context(), abilityId)
+	role, err := q.GetRoleFromAbilityDetailsID(c.Request().Context(), abilityId)
 	if err != nil {
 		log.Println(err)
-		return util.InternalServerErrorJson(c, err.Error())
+		if util.ErrorNotFound(err) {
+			return util.NotFoundJson(c, "Invalid Ability ID")
+		} else {
+			return util.InternalServerErrorJson(c, err.Error())
+		}
 	}
 	return c.JSON(200, role)
 }

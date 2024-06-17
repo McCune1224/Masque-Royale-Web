@@ -29,15 +29,15 @@ func (q *Queries) CreateRoleAbilityJoin(ctx context.Context, arg CreateRoleAbili
 	return i, err
 }
 
-const getAssociatedRoleAbilities = `-- name: GetAssociatedRoleAbilities :many
+const getRoleAbilityDetails = `-- name: GetRoleAbilityDetails :many
 select ab.id, ab.name, ab.description, ab.default_charges, ab.rarity, ab.any_ability
 from role_abilities_join raj
 join ability_details ab on raj.ability_id = ab.id
 where raj.role_id = $1
 `
 
-func (q *Queries) GetAssociatedRoleAbilities(ctx context.Context, roleID int32) ([]AbilityDetail, error) {
-	rows, err := q.db.Query(ctx, getAssociatedRoleAbilities, roleID)
+func (q *Queries) GetRoleAbilityDetails(ctx context.Context, roleID int32) ([]AbilityDetail, error) {
+	rows, err := q.db.Query(ctx, getRoleAbilityDetails, roleID)
 	if err != nil {
 		return nil, err
 	}
@@ -87,15 +87,15 @@ func (q *Queries) GetRoleAbilityJoin(ctx context.Context) (GetRoleAbilityJoinRow
 	return i, err
 }
 
-const getRoleFromAbilityID = `-- name: GetRoleFromAbilityID :one
+const getRoleFromAbilityDetailsID = `-- name: GetRoleFromAbilityDetailsID :one
 select r.id, r.name, r.alignment
 from roles r
 join role_abilities_join ra on r.id = ra.role_id
 where ra.ability_id = $1
 `
 
-func (q *Queries) GetRoleFromAbilityID(ctx context.Context, abilityID int32) (Role, error) {
-	row := q.db.QueryRow(ctx, getRoleFromAbilityID, abilityID)
+func (q *Queries) GetRoleFromAbilityDetailsID(ctx context.Context, abilityID int32) (Role, error) {
+	row := q.db.QueryRow(ctx, getRoleFromAbilityDetailsID, abilityID)
 	var i Role
 	err := row.Scan(&i.ID, &i.Name, &i.Alignment)
 	return i, err

@@ -21,3 +21,7 @@ func ParseInt32Param(c echo.Context, str string) (int32, error) {
 func ErrorContains(err error, msg string) bool {
 	return strings.Contains(err.Error(), msg)
 }
+
+func ErrorNotFound(err error) bool {
+	return strings.Contains(err.Error(), "no rows in result set")
+}

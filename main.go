@@ -43,7 +43,8 @@ func main() {
 
 	app.Use(middleware.LoggerWithConfig(
 		middleware.LoggerConfig{
-			Format: "${status} | ${latency_human} | ${method} | ${uri} | ${error} \n",
+			// Format: "${status} | ${latency_human} | ${method} | ${uri} | ${error} \n",
+			Format: "${status} | ${method} | ${uri} | ${error} \n",
 		},
 	))
 

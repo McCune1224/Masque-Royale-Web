@@ -101,12 +101,6 @@ func (ns NullRarity) Value() (driver.Value, error) {
 	return string(ns.Rarity), nil
 }
 
-type Ability struct {
-	ID                int32       `json:"id"`
-	AbilityDetailsID  pgtype.Int4 `json:"ability_details_id"`
-	PlayerInventoryID pgtype.Int4 `json:"player_inventory_id"`
-}
-
 type AbilityDetail struct {
 	ID             int32       `json:"id"`
 	Name           string      `json:"name"`
@@ -119,20 +113,6 @@ type AbilityDetail struct {
 type AbilityDetailsCategoriesJoin struct {
 	AbilityDetailsID int32 `json:"ability_details_id"`
 	CategoriesID     int32 `json:"categories_id"`
-}
-
-type Action struct {
-	ID              int32       `json:"id"`
-	GameID          pgtype.Int4 `json:"game_id"`
-	PlayerID        pgtype.Int4 `json:"player_id"`
-	PendingApproval bool        `json:"pending_approval"`
-	Resolved        bool        `json:"resolved"`
-	Target          string      `json:"target"`
-	Context         string      `json:"context"`
-	AbilityName     string      `json:"ability_name"`
-	Round           int32       `json:"round"`
-	Priority        int32       `json:"priority"`
-	RoleID          pgtype.Int4 `json:"role_id"`
 }
 
 type Category struct {
@@ -158,20 +138,31 @@ type PassiveDetail struct {
 }
 
 type Player struct {
-	ID                int32       `json:"id"`
-	Name              string      `json:"name"`
-	GameID            pgtype.Int4 `json:"game_id"`
-	RoleID            pgtype.Int4 `json:"role_id"`
-	Alive             bool        `json:"alive"`
-	AlignmentOverride pgtype.Text `json:"alignment_override"`
-	Notes             string      `json:"notes"`
-	RoomID            pgtype.Int4 `json:"room_id"`
+	ID        int32         `json:"id"`
+	Name      string        `json:"name"`
+	GameID    pgtype.Int4   `json:"game_id"`
+	RoleID    pgtype.Int4   `json:"role_id"`
+	Alive     bool          `json:"alive"`
+	Alignment NullAlignment `json:"alignment"`
+	RoomID    pgtype.Int4   `json:"room_id"`
 }
 
-type PlayerInventory struct {
-	PlayerID        int32       `json:"player_id"`
-	AbilityName     string      `json:"ability_name"`
-	AbilityQuantity pgtype.Int4 `json:"ability_quantity"`
+type PlayerAbility struct {
+	PlayerID         int32 `json:"player_id"`
+	AbilityDetailsID int32 `json:"ability_details_id"`
+	Charges          int32 `json:"charges"`
+}
+
+type PlayerNote struct {
+	PlayerID int32  `json:"player_id"`
+	Note     string `json:"note"`
+}
+
+type PlayerStatus struct {
+	PlayerID   int32 `json:"player_id"`
+	StatusID   int32 `json:"status_id"`
+	Stack      int32 `json:"stack"`
+	RoundGiven int32 `json:"round_given"`
 }
 
 type Role struct {

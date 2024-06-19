@@ -12,20 +12,19 @@ import (
 )
 
 const createPlayer = `-- name: CreatePlayer :one
-INSERT INTO players (
- name, game_id, role_id, alive, alignment_override, notes, room_id
-  )
-VALUES ( $1, $2, $3, $4, $5, $6, $7 ) RETURNING id, name, game_id, role_id, alive, alignment_override, notes, room_id
+insert into players
+  ( name, game_id, role_id, alive, alignment, room_id)
+values ( $1, $2, $3, $4, $5, $6 )
+returning id, name, game_id, role_id, alive, alignment, room_id
 `
 
 type CreatePlayerParams struct {
-	Name              string      `json:"name"`
-	GameID            pgtype.Int4 `json:"game_id"`
-	RoleID            pgtype.Int4 `json:"role_id"`
-	Alive             bool        `json:"alive"`
-	AlignmentOverride pgtype.Text `json:"alignment_override"`
-	Notes             string      `json:"notes"`
-	RoomID            pgtype.Int4 `json:"room_id"`
+	Name      string        `json:"name"`
+	GameID    pgtype.Int4   `json:"game_id"`
+	RoleID    pgtype.Int4   `json:"role_id"`
+	Alive     bool          `json:"alive"`
+	Alignment NullAlignment `json:"alignment"`
+	RoomID    pgtype.Int4   `json:"room_id"`
 }
 
 func (q *Queries) CreatePlayer(ctx context.Context, arg CreatePlayerParams) (Player, error) {
@@ -34,8 +33,7 @@ func (q *Queries) CreatePlayer(ctx context.Context, arg CreatePlayerParams) (Pla
 		arg.GameID,
 		arg.RoleID,
 		arg.Alive,
-		arg.AlignmentOverride,
-		arg.Notes,
+		arg.Alignment,
 		arg.RoomID,
 	)
 	var i Player
@@ -45,9 +43,59 @@ func (q *Queries) CreatePlayer(ctx context.Context, arg CreatePlayerParams) (Pla
 		&i.GameID,
 		&i.RoleID,
 		&i.Alive,
-		&i.AlignmentOverride,
-		&i.Notes,
+		&i.Alignment,
 		&i.RoomID,
+	)
+	return i, err
+}
+
+const createPlayerAbility = `-- name: CreatePlayerAbility :one
+insert into player_abilities
+  ( player_id, ability_details_id, charges )
+values ( $1, $2, $3 )
+returning player_id, ability_details_id, charges
+`
+
+type CreatePlayerAbilityParams struct {
+	PlayerID         int32 `json:"player_id"`
+	AbilityDetailsID int32 `json:"ability_details_id"`
+	Charges          int32 `json:"charges"`
+}
+
+func (q *Queries) CreatePlayerAbility(ctx context.Context, arg CreatePlayerAbilityParams) (PlayerAbility, error) {
+	row := q.db.QueryRow(ctx, createPlayerAbility, arg.PlayerID, arg.AbilityDetailsID, arg.Charges)
+	var i PlayerAbility
+	err := row.Scan(&i.PlayerID, &i.AbilityDetailsID, &i.Charges)
+	return i, err
+}
+
+const createPlayerStatus = `-- name: CreatePlayerStatus :one
+insert into player_statuses
+  ( player_id, status_id, stack, round_given )
+values ( $1, $2, $3, $4 )
+returning player_id, status_id, stack, round_given
+`
+
+type CreatePlayerStatusParams struct {
+	PlayerID   int32 `json:"player_id"`
+	StatusID   int32 `json:"status_id"`
+	Stack      int32 `json:"stack"`
+	RoundGiven int32 `json:"round_given"`
+}
+
+func (q *Queries) CreatePlayerStatus(ctx context.Context, arg CreatePlayerStatusParams) (PlayerStatus, error) {
+	row := q.db.QueryRow(ctx, createPlayerStatus,
+		arg.PlayerID,
+		arg.StatusID,
+		arg.Stack,
+		arg.RoundGiven,
+	)
+	var i PlayerStatus
+	err := row.Scan(
+		&i.PlayerID,
+		&i.StatusID,
+		&i.Stack,
+		&i.RoundGiven,
 	)
 	return i, err
 }
@@ -62,8 +110,34 @@ func (q *Queries) DeletePlayer(ctx context.Context, id int32) error {
 	return err
 }
 
+const deletePlayerAbility = `-- name: DeletePlayerAbility :exec
+delete from player_abilities
+where player_id = $1
+and ability_details_id = $2
+`
+
+type DeletePlayerAbilityParams struct {
+	PlayerID         int32 `json:"player_id"`
+	AbilityDetailsID int32 `json:"ability_details_id"`
+}
+
+func (q *Queries) DeletePlayerAbility(ctx context.Context, arg DeletePlayerAbilityParams) error {
+	_, err := q.db.Exec(ctx, deletePlayerAbility, arg.PlayerID, arg.AbilityDetailsID)
+	return err
+}
+
+const deletePlayerNote = `-- name: DeletePlayerNote :exec
+delete from player_notes
+where player_id = $1
+`
+
+func (q *Queries) DeletePlayerNote(ctx context.Context, playerID int32) error {
+	_, err := q.db.Exec(ctx, deletePlayerNote, playerID)
+	return err
+}
+
 const getAllPlayers = `-- name: GetAllPlayers :many
-select id, name, game_id, role_id, alive, alignment_override, notes, room_id
+select id, name, game_id, role_id, alive, alignment, room_id
 from players
 `
 
@@ -82,8 +156,7 @@ func (q *Queries) GetAllPlayers(ctx context.Context) ([]Player, error) {
 			&i.GameID,
 			&i.RoleID,
 			&i.Alive,
-			&i.AlignmentOverride,
-			&i.Notes,
+			&i.Alignment,
 			&i.RoomID,
 		); err != nil {
 			return nil, err
@@ -97,7 +170,7 @@ func (q *Queries) GetAllPlayers(ctx context.Context) ([]Player, error) {
 }
 
 const getPlayer = `-- name: GetPlayer :one
-select id, name, game_id, role_id, alive, alignment_override, notes, room_id
+select id, name, game_id, role_id, alive, alignment, room_id
 from players
 where id = $1
 limit 1
@@ -112,15 +185,55 @@ func (q *Queries) GetPlayer(ctx context.Context, id int32) (Player, error) {
 		&i.GameID,
 		&i.RoleID,
 		&i.Alive,
-		&i.AlignmentOverride,
-		&i.Notes,
+		&i.Alignment,
 		&i.RoomID,
 	)
 	return i, err
 }
 
+const getPlayerAbility = `-- name: GetPlayerAbility :one
+select  
+  ability_details_id, 
+  charges, 
+  name, 
+  description, 
+  rarity, 
+  any_ability
+from player_abilities pa 
+inner join ability_details ad on ad.id = pa.ability_details_id
+where player_id = $1 and ability_details_id = $2
+`
+
+type GetPlayerAbilityParams struct {
+	PlayerID         int32 `json:"player_id"`
+	AbilityDetailsID int32 `json:"ability_details_id"`
+}
+
+type GetPlayerAbilityRow struct {
+	AbilityDetailsID int32       `json:"ability_details_id"`
+	Charges          int32       `json:"charges"`
+	Name             string      `json:"name"`
+	Description      string      `json:"description"`
+	Rarity           Rarity      `json:"rarity"`
+	AnyAbility       pgtype.Bool `json:"any_ability"`
+}
+
+func (q *Queries) GetPlayerAbility(ctx context.Context, arg GetPlayerAbilityParams) (GetPlayerAbilityRow, error) {
+	row := q.db.QueryRow(ctx, getPlayerAbility, arg.PlayerID, arg.AbilityDetailsID)
+	var i GetPlayerAbilityRow
+	err := row.Scan(
+		&i.AbilityDetailsID,
+		&i.Charges,
+		&i.Name,
+		&i.Description,
+		&i.Rarity,
+		&i.AnyAbility,
+	)
+	return i, err
+}
+
 const getPlayerByID = `-- name: GetPlayerByID :one
-select id, name, game_id, role_id, alive, alignment_override, notes, room_id
+select id, name, game_id, role_id, alive, alignment, room_id
 from players
 where id = $1
 `
@@ -134,15 +247,14 @@ func (q *Queries) GetPlayerByID(ctx context.Context, id int32) (Player, error) {
 		&i.GameID,
 		&i.RoleID,
 		&i.Alive,
-		&i.AlignmentOverride,
-		&i.Notes,
+		&i.Alignment,
 		&i.RoomID,
 	)
 	return i, err
 }
 
 const getPlayerByName = `-- name: GetPlayerByName :one
-select id, name, game_id, role_id, alive, alignment_override, notes, room_id
+select id, name, game_id, role_id, alive, alignment, room_id
 from players
 where name = $1
 `
@@ -156,15 +268,89 @@ func (q *Queries) GetPlayerByName(ctx context.Context, name string) (Player, err
 		&i.GameID,
 		&i.RoleID,
 		&i.Alive,
-		&i.AlignmentOverride,
-		&i.Notes,
+		&i.Alignment,
 		&i.RoomID,
 	)
 	return i, err
 }
 
+const getPlayerNote = `-- name: GetPlayerNote :one
+select player_id, note
+from player_notes
+where player_id = $1
+`
+
+func (q *Queries) GetPlayerNote(ctx context.Context, playerID int32) (PlayerNote, error) {
+	row := q.db.QueryRow(ctx, getPlayerNote, playerID)
+	var i PlayerNote
+	err := row.Scan(&i.PlayerID, &i.Note)
+	return i, err
+}
+
+const listPlayerAbilites = `-- name: ListPlayerAbilites :one
+select player_id, ability_details_id, charges
+from player_abilities
+where player_id = $1
+`
+
+func (q *Queries) ListPlayerAbilites(ctx context.Context, playerID int32) (PlayerAbility, error) {
+	row := q.db.QueryRow(ctx, listPlayerAbilites, playerID)
+	var i PlayerAbility
+	err := row.Scan(&i.PlayerID, &i.AbilityDetailsID, &i.Charges)
+	return i, err
+}
+
+const listPlayerAbilitiesJoin = `-- name: ListPlayerAbilitiesJoin :many
+select  
+  ability_details_id, 
+  charges, 
+  name, 
+  description, 
+  rarity, 
+  any_ability
+from player_abilities pa 
+inner join ability_details ad on ad.id = pa.ability_details_id
+where player_id = $1
+`
+
+type ListPlayerAbilitiesJoinRow struct {
+	AbilityDetailsID int32       `json:"ability_details_id"`
+	Charges          int32       `json:"charges"`
+	Name             string      `json:"name"`
+	Description      string      `json:"description"`
+	Rarity           Rarity      `json:"rarity"`
+	AnyAbility       pgtype.Bool `json:"any_ability"`
+}
+
+func (q *Queries) ListPlayerAbilitiesJoin(ctx context.Context, playerID int32) ([]ListPlayerAbilitiesJoinRow, error) {
+	rows, err := q.db.Query(ctx, listPlayerAbilitiesJoin, playerID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListPlayerAbilitiesJoinRow
+	for rows.Next() {
+		var i ListPlayerAbilitiesJoinRow
+		if err := rows.Scan(
+			&i.AbilityDetailsID,
+			&i.Charges,
+			&i.Name,
+			&i.Description,
+			&i.Rarity,
+			&i.AnyAbility,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listPlayers = `-- name: ListPlayers :many
-select id, name, game_id, role_id, alive, alignment_override, notes, room_id
+select id, name, game_id, role_id, alive, alignment, room_id
 from players
 `
 
@@ -183,8 +369,7 @@ func (q *Queries) ListPlayers(ctx context.Context) ([]Player, error) {
 			&i.GameID,
 			&i.RoleID,
 			&i.Alive,
-			&i.AlignmentOverride,
-			&i.Notes,
+			&i.Alignment,
 			&i.RoomID,
 		); err != nil {
 			return nil, err
@@ -198,7 +383,7 @@ func (q *Queries) ListPlayers(ctx context.Context) ([]Player, error) {
 }
 
 const listPlayersByGame = `-- name: ListPlayersByGame :many
-select id, name, game_id, role_id, alive, alignment_override, notes, room_id
+select id, name, game_id, role_id, alive, alignment, room_id
 from players
 where game_id = $1
 `
@@ -218,8 +403,7 @@ func (q *Queries) ListPlayersByGame(ctx context.Context, gameID pgtype.Int4) ([]
 			&i.GameID,
 			&i.RoleID,
 			&i.Alive,
-			&i.AlignmentOverride,
-			&i.Notes,
+			&i.Alignment,
 			&i.RoomID,
 		); err != nil {
 			return nil, err
@@ -233,27 +417,25 @@ func (q *Queries) ListPlayersByGame(ctx context.Context, gameID pgtype.Int4) ([]
 }
 
 const updatePlayer = `-- name: UpdatePlayer :one
-UPDATE players
-  SET name = $2,
-  game_id = $3,
-  role_id = $4,
-  alive = $5,
-  alignment_override = $6,
-  notes = $7,
-  room_id = $8
-WHERE id = $1
-RETURNING id, name, game_id, role_id, alive, alignment_override, notes, room_id
+update players
+set name = $2,
+game_id = $3,
+role_id = $4,
+alive = $5,
+alignment = $6,
+room_id = $7
+where id = $1
+returning id, name, game_id, role_id, alive, alignment, room_id
 `
 
 type UpdatePlayerParams struct {
-	ID                int32       `json:"id"`
-	Name              string      `json:"name"`
-	GameID            pgtype.Int4 `json:"game_id"`
-	RoleID            pgtype.Int4 `json:"role_id"`
-	Alive             bool        `json:"alive"`
-	AlignmentOverride pgtype.Text `json:"alignment_override"`
-	Notes             string      `json:"notes"`
-	RoomID            pgtype.Int4 `json:"room_id"`
+	ID        int32         `json:"id"`
+	Name      string        `json:"name"`
+	GameID    pgtype.Int4   `json:"game_id"`
+	RoleID    pgtype.Int4   `json:"role_id"`
+	Alive     bool          `json:"alive"`
+	Alignment NullAlignment `json:"alignment"`
+	RoomID    pgtype.Int4   `json:"room_id"`
 }
 
 func (q *Queries) UpdatePlayer(ctx context.Context, arg UpdatePlayerParams) (Player, error) {
@@ -263,8 +445,7 @@ func (q *Queries) UpdatePlayer(ctx context.Context, arg UpdatePlayerParams) (Pla
 		arg.GameID,
 		arg.RoleID,
 		arg.Alive,
-		arg.AlignmentOverride,
-		arg.Notes,
+		arg.Alignment,
 		arg.RoomID,
 	)
 	var i Player
@@ -274,27 +455,47 @@ func (q *Queries) UpdatePlayer(ctx context.Context, arg UpdatePlayerParams) (Pla
 		&i.GameID,
 		&i.RoleID,
 		&i.Alive,
-		&i.AlignmentOverride,
-		&i.Notes,
+		&i.Alignment,
 		&i.RoomID,
 	)
 	return i, err
 }
 
-const updatePlayerAlignmentOverride = `-- name: UpdatePlayerAlignmentOverride :one
-UPDATE players
-  SET alignment_override = $2
-WHERE id = $1
-RETURNING id, name, game_id, role_id, alive, alignment_override, notes, room_id
+const updatePlayerAbility = `-- name: UpdatePlayerAbility :one
+update player_abilities
+set charges = $3
+where player_id = $1
+and ability_details_id = $2
+returning player_id, ability_details_id, charges
 `
 
-type UpdatePlayerAlignmentOverrideParams struct {
-	ID                int32       `json:"id"`
-	AlignmentOverride pgtype.Text `json:"alignment_override"`
+type UpdatePlayerAbilityParams struct {
+	PlayerID         int32 `json:"player_id"`
+	AbilityDetailsID int32 `json:"ability_details_id"`
+	Charges          int32 `json:"charges"`
 }
 
-func (q *Queries) UpdatePlayerAlignmentOverride(ctx context.Context, arg UpdatePlayerAlignmentOverrideParams) (Player, error) {
-	row := q.db.QueryRow(ctx, updatePlayerAlignmentOverride, arg.ID, arg.AlignmentOverride)
+func (q *Queries) UpdatePlayerAbility(ctx context.Context, arg UpdatePlayerAbilityParams) (PlayerAbility, error) {
+	row := q.db.QueryRow(ctx, updatePlayerAbility, arg.PlayerID, arg.AbilityDetailsID, arg.Charges)
+	var i PlayerAbility
+	err := row.Scan(&i.PlayerID, &i.AbilityDetailsID, &i.Charges)
+	return i, err
+}
+
+const updatePlayerAlignment = `-- name: UpdatePlayerAlignment :one
+update players
+set alignment = $2
+where id = $1
+returning id, name, game_id, role_id, alive, alignment, room_id
+`
+
+type UpdatePlayerAlignmentParams struct {
+	ID        int32         `json:"id"`
+	Alignment NullAlignment `json:"alignment"`
+}
+
+func (q *Queries) UpdatePlayerAlignment(ctx context.Context, arg UpdatePlayerAlignmentParams) (Player, error) {
+	row := q.db.QueryRow(ctx, updatePlayerAlignment, arg.ID, arg.Alignment)
 	var i Player
 	err := row.Scan(
 		&i.ID,
@@ -302,18 +503,17 @@ func (q *Queries) UpdatePlayerAlignmentOverride(ctx context.Context, arg UpdateP
 		&i.GameID,
 		&i.RoleID,
 		&i.Alive,
-		&i.AlignmentOverride,
-		&i.Notes,
+		&i.Alignment,
 		&i.RoomID,
 	)
 	return i, err
 }
 
 const updatePlayerAlive = `-- name: UpdatePlayerAlive :one
-UPDATE players
-  SET alive = $2
-WHERE id = $1
-RETURNING id, name, game_id, role_id, alive, alignment_override, notes, room_id
+update players
+set alive = $2
+where id = $1
+returning id, name, game_id, role_id, alive, alignment, room_id
 `
 
 type UpdatePlayerAliveParams struct {
@@ -330,46 +530,17 @@ func (q *Queries) UpdatePlayerAlive(ctx context.Context, arg UpdatePlayerAlivePa
 		&i.GameID,
 		&i.RoleID,
 		&i.Alive,
-		&i.AlignmentOverride,
-		&i.Notes,
-		&i.RoomID,
-	)
-	return i, err
-}
-
-const updatePlayerNotes = `-- name: UpdatePlayerNotes :one
-UPDATE players
-  SET notes = $2
-WHERE id = $1
-RETURNING id, name, game_id, role_id, alive, alignment_override, notes, room_id
-`
-
-type UpdatePlayerNotesParams struct {
-	ID    int32  `json:"id"`
-	Notes string `json:"notes"`
-}
-
-func (q *Queries) UpdatePlayerNotes(ctx context.Context, arg UpdatePlayerNotesParams) (Player, error) {
-	row := q.db.QueryRow(ctx, updatePlayerNotes, arg.ID, arg.Notes)
-	var i Player
-	err := row.Scan(
-		&i.ID,
-		&i.Name,
-		&i.GameID,
-		&i.RoleID,
-		&i.Alive,
-		&i.AlignmentOverride,
-		&i.Notes,
+		&i.Alignment,
 		&i.RoomID,
 	)
 	return i, err
 }
 
 const updatePlayerRole = `-- name: UpdatePlayerRole :one
-UPDATE players
-  SET role_id = $2
-WHERE id = $1
-RETURNING id, name, game_id, role_id, alive, alignment_override, notes, room_id
+update players
+set role_id = $2
+where id = $1
+returning id, name, game_id, role_id, alive, alignment, room_id
 `
 
 type UpdatePlayerRoleParams struct {
@@ -386,18 +557,17 @@ func (q *Queries) UpdatePlayerRole(ctx context.Context, arg UpdatePlayerRolePara
 		&i.GameID,
 		&i.RoleID,
 		&i.Alive,
-		&i.AlignmentOverride,
-		&i.Notes,
+		&i.Alignment,
 		&i.RoomID,
 	)
 	return i, err
 }
 
 const updatePlayerRoom = `-- name: UpdatePlayerRoom :one
-UPDATE players
-  SET room_id = $2
-WHERE id = $1
-RETURNING id, name, game_id, role_id, alive, alignment_override, notes, room_id
+update players
+set room_id = $2
+where id = $1
+returning id, name, game_id, role_id, alive, alignment, room_id
 `
 
 type UpdatePlayerRoomParams struct {
@@ -414,9 +584,29 @@ func (q *Queries) UpdatePlayerRoom(ctx context.Context, arg UpdatePlayerRoomPara
 		&i.GameID,
 		&i.RoleID,
 		&i.Alive,
-		&i.AlignmentOverride,
-		&i.Notes,
+		&i.Alignment,
 		&i.RoomID,
 	)
+	return i, err
+}
+
+const upsertPlayerNote = `-- name: UpsertPlayerNote :one
+insert into player_notes
+  ( player_id, note )
+values ( $1, $2 )
+on conflict (player_id) do update
+  set note = $2
+returning player_id, note
+`
+
+type UpsertPlayerNoteParams struct {
+	PlayerID int32  `json:"player_id"`
+	Note     string `json:"note"`
+}
+
+func (q *Queries) UpsertPlayerNote(ctx context.Context, arg UpsertPlayerNoteParams) (PlayerNote, error) {
+	row := q.db.QueryRow(ctx, upsertPlayerNote, arg.PlayerID, arg.Note)
+	var i PlayerNote
+	err := row.Scan(&i.PlayerID, &i.Note)
 	return i, err
 }

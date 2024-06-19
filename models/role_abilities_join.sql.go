@@ -63,30 +63,6 @@ func (q *Queries) GetRoleAbilityDetails(ctx context.Context, roleID int32) ([]Ab
 	return items, nil
 }
 
-const getRoleAbilityJoin = `-- name: GetRoleAbilityJoin :one
-select role_abilities_join.role_id, role_abilities_join.ability_id, abilities.id, abilities.ability_details_id, abilities.player_inventory_id
-from role_abilities_join
-join abilities on role_abilities_join.ability_id = abilities.id
-`
-
-type GetRoleAbilityJoinRow struct {
-	RoleAbilitiesJoin RoleAbilitiesJoin `json:"role_abilities_join"`
-	Ability           Ability           `json:"ability"`
-}
-
-func (q *Queries) GetRoleAbilityJoin(ctx context.Context) (GetRoleAbilityJoinRow, error) {
-	row := q.db.QueryRow(ctx, getRoleAbilityJoin)
-	var i GetRoleAbilityJoinRow
-	err := row.Scan(
-		&i.RoleAbilitiesJoin.RoleID,
-		&i.RoleAbilitiesJoin.AbilityID,
-		&i.Ability.ID,
-		&i.Ability.AbilityDetailsID,
-		&i.Ability.PlayerInventoryID,
-	)
-	return i, err
-}
-
 const getRoleFromAbilityDetailsID = `-- name: GetRoleFromAbilityDetailsID :one
 select r.id, r.name, r.alignment
 from roles r

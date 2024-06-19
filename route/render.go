@@ -26,15 +26,6 @@ func Routes(app *echo.Echo, handler *handler.Handler) {
 	room.GET("/:room_id", handler.GetRoomByID)
 	room.POST("", handler.GetRoomByName)
 
-	games := api.Group("/games")
-	games.GET("/random", handler.GetRandomGame)
-	games.POST("", handler.InsertGame)
-	games.GET("", handler.GetAllGames)
-	games.GET("/:game_id", handler.GetGameByID)
-	games.PUT("/:game_id", handler.UpdateGame)
-	games.PATCH("/:game_id", handler.UpdateGame)
-	games.DELETE("/:game_id", handler.DeleteGame)
-
 	roles := api.Group("/roles")
 	roles.GET("", handler.GetAllRoles)
 	roles.GET("/complete", handler.GetAllCompleteRoles)
@@ -43,7 +34,22 @@ func Routes(app *echo.Echo, handler *handler.Handler) {
 	roles.GET("/:role_id/abilities", handler.GetRoleAbilities)
 	roles.GET("/:role_id/passives", handler.GetRolePassives)
 
-	// roles.POST("", handler.InsertRole
+	games := api.Group("/games")
+	games.GET("/random", handler.GetRandomGame)
+	games.POST("", handler.InsertGame)
+	games.GET("", handler.GetAllGames)
+	games.GET("/:game_id", handler.GetGameByID)
+	games.PUT("/:game_id", handler.UpdateGame)
+	games.DELETE("/:game_id", handler.DeleteGame)
+
+	gamesPlayers := games.Group("/:game_id/players")
+	gamesPlayers.GET("", handler.GetAllGamePlayers)
+	gamesPlayers.POST("", handler.InsertPlayer)
+	gamesPlayers.GET("/:player_id", handler.GetPlayerByID)
+	gamesPlayers.PUT("/:player_id", handler.UpdatePlayer)
+	gamesPlayers.GET("/:player_id/notes", handler.GetPlayerNotes)
+	gamesPlayers.GET("/:player_id/abilities", handler.GetPlayerAbilities)
+	gamesPlayers.DELETE("/:player_id", handler.DeletePlayer)
 
 	categories := api.Group("/categories")
 	// categories.GET("", handler.GetAllCategories)
@@ -55,32 +61,10 @@ func Routes(app *echo.Echo, handler *handler.Handler) {
 	abilities.GET("/:ability_id/role", handler.GetRoleForAbility)
 	abilities.GET("/search", handler.GetAbilityByName)
 
-	anyAbilities := api.Group("/any_abilities")
-	anyAbilities.GET("", handler.GetAllAnyAbilities)
-	// anyAbilities.GET("/:any_ability_id", handler.GetAnyAbilityByID)
-	// anyAbilities.GET("/search", handler.GetAnyAbilityByName)
+	gameAdmin := games.Group("/:game_id/admin")
+	gameAdmin.POST("/sync-roles-csv", handler.SyncRolesCsv)
+	gameAdmin.POST("/sync-any-abilities-csv", handler.SyncStatusDetailsCSV)
 
 	statuses := api.Group("/statuses")
 	statuses.GET("", handler.GetAllStatuses)
-
-	players := games.Group("/:game_id/players")
-	players.GET("", handler.GetAllPlayers)
-	players.POST("", handler.InsertPlayer)
-	players.GET("/:player_id", handler.GetPlayerByID)
-	players.PUT("/:player_id", handler.UpdatePlayer)
-	players.PATCH("/:player_id", handler.UpdatePlayer)
-	players.DELETE("/:player_id", handler.DeletePlayer)
-	players.GET("/:player_id/actions", handler.GetPlayerActions)
-
-	actions := games.Group("/:game_id/actions")
-	actions.GET("", handler.GetAllActions)
-	actions.POST("", handler.InsertAction)
-	actions.PUT("/:action_id", handler.UpdateAction)
-	actions.PATCH("/:action_id", handler.UpdateAction)
-	// actions.GET("/:action_id", handler.GetActionByID)
-	actions.DELETE("/:action_id", handler.DeleteAction)
-
-	admin := games.Group("/:game_id/admin")
-	admin.POST("/sync-roles-csv", handler.SyncRolesCsv)
-	admin.POST("/sync-any-abilities-csv", handler.SyncStatusDetailsCSV)
 }

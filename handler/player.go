@@ -208,3 +208,78 @@ func (h *Handler) DeletePlayer(c echo.Context) error {
 	}
 	return c.JSON(200, "Success")
 }
+
+func (h *Handler) GetPlayerAbility(c echo.Context) error {
+	playerID, err := util.ParseInt32Param(c, "player_id")
+	if err != nil {
+		return util.BadRequestJson(c, "Invalid Player ID")
+	}
+	abilityID, err := util.ParseInt32Param(c, "ability_id")
+	if err != nil {
+		return util.BadRequestJson(c, "Invalid Ability ID")
+	}
+	q := models.New(h.Db)
+	ability, err := q.GetPlayerAbility(c.Request().Context(), models.GetPlayerAbilityParams{
+		PlayerID:         playerID,
+		AbilityDetailsID: abilityID,
+	})
+	if err != nil {
+		log.Println(err)
+		return util.InternalServerErrorJson(c, err.Error())
+	}
+	return c.JSON(200, ability)
+}
+
+func (h *Handler) CreatePlayerAbility(c echo.Context) error {
+	playerID, err := util.ParseInt32Param(c, "player_id")
+	if err != nil {
+		return util.BadRequestJson(c, "Invalid Player ID")
+	}
+	var ability models.PlayerAbility
+	err = c.Bind(&ability)
+	if err != nil {
+		log.Println(err)
+		return util.BadRequestJson(c, err.Error())
+	}
+	q := models.New(h.Db)
+	ability, err = q.CreatePlayerAbility(c.Request().Context(), models.CreatePlayerAbilityParams{
+		PlayerID:         playerID,
+		AbilityDetailsID: ability.AbilityDetailsID,
+		Charges:          ability.Charges,
+	})
+	if err != nil {
+		log.Println(err)
+		return util.InternalServerErrorJson(c, err.Error())
+	}
+	return c.JSON(200, ability)
+}
+
+func (h *Handler) UpdatePlayerAbility(c echo.Context) error {
+	playerID, err := util.ParseInt32Param(c, "player_id")
+	if err != nil {
+		return util.BadRequestJson(c, "Invalid Player ID")
+	}
+	abilityID, err := util.ParseInt32Param(c, "ability_id")
+	if err != nil {
+		return util.BadRequestJson(c, "Invalid Ability ID")
+	}
+	jsonBind := struct {
+		Charges int32 `json:"charges"`
+	}{}
+	err = c.Bind(&jsonBind)
+	if err != nil {
+		log.Println(err)
+		return util.BadRequestJson(c, err.Error())
+	}
+	q := models.New(h.Db)
+	ability, err := q.UpdatePlayerAbility(c.Request().Context(), models.UpdatePlayerAbilityParams{
+		PlayerID:         playerID,
+		AbilityDetailsID: abilityID,
+		Charges:          jsonBind.Charges,
+	})
+	if err != nil {
+		log.Println(err)
+		return util.InternalServerErrorJson(c, err.Error())
+	}
+	return c.JSON(200, ability)
+}

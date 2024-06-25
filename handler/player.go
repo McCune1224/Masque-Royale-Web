@@ -283,3 +283,26 @@ func (h *Handler) UpdatePlayerAbility(c echo.Context) error {
 	}
 	return c.JSON(200, ability)
 }
+
+func (h *Handler) UpdatePlayerNotes(c echo.Context) error {
+	playerID, err := util.ParseInt32Param(c, "player_id")
+	if err != nil {
+		return util.BadRequestJson(c, "Invalid Player ID")
+	}
+	var notes models.PlayerNote
+	err = c.Bind(&notes)
+	if err != nil {
+		log.Println(err)
+		return util.BadRequestJson(c, err.Error())
+	}
+	q := models.New(h.Db)
+	notes, err = q.UpsertPlayerNote(c.Request().Context(), models.UpsertPlayerNoteParams{
+		PlayerID: playerID,
+		Note:     notes.Note,
+	})
+	if err != nil {
+		log.Println(err)
+		return util.InternalServerErrorJson(c, err.Error())
+	}
+	return c.JSON(200, notes)
+}

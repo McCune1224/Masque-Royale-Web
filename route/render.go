@@ -48,6 +48,7 @@ func Routes(app *echo.Echo, handler *handler.Handler) {
 	gamesPlayers.GET("/:player_id", handler.GetPlayerByID)
 	gamesPlayers.PUT("/:player_id", handler.UpdatePlayer)
 	gamesPlayers.GET("/:player_id/notes", handler.GetPlayerNotes)
+	gamesPlayers.PUT("/:player_id/notes", handler.UpdatePlayerNotes)
 	gamesPlayers.GET("/:player_id/abilities", handler.GetPlayerAbilities)
 	gamesPlayers.GET("/:player_id/abilities/:ability_id", handler.GetPlayerAbility)
 	gamesPlayers.POST("/:player_id/abilities/:ability_id", handler.CreatePlayerAbility)
